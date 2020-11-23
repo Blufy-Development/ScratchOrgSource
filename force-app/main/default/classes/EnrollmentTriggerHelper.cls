@@ -1,20 +1,13 @@
 /*
-	Name		:	EnrollmentTriggerHelper	
-	Description	:	This class is associated with Enrollment Trigger class.
+	Name		 : EnrollmentTriggerHelper	
+	Description	 : This class is associated with Enrollment Trigger class.
+	CH1			 : Updated on 20th Nov 2020 by Mohit, this method allows to rollup the total enrolments on Class Session.
+    Dependencies : EnrollmentTrigger, EnrollmentService, ClassSessionService. 
 */
 public with sharing class EnrollmentTriggerHelper {
     public EnrollmentTriggerHelper() {}
     
-    /*
-     * Code			: Dev(20/11/2020) 
-     * Method Name	: enrolmentsRollUpOnClsSession
-     * Date			: 20th Nov, 2020
-     * Developer	: Mohit Saxena
-     * Decription	: This method helps to rollup the total enrolments on Class Session of a particular Class.  
-     * Dependencies : EnrollmentTrigger, EnrollmentService, ClassSessionService.
-     */
-    
-    //Dev(20/11/2020)
+    //CH1
     public static void enrolmentsRollUpOnClsSession(Set<String> clsSessIds){
         List<Class_Session__c> clsSessList = new List<Class_Session__c>();
         
@@ -30,7 +23,7 @@ public with sharing class EnrollmentTriggerHelper {
             ClassSessionService.updateClassSessionRecords(clsSessList);
         }   
     }
-    //Dev(20/11/2020)
+    //CH1
     
     public static void insertFeeAlloaction(List<Enrollment__c> enrList, Set<Id> enrIdSet){
         Map<Id,Enrollment__c> enrolmap = new map<Id,Enrollment__c>();
