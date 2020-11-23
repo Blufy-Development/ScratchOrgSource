@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Advance_Scheduling_Unit__c</fullName>
+    <externalId>false</externalId>
+    <label>Advance Scheduling Unit</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Frequency__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Day(s)</fullName>
+                <default>false</default>
+                <label>Day(s)</label>
+            </value>
+            <value>
+                <fullName>Week(s)</fullName>
+                <default>false</default>
+                <label>Week(s)</label>
+            </value>
+            <value>
+                <fullName>Month(s)</fullName>
+                <default>false</default>
+                <label>Month(s)</label>
+            </value>
+            <value>
+                <fullName>Term(s)</fullName>
+                <default>false</default>
+                <label>Term(s)</label>
+            </value>
+            <value>
+                <fullName>None</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>None</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Monthly</controllingFieldValue>
+            <valueName>Month(s)</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

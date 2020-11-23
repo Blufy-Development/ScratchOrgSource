@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Time_can_not_be_blank</fullName>
+    <active>true</active>
+    <description>This validation rule is use for to validate time  when a user creating the working hours record and rule is active so that time, start time and end time shouldn&apos;t blank end time must be greater than start time.</description>
+    <errorConditionFormula>Start_Time__c &gt;= End_Time__c</errorConditionFormula>
+    <errorMessage>Start time must less than end time</errorMessage>
+</ValidationRule>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Common_Validation</fullName>
+    <active>true</active>
+    <description>This validation rule is use to validate whether end date must be greater than start date, start date must be future date with sequence and sessions must be greater than zero.</description>
+    <errorConditionFormula>OR(End_Date__c &lt; Start_Date__c, Sessions__c &lt;= 0, Sequence__c &lt;= 0,
+TEXT(Year__c) != TEXT(YEAR(Start_Date__c)))</errorConditionFormula>
+    <errorMessage>Please input valid information as in end date must be greater than or equal to start date and start date must be in future with sequence and session must be greater than zero.</errorMessage>
+</ValidationRule>

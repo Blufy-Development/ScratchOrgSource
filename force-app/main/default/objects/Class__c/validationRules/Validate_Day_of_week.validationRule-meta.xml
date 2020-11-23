@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validate_Day_of_week</fullName>
+    <active>false</active>
+    <errorConditionFormula>NOT(Contains((IF(INCLUDES(Days_of_Week__c, &quot;Sun&quot;), &quot;1;&quot;, &quot;&quot;) +
+IF(INCLUDES(Days_of_Week__c, &quot;Mon&quot;), &quot;2;&quot;, &quot;&quot;)+
+IF(INCLUDES(Days_of_Week__c, &quot;Tue&quot;), &quot;3;&quot;, &quot;&quot;)+
+IF(INCLUDES(Days_of_Week__c, &quot;Wed&quot;), &quot;4;&quot;, &quot;&quot;)+
+IF(INCLUDES(Days_of_Week__c, &quot;Thu&quot;), &quot;5;&quot;, &quot;&quot;)+
+IF(INCLUDES(Days_of_Week__c, &quot;Fri&quot;), &quot;6;&quot;, &quot;&quot;)+
+IF(INCLUDES(Days_of_Week__c, &quot;Sat&quot;), &quot;7;&quot;, &quot;&quot;)),  TEXT(WEEKDAY(Start_Date__c))))</errorConditionFormula>
+    <errorDisplayField>Start_Date__c</errorDisplayField>
+    <errorMessage>Please select matching date with weekdays.</errorMessage>
+</ValidationRule>

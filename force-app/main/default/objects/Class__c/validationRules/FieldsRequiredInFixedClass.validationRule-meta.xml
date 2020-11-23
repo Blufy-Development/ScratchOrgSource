@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FieldsRequiredInFixedClass</fullName>
+    <active>true</active>
+    <description>If class is fixed then session,start date &amp; end date can not be blank</description>
+    <errorConditionFormula>AND(ISPICKVAL(Type__c,&apos;Fixed&apos;),
+OR(ISBLANK(Start_Date__c),
+		ISBLANK(End_Date__c)))</errorConditionFormula>
+    <errorMessage>Start Date &amp; End Date Fields are required for Fixed Class.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Section__c</fullName>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Section</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Contact Address Details</fullName>
+                <default>false</default>
+                <label>Contact Address Details</label>
+            </value>
+            <value>
+                <fullName>Contact Details</fullName>
+                <default>false</default>
+                <label>Contact Details</label>
+            </value>
+            <value>
+                <fullName>Course Filter</fullName>
+                <default>true</default>
+                <label>Course Filter</label>
+            </value>
+            <value>
+                <fullName>Enrollment Details</fullName>
+                <default>false</default>
+                <label>Enrollment Details</label>
+            </value>
+            <value>
+                <fullName>Student Details</fullName>
+                <default>false</default>
+                <label>Student Details</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Certificate</fullName>
+                <default>false</default>
+                <label>Certificate</label>
+            </value>
+            <value>
+                <fullName>Home Stay</fullName>
+                <default>false</default>
+                <label>Home Stay</label>
+            </value>
+            <value>
+                <fullName>Hostel</fullName>
+                <default>false</default>
+                <label>Hostel</label>
+            </value>
+            <value>
+                <fullName>Hotel</fullName>
+                <default>false</default>
+                <label>Hotel</label>
+            </value>
+            <value>
+                <fullName>Placement Test</fullName>
+                <default>false</default>
+                <label>Placement Test</label>
+            </value>
+            <value>
+                <fullName>Return</fullName>
+                <default>false</default>
+                <label>Return</label>
+            </value>
+            <value>
+                <fullName>Single</fullName>
+                <default>false</default>
+                <label>Single</label>
+            </value>
+            <value>
+                <fullName>Student Pass</fullName>
+                <default>false</default>
+                <label>Student Pass</label>
+            </value>
+            <value>
+                <fullName>One-Way</fullName>
+                <default>false</default>
+                <label>One-Way</label>
+            </value>
+            <value>
+                <fullName>Two-Way</fullName>
+                <default>false</default>
+                <label>Two-Way</label>
+            </value>
+            <value>
+                <fullName>Speaking</fullName>
+                <default>false</default>
+                <label>Speaking</label>
+            </value>
+            <value>
+                <fullName>Free Late Test</fullName>
+                <default>false</default>
+                <label>Free Late Test</label>
+            </value>
+            <value>
+                <fullName>Paid Late Test</fullName>
+                <default>false</default>
+                <label>Paid Late Test</label>
+            </value>
+            <value>
+                <fullName>Early Test</fullName>
+                <default>false</default>
+                <label>Early Test</label>
+            </value>
+            <value>
+                <fullName>Free Make-up</fullName>
+                <default>false</default>
+                <label>Free Make-up</label>
+            </value>
+            <value>
+                <fullName>Paid Make-up</fullName>
+                <default>false</default>
+                <label>Paid Make-up</label>
+            </value>
+            <value>
+                <fullName>Free Catch-up</fullName>
+                <default>false</default>
+                <label>Free Catch-up</label>
+            </value>
+            <value>
+                <fullName>Paid Catch-up</fullName>
+                <default>false</default>
+                <label>Paid Catch-up</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>New</fullName>
+                <default>false</default>
+                <label>New</label>
+            </value>
+            <value>
+                <fullName>Renew</fullName>
+                <default>false</default>
+                <label>Renew</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

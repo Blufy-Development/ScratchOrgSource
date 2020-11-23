@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NoOfDaysMandatory</fullName>
+    <active>true</active>
+    <description>If the Discount Type equals to &quot;Early Bird&quot; then The &quot;Days Before Class&quot; Should be a mandatory field</description>
+    <errorConditionFormula>AND(
+					ISPICKVAL(Type__c, &apos;Early Bird&apos;),
+				 ISBLANK(Days_Before_Class__c) 
+	)</errorConditionFormula>
+    <errorDisplayField>Days_Before_Class__c</errorDisplayField>
+    <errorMessage>Field is required in case of Early Bird discount</errorMessage>
+</ValidationRule>

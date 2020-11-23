@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enrollment__c</fullName>
+    <externalId>false</externalId>
+    <label>Enrollment</label>
+    <referenceTo>Enrollment__c</referenceTo>
+    <relationshipLabel>Enrollment Classes</relationshipLabel>
+    <relationshipName>Enrollment_Classes</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

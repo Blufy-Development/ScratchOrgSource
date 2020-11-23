@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Deposit_Amount__c</fullName>
+    <description>to calculate deposit amount from all child invoice line item if type is deposit</description>
+    <externalId>false</externalId>
+    <label>Deposit Amount</label>
+    <summarizedField>Invoice_Line_Item__c.Amount__c</summarizedField>
+    <summaryFilterItems>
+        <field>Invoice_Line_Item__c.Type__c</field>
+        <operation>equals</operation>
+        <value>Deposit</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Invoice_Line_Item__c.Invoice__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

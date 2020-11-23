@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sessions__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>Number of Session used to define one Term (Term 1) of this class. The system will create subsequent Terms automatically using this definition (in Draft mode). You can edit subsequent terms as required.</inlineHelpText>
+    <label>Number of Sessions</label>
+    <precision>10</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

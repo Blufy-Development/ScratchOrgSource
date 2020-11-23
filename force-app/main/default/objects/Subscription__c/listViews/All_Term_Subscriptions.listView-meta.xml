@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Term_Subscriptions</fullName>
+    <columns>NAME</columns>
+    <columns>Customer__c</columns>
+    <columns>Next_Bill_Date__c</columns>
+    <columns>Payment_Frequency__c</columns>
+    <columns>Amount__c</columns>
+    <columns>Total_Amount__c</columns>
+    <columns>Status__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>Payment_Frequency__c</field>
+        <operation>equals</operation>
+        <value>Term</value>
+    </filters>
+    <label>All Term Subscriptions</label>
+</ListView>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Open_Classes</fullName>
+    <columns>NAME</columns>
+    <columns>Course__c</columns>
+    <columns>Teacher__c</columns>
+    <columns>Start_Date__c</columns>
+    <columns>Location__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Open</value>
+    </filters>
+    <label>All Open Classes</label>
+</ListView>

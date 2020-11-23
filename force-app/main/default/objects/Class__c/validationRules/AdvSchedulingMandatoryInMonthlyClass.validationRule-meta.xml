@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AdvSchedulingMandatoryInMonthlyClass</fullName>
+    <active>false</active>
+    <description>Advance Scheduling and Advance Scheduling Unit are mandatory for monthly class</description>
+    <errorConditionFormula>AND(ISPICKVAL(Frequency__c,&apos;Monthly&apos;),
+ISBLANK(Advance_Scheduling__c),
+ISBLANK(TEXT(Advance_Scheduling_Unit__c)))</errorConditionFormula>
+    <errorMessage>Advance scheduling unit and advance scheduling fields are mandatory for monthly class.</errorMessage>
+</ValidationRule>

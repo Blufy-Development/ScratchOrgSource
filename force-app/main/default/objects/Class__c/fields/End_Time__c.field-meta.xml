@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>End_Time__c</fullName>
+    <externalId>false</externalId>
+    <formula>Start_Time__c +  (Duration__c*60000)
+/*IF(  ISPICKVAL(Duration_Unit__c, &apos;Minutes&apos;)  , educato__Start_Time__c +  (educato__Duration__c*60000) ,  educato__Start_Time__c +  (educato__Duration__c*3600000))*/</formula>
+    <inlineHelpText>The system will calculate this field based on &apos;Duration Unit&apos; and &apos;Duration&apos;.</inlineHelpText>
+    <label>End Time</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Time</type>
+</CustomField>

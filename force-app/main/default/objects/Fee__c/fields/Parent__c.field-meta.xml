@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parent__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Refer to a parent fee record</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Select a parent fee record</inlineHelpText>
+    <label>Parent</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Fee__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Primary</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Fee__c</referenceTo>
+    <relationshipLabel>Related Fees</relationshipLabel>
+    <relationshipName>Related_Fees</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

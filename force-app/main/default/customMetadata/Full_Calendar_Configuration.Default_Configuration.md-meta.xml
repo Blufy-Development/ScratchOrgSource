@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default Configuration</label>
+    <protected>false</protected>
+    <values>
+        <field>Business_Hours_Color__c</field>
+        <value xsi:type="xsd:string">#fff</value>
+    </values>
+    <values>
+        <field>Calendar_Border_Color__c</field>
+        <value xsi:type="xsd:string">#a4bbbb</value>
+    </values>
+    <values>
+        <field>Modal_Header_Footer_Color__c</field>
+        <value xsi:type="xsd:string">#2f5597</value>
+    </values>
+    <values>
+        <field>Mode_Button_Color__c</field>
+        <value xsi:type="xsd:string">#fff</value>
+    </values>
+    <values>
+        <field>Non_Business_Hours_Color__c</field>
+        <value xsi:type="xsd:string">#858585</value>
+    </values>
+    <values>
+        <field>Scheduler_License_Key__c</field>
+        <value xsi:type="xsd:string">GPL-My-Project-Is-Open-Source</value>
+    </values>
+    <values>
+        <field>Selected_Mode_Button_Color__c</field>
+        <value xsi:type="xsd:string">#3788d8</value>
+    </values>
+    <values>
+        <field>Selected_View_Button_Color__c</field>
+        <value xsi:type="xsd:string">#1b3b5a</value>
+    </values>
+    <values>
+        <field>Slot_Duration__c</field>
+        <value xsi:type="xsd:string">00:15</value>
+    </values>
+    <values>
+        <field>View_Button_Color__c</field>
+        <value xsi:type="xsd:string">#33506d</value>
+    </values>
+</CustomMetadata>

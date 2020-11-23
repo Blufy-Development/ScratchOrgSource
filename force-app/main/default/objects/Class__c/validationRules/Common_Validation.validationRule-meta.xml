@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Common_Validation</fullName>
+    <active>false</active>
+    <description>Validation on Capacity, Sessions, Duration and Advance Scheduling</description>
+    <errorConditionFormula>Capacity__c &lt;= 0  ||  
+Sessions__c &lt;= 0</errorConditionFormula>
+    <errorMessage>Please input valid information in Capacity and Sessions to proceed.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Program__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Program</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Course__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Program</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Course__c</referenceTo>
+    <relationshipLabel>Program Courses (Program)</relationshipLabel>
+    <relationshipName>Program_Courses1</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

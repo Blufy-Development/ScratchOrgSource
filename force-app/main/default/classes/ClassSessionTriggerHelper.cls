@@ -1,0 +1,2 @@
+public class ClassSessionTriggerHelper {
+}

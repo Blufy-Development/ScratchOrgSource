@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount__c</fullName>
+    <description>get total of all related child subscription line item</description>
+    <externalId>false</externalId>
+    <label>Amount</label>
+    <summarizedField>Subscription_Line_Item__c.Amount__c</summarizedField>
+    <summaryForeignKey>Subscription_Line_Item__c.Subscription__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

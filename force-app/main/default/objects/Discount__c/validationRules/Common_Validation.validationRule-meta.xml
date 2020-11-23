@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Common_Validation</fullName>
+    <active>true</active>
+    <description>This validation rule is use to validate end date must be greater than start date.</description>
+    <errorConditionFormula>End_Date__c &lt; Start_Date__c</errorConditionFormula>
+    <errorMessage>Please input valid information as in end date must be greater than start date and value must be greater than zero.</errorMessage>
+</ValidationRule>

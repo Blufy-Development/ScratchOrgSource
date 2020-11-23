@@ -1,0 +1,67 @@
+<aura:component controller="DependentPicklistCmpController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="c:DependentPicklistEvt" action="{!c.checkRequired}"/>
+    <!-- aura attributes--> 
+    <aura:attribute name="parentList" type="list" default="[]" description=""/>
+    <aura:attribute name="childList" type="list" default="[]"/>
+    <aura:attribute name="pickListMap" type="map"/>
+    <aura:attribute name="disabledChildField" type="boolean" default="true"/>
+    
+    <aura:attribute name="objectName" type="string" default=""/>
+    <aura:attribute name="parentFieldAPI" type="string" default=" "/>
+    <aura:attribute name="childFieldAPI" type="string" default=""/>
+    <aura:attribute name="parentFieldLabel" type="string" default=""/>
+    <aura:attribute name="childFieldLabel" type="string" default=""/>
+    <aura:attribute name="parentValue" type="string" default=""/>
+    <aura:attribute name="childValue" type="string" default=""/>
+    <aura:attribute name="requiredOrNot" type="Boolean" default="false" />
+    <aura:attribute name="requiredCheck" type="Boolean" default="false" />
+    
+    <!--<lightning:card title="">-->
+    <!-- Controller Field -->
+    <!--<lightning:layoutItem size="12" padding="around-small">    
+            <lightning:select name="parentField" aura:id="parentField"
+                              value="{!v.parentValue}"
+                              label="{!v.parentFieldLabel}"
+                              onchange="{!c.parentFieldChange}">
+                <aura:iteration items="{!v.parentList}" var="value">
+                    <option value="{!value}">{!value}</option>
+                </aura:iteration>
+            </lightning:select>
+        </lightning:layoutItem>
+        -->
+    <!--Dependent Field-->
+    <!--<lightning:layoutItem size="12" padding="around-small">
+            <lightning:select name="childField"
+                              value="{!v.childValue}"
+                              label="{!v.childFieldLabel}"
+                              disabled="{!v.disabledChildField}">
+                <aura:iteration items="{!v.childList}" var="value">
+                    <option value="{!value}">{!value}</option>
+                </aura:iteration>
+            </lightning:select>
+        </lightning:layoutItem>
+    </lightning:card> -->
+    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small" id="parent">
+        <lightning:select name="parentField" aura:id="parentField"
+                          value="{!v.parentValue}" class=""
+                          label="{!v.parentFieldLabel}" required="{!v.requiredOrNot}" messageWhenValueMissing="Complete this field"
+                          onchange="{!c.parentFieldChange}">
+            <aura:iteration items="{!v.parentList}" var="value">
+                <option value="{!value}">{!value}</option>
+            </aura:iteration>
+        </lightning:select>
+        <div style="display:none;color:#C23934" id="parentError">Complete this field</div>
+    </div>
+    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small" id="child">
+        <lightning:select name="childField" aura:id="childField"
+                          value="{!v.childValue}"
+                          label="{!v.childFieldLabel}" required="{!v.requiredOrNot}" messageWhenValueMissing="Complete this field"
+                          disabled="{!v.disabledChildField}" onchange="{!c.childFieldChange}">
+            <aura:iteration items="{!v.childList}" var="value">                
+                <option value="{!value}">{!value}</option>
+            </aura:iteration>
+        </lightning:select>
+        <div style="display:none;color:#C23934" id="childError">Complete this field</div>
+    </div>
+</aura:component>
