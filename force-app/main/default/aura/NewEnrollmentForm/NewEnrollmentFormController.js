@@ -20,7 +20,7 @@
                 nameSpacelabel = $A.get("$Label.c.Namespace")+'__';
             component.set("v.namespace",nameSpacelabel)
             helper.fetchGender(component,'Account','educato__Gender__c');
-            helper.fetchRelationsShip(component, 'AccountContactRelation', 'Roles');
+           // helper.fetchRelationsShip(component, 'AccountContactRelation', 'Roles');
             helper.fetchRelationsShipWithContact(component, 'Account','educato__Relationship_with_contact__c');
             helper.fetchPayMode(component,'educato__Payment__c','educato__Cash_Mode__c');
             helper.initilizeCstmrList(component, event);

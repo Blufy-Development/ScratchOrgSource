@@ -7,17 +7,14 @@
         <th>Last Name</th>
         <th>Gender</th>
         <th>Date of Birth</th>
-        <!--<th>Relationship</th>-->
         <th style="width:85px;">Add Class</th>
-        <!--<th>Edit</th>-->
         <th>Delete</th>
     </tr>
 </thead>
 <tbody>
-    <!-- <aura-iteration items={stuClsWrapperList} var="stuWraper" indexVar="key"> -->
-    <template for:each={studetnDetailsArr} for:item="studenIndx" for:index="studentTableIndex">
-        <tr key={studenIndx.Id}>
-            <td>{studentTableIndex}</td>
+    <template for:each={studetnDetailsArr} for:item="student" for:index="studentTableIndex">
+        <tr key={student.Id}>
+            <td>{index}</td>
             <td>
             <c-auto-complete-component iconname="standard:account" objectname="Account" studentindex={studentTableIndex}
                 label="" searchfield="Name" type="Student" onselectedrec={handleOnSelectStudent}
@@ -27,43 +24,36 @@
                     style="color:rgb(194, 59, 54);display:none;">Complete this field</div> -->
             </td>
             <td>
-                <!-- <lightning-input name="inputb" aura-id="StuDetReqId" label="" variant="label-hidden"
-            value={stuWraper.studentDetails.LastName} required="true"></lightning-input> -->
                 <lightning-input name="inputb" label="" variant="label-hidden" required="true"
-                    value={studenIndx.studentdetail.LastName}>
+                    value={student.LastName}>
                 </lightning-input>
             </td>
             <td>
                 <lightning-combobox name="gender" label="" variant="label-hidden" placeholder="Select Gender"
-                    value={studenIndx.studentdetail.educato__Gender__c} options={genderList}>
+                    value={student.educato__Gender__c} options={genderList}>
                 </lightning-combobox>
             </td>
             <td>
-                <!-- <lightning-input type="date" aura-id="StuDetReqId" name="input5" label=""
-            variant="label-hidden" required="true" value={stuWraper.studentDetails.PersonBirthdate}
-            max={maxBirthDate} autocomplete="off"></lightning-input> -->
+                {student.PersonBirthDate}
                 <lightning-input type="date" name="input5" label="" variant="label-hidden" required="true"
-                    autocomplete="off" value={studenIndx.studentdetail.PersonBirthdate}>
+                    autocomplete="off" value={student.PersonBirthdate}>
                 </lightning-input>
             </td>
             <td class="slds-text-align_center">
-                <lightning-button-icon icon-name="utility:relate" variant="bare" class="icon-large">
+                <lightning-button-icon icon-name="utility:relate" data-index={studentTableIndex} variant="bare" class="icon-large"
+                onclick={openAddClassModal}>
                 </lightning-button-icon>
             </td>
             <td>
-                <!-- <div id={key} onclick={deleteStudent}>
-                    <lightning-buttonIcon icon-name="utility-delete" variant="bare"
-                        alternativeText="Settings" class="slds-text-color_error icon-large">
-                    </lightning-buttonIcon>
-                </div> -->
                 <lightning-button-icon icon-name="utility:delete" variant="bare"
                     icon-class="slds-text-color_error icon-large" data-index={studentTableIndex} onclick={removeRow}>
                 </lightning-button-icon>
             </td>
         </tr>
     </template>
-    <!-- </aura-iteration> -->
 </tbody>
 </table>
-
+<template if:true={showModal}>
+<c-add-course onclosemodal={handleClassAndCourseModal} mode="new" index={studentIndex}></c-add-course>
+</template>
 </template>

@@ -1,5 +1,5 @@
 public class AccountContactRelationService {
-		
+	/*	
     public static List<AccountContactRelation> getByPrimaryAccountContactId(String primaryAccContactId){        
         if(String.isNotBlank(primaryAccContactId)){
             try {
@@ -46,5 +46,5 @@ public class AccountContactRelationService {
             System.debug('Account Contact Relation Error Message--->'+e.getMessage());
         }
         return null;
-    }
+    }*/
 }

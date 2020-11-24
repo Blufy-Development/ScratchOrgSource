@@ -8,7 +8,7 @@
         <active>true</active>
         <booleanFilter>1 OR 2</booleanFilter>
         <filterItems>
-            <field>Account.RecordTypeId</field>
+            <field>Account.RecordType.DeveloperName</field>
             <operation>equals</operation>
             <value>Customer</value>
         </filterItems>

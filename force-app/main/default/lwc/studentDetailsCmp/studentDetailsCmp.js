@@ -8,7 +8,8 @@ export default class StudentDetailsCmp extends LightningElement {
     fieldName = 'educato__Gender__c';
     @track studentDetail;
     rowIndex = 0;
-    
+    @track showModal = false;
+    @track studentindex;
     @wire(getGender, {
         "ObjectApi_name": '$objectApiName',
         "Field_name": '$fieldName'
@@ -26,8 +27,8 @@ export default class StudentDetailsCmp extends LightningElement {
         }
     }
 
-    @api studetnDetailsArr = [{}];
-    /*get studetnDetailsArr(){
+    @api
+    get studetnDetailsArr(){
         this.rowIndex = 0;
         return this.studentDetail;
     }
@@ -37,20 +38,22 @@ export default class StudentDetailsCmp extends LightningElement {
 
     get index(){
         return this.rowIndex +=1;
-    }*/
+    }
 
     handleOnSelectStudent(event){
         let slectedRecord = event.detail;
-        alert(JSON.stringify(this.studetnDetailsArr))
-        //alert(JSON.stringify(this.studetnDetailsArr[slectedRecord.studentindex].studentdetail))
+     //   alert(JSON.stringify(slectedRecord))
+      console.log(this.studetnDetailsArr)
+      console.log(slectedRecord.studentindex)
+      // alert(this.rowIndex)
         if(slectedRecord.type == 'Student' && slectedRecord.recordId != ''){
             getSlcdAccDetailFromApex({
                 "accId": slectedRecord.recordId,
                 "isCorporateAccount": false 
             }).then(res => {
-                alert(JSON.stringify(res))
-                this.studetnDetailsArr[slectedRecord.studentindex].studentdetail = JSON.parse(JSON.stringify(res));
-                alert(this.studetnDetailsArr[slectedRecord.studentindex].studentdetail)
+                this.studentDetail = JSON.parse(JSON.stringify(this.studentDetail));
+                this.studentDetail[slectedRecord.studentindex] = JSON.parse(JSON.stringify(res));
+               console.log('val-->'+JSON.stringify( this.studetnDetailsArr[slectedRecord.studentindex]))
             }).catch(error => {
                 console.log('error while getting records', error);
             })
@@ -58,7 +61,7 @@ export default class StudentDetailsCmp extends LightningElement {
         else if(slectedRecord.type == 'Student' && slectedRecord.recordId == ''){
             this.studetnDetailsArr[slectedRecord.studentindex].studentdetail = {};
         }
-
+      
     }
 
     removeRow(event){
@@ -66,5 +69,11 @@ export default class StudentDetailsCmp extends LightningElement {
         this.dispatchEvent(new CustomEvent("remove", {
             detail: event.currentTarget.dataset.index
         }));
+    }
+
+    openAddClassModal(event){
+        console.log(event.currentTarget.dataset.index);
+        this.studentindex = event.currentTarget.dataset.index;
+        this.showModal = true;
     }
 }

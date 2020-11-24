@@ -10,7 +10,6 @@
 </template>
 <div class="slds-grid bg slds-grid_align-center" style="margin-top:-13px;">
 <div class="slds-large-size_8-of-12 " style="background-color: #fff; border:1px solid #c6c8ca; ">
-    <!--For Now I commented Code Asif-->
     <h2 class="slds-text-heading_small slds-m-bottom_small title">
         <!-- <img src={$Resource.enrolment} style="height:23px;" alt="Enrollment" /> -->
         &nbsp;&nbsp;Enrollment Form</h2>
@@ -25,7 +24,7 @@
                         checked={isCorporateAccount} onchange={handleAccountChange}></lightning-input>
                 </div>
             </div>
-            <!-- <aura:if isTrue={isCorporateAccount}> -->
+            
             <template if:true={isCorporateAccount}>
                 <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
                     <c-auto-complete-component iconname="standard:account" objectname="Account"
@@ -36,8 +35,7 @@
                         style="color:rgb(194, 59, 54);display:none;">Complete this field</div>
                 </div>
             </template>
-            <!-- </aura:if> -->
-            <!-- <aura:if isTrue={isCorporateAccount}> -->
+           
             <template if:false={isCorporateAccount}>
                 <h2
                     class="slds-p-horizontal_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small  slds-p-top_small">
@@ -52,8 +50,6 @@
                 </div>
 
                 <div class="slds-col slds-medium-size_1-of-2">
-                    <!-- <lightning-input class="myinput" value={contactDetail.LastName} aura-id="conDetReqId"
-                        label="Last Name" required="true"></lightning-input> -->
                     <lightning-input class="myinput" label="Last Name" value={contactDetail.LastName}
                         required="true"></lightning-input>
                 </div>
@@ -82,8 +78,7 @@
                             options={genderList} >
                     </lightning-combobox>
                 </div>
-                <h2
-                    class="slds-p-horizontal_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small  slds-p-top_medium">
+                <h2 class="slds-p-horizontal_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small  slds-p-top_medium">
                     Secondary</h2>
                 <div class="slds-col slds-medium-size_1-of-2">
                     <c-auto-complete-component iconname="standard:account" objectname="Account"
@@ -145,25 +140,15 @@
                     </lightning-input> -->
                     <lightning-input class="myinput" label="Postal Code" required="true"></lightning-input>
                 </div>
-                <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                    <lightning-button variant="base" label="add class" title="titleName"
-                        onclick={handleClassAndCourseModal}></lightning-button>
+                <div class="slds-col slds-medium-size_1-of-1 slds-p-top_small">
+                    <c-country-state-picklist></c-country-state-picklist>
                 </div>
-                <!--<div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                    <lightning-input class="myinput" aura-id="conDetReqId" label="State" value={contactDetail.BillingState} required="true" />                                                          
-                </div>
-                
-                <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                    <lightning-input class="myinput" aura-id="conDetReqId" label="Country" value={contactDetail.BillingCountry} required="true" />                                                          
-                </div>-->
-                <!-- <c:DependentPicklistCmp objectName="Account" parentFieldAPI="BillingCountryCode"
-                    childFieldAPI="BillingStateCode" parentFieldLabel="Country" childFieldLabel="State"
-                    parentValue={parentValue} childValue={childValue} requiredOrNot="true"
-                    requiredCheck={requiredCheck} /> -->
-                <div class="slds-col slds-medium-size_1-of-2 slds-p-top_x-large">
-                    <!-- <lightning-input type="checkbox" class="myinput" aura-id="" label="Same As Student"
-                        checked={isSameAsParent} onchange={sameAsParentChange}></lightning-input> -->
-                </div>
+                <!-- <lightning-input type="checkbox" class="myinput" aura-id="" label="Same As Student"
+                    checked={isSameAsParent} onchange={sameAsParentChange}></lightning-input> -->
+                    <div class="slds-col slds-medium-size_1-of-1 slds-p-top_small">
+                        <lightning-button variant="base" label="add class" title="titleName"
+                            onclick={handleClassAndCourseModal}></lightning-button>
+                    </div>
             </template>
             <!-- </aura-if> -->
         </div>

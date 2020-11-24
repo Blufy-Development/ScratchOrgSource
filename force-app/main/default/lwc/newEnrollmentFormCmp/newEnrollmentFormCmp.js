@@ -15,7 +15,7 @@ export default class NewEnrollmentFormCmp extends LightningElement {
     toggleSpinner = false;
     showCourseAndClassModal = false;
     showAddClassAndCourseModal = false;
-    @track studetnDetailsArr = [{index : 0,studentdetail : {} }];
+    @track studetnDetailsArr = [{}];
 
     get relationshipoptions() {
         return [
@@ -76,7 +76,7 @@ export default class NewEnrollmentFormCmp extends LightningElement {
     addStudent(){
         console.log('call');
         alert(this.studetnDetailsArr.length)
-        this.studetnDetailsArr.push({index : this.studetnDetailsArr.length,studentdetail : {} });
+        this.studetnDetailsArr.push({});
         console.log('this.studetnDetailsArr', this.studetnDetailsArr);
     }
 
