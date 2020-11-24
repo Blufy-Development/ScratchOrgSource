@@ -11,20 +11,8 @@
         <label>Term</label>
     </customValue>
     <customValue>
-        <fullName>One_Time</fullName>
-        <default>false</default>
-        <label>One-Time</label>
-    </customValue>
-    <customValue>
-        <fullName>Bi-Weekly</fullName>
-        <default>false</default>
-        <isActive>false</isActive>
-        <label>Bi-Weekly</label>
-    </customValue>
-    <customValue>
         <fullName>One-Time</fullName>
         <default>false</default>
-        <isActive>false</isActive>
         <label>One-Time</label>
     </customValue>
     <masterLabel>Frequency</masterLabel>

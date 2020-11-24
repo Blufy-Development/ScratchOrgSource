@@ -25,12 +25,12 @@ public class AccountService {
                 else{
                     listAccount = [SELECT Id,FirstName,LastName,PersonEmail,Phone,BillingStreet,BillingStateCode,BillingCountryCode,
                                    BillingPostalCode,BillingState,BillingCountry,Relationship_with_contact__c,Gender__c,
-                                   PersonBirthDate,educato__Relationship_With_Student__c
+                                   PersonBirthDate,Relationship_With_Student__c
                                    FROM Account WHERE Id=:accId WITH SECURITY_ENFORCED LIMIT 1];
                     
                 }
                 return listAccount;
-            }catch (System.QueryException e){
+            }catch (System.QueryException e) {
                 System.debug(e.getMessage());
             }        
         }

@@ -1,5 +1,10 @@
+/*
+	Name		 : ClassSessionService	
+	Description	 : This Service Class is used for DML operations.
+	CH1			 : Updated on 20th Nov 2020 by Mohit, this method will update the Class Session records.
+*/
 public class ClassSessionService {
-    //update Class Session Records
+    //CH1
     public static List<Class_Session__c> updateClassSessionRecords(List<Class_Session__c> clsSessList){
         try{
             if(clsSessList.size() > 0){
@@ -19,23 +24,7 @@ public class ClassSessionService {
         }
         return null;
     }
-    
-    public static List<Class_Session__c> getById(Set<String> setClsSessId){  
-        try{
-            if(setClsSessId.size() > 0){
-                List<Class_Session__c> listClassSession = [SELECT Id, Name, Enrollments__c 
-                                                           FROM Class_Session__c
-                                                           WHERE ID IN: setClsSessId 
-                                                           WITH SECURITY_ENFORCED];
-                return listClassSession;   
-            }            
-        }
-        catch (System.QueryException e){
-            System.debug(e.getMessage());
-        }
-        return null;    
-    }
-    
+    //CH1
     
     public static List<Class_Session__c> getClassSessionsByClssId(Set<String> setClassId){  
         try{

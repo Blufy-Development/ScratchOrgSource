@@ -4,6 +4,14 @@ public class ConstantClass {
     public static String customerRecTypeId     	 = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Customer').getRecordTypeId();
     public static String corporateRecTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Business_Account').getRecordTypeId();
     public static String familyAccRecTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Family').getRecordTypeId();
+    
+    public static String locationRecordsTypeId    = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Location').getRecordTypeId();
+    public static String teacherRecordTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Teacher').getRecordTypeId();
+    public static String courseRecordTypeId       = Schema.SObjectType.Course__c.getRecordTypeInfosByDeveloperName().get('Course').getRecordTypeId();
+    public static String primaryFeeRecordTypeId   = Schema.SObjectType.Fee__c.getRecordTypeInfosByDeveloperName().get('Primary').getRecordTypeId();
+    public static String secondaryFeeRecordTypeId = Schema.SObjectType.Fee__c.getRecordTypeInfosByDeveloperName().get('Secondary').getRecordTypeId();
+    public static String studCustomerRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Student').getRecordTypeId();
+    
     public static String teacherRecType     	 = 'Teacher';
     
     public static String activeStatus         	 = 'Active';
@@ -69,14 +77,6 @@ public class ConstantClass {
     public static String teacherRequestLeaveComment	 = 'Teacher has requested a leave';
     public static String teacherOccupiedComment = 'Teacher is already occupied';
     public static String roomOccupiedComment = 'Room is already occupied';
-    
-    public static String locationRecordsTypeId    = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Location').getRecordTypeId();
-    public static String teacherRecordTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Teacher').getRecordTypeId();
-    public static String courseRecordTypeId       = Schema.SObjectType.Course__c.getRecordTypeInfosByDeveloperName().get('Course').getRecordTypeId();
-    public static String primaryFeeRecordTypeId   = Schema.SObjectType.Fee__c.getRecordTypeInfosByDeveloperName().get('Primary').getRecordTypeId();
-    public static String secondaryFeeRecordTypeId = Schema.SObjectType.Fee__c.getRecordTypeInfosByDeveloperName().get('Secondary').getRecordTypeId();
-  
-    public static String studCustomerRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Student').getRecordTypeId();
     
     public static String inActiveCourse          = 'Inactive';
     //public static String sessionCancel           = 'Canceled';

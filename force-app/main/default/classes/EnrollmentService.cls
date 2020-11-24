@@ -1,5 +1,11 @@
+/*
+	Name		 : EnrollmentService	
+	Description	 : This Service Class is used for DML operations.
+	CH1			 : Updated on 20th Nov 2020 by Mohit, this method allows to get aggregate result of enrolments rollup by Class Session Id.
+*/
 public class EnrollmentService {
     
+    //CH1
     public static List<AggregateResult> getEnrlByClsSessIdsAggResult(Set<String> setClsSessIds){
         try {
             List<AggregateResult> enroledList = [SELECT Class_Session__c, Count(ID) totalEnrolments 
@@ -13,6 +19,7 @@ public class EnrollmentService {
         }        
         return null;
     }
+    //CH1
     
     public static List<Enrollment__c> getById(Set<Id> Ids){
         if(!Ids.isEmpty()){

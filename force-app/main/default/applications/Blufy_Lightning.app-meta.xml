@@ -12,15 +12,6 @@
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Blufy Lightning</label>
     <navType>Standard</navType>
-    <profileActionOverrides>
-        <actionName>View</actionName>
-        <content>Account_Record_Page</content>
-        <formFactor>Large</formFactor>
-        <pageOrSobjectType>Account</pageOrSobjectType>
-        <recordType>PersonAccount.Customer</recordType>
-        <type>Flexipage</type>
-        <profile>Admin</profile>
-    </profileActionOverrides>
     <tabs>standard-home</tabs>
     <tabs>standard-Account</tabs>
     <tabs>Course__c</tabs>

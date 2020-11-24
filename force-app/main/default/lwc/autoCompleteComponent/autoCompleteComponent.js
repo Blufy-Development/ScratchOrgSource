@@ -47,6 +47,8 @@ export default class AutoCompleteComponent extends LightningElement {
                     }
                     this.error = undefined;
                     //console.log(' records ', this.records);
+                }else{
+                    this.records = undefined;
                 }
             }
             if(searchKey == ''){
