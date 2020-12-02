@@ -1,3 +1,7 @@
+body {
+  /* Set "my-sec-counter" to 0 */
+  counter-reset: my-sec-counter;
+}
 .thead-dark th,
 .bglight {
   color: #000;
@@ -32,4 +36,12 @@ table tr table tr:first-child td {
 
 .table.tablepay1 thead tr:first-child td {
   border-bottom: 1px solid #dee2e6;
+}
+
+.tBody tr {
+  counter-increment: my-sec-counter;
+}
+
+.tBody tr td:first-child::before {
+  content: counter(my-sec-counter);  
 }

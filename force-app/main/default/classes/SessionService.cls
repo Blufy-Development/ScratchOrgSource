@@ -175,4 +175,38 @@ public class SessionService {
         }
         return null;
     }
+    
+    public static List<Session__c> getByClassSessionIdAlongWithEnrolDate(String classSessionId,Date enrolDate){
+        List<Session__c> listSession = new List<Session__c>();
+        try {
+            if(String.isNotBlank(classSessionId) && enrolDate != NULL){
+                Integer numOfMonthDays = Date.daysInMonth(enrolDate.year(),enrolDate.month());
+                Date lstDateOfEnrolDateMonth = Date.newInstance(enrolDate.year(),enrolDate.month(),numOfMonthDays);
+                listSession = [SELECT Id FROM Session__c WHERE Class_Session__c =: classSessionId AND 
+                               Status__c =: ConstantClass.scheduledStatus AND Session_Date__c >=: enrolDate
+                               AND Session_Date__c <=: lstDateOfEnrolDateMonth
+                               WITH SECURITY_ENFORCED];
+            }
+        }catch (System.QueryException e) {
+            System.debug(e.getMessage());
+        }        
+        return listSession;
+    }
+    
+    public static List<Session__c> getSessionsByClassSessionId(Set<String> setClassSessionId){  
+        try{
+            if(setClassSessionId.size() > 0){
+                List<Session__c> listSession = [SELECT Id,Name,Session_Date__c,Class__c,Class_Session__c FROM Session__c
+                                                           WHERE Status__c =: ConstantClass.scheduledStatus 
+                                                           AND Class_Session__c IN : setClassSessionId
+                                                           WITH SECURITY_ENFORCED];
+                return listSession;   
+            }            
+        }
+        catch (System.QueryException e){
+            System.debug(e.getMessage());
+        }
+        return null;    
+    }
+    
 }

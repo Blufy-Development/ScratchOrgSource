@@ -46,7 +46,7 @@
             <columnToColumn>false</columnToColumn>
             <isUnlocked>true</isUnlocked>
             <operator>equals</operator>
-            <value>PersonAccount.Customer</value>
+            <value>PersonAccount.Parent</value>
         </criteriaItems>
         <criteriaItems>
             <column>Account.Parent__c</column>

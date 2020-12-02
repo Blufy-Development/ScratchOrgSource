@@ -70,4 +70,11 @@
         <shortDescription>Online Application Fee</shortDescription>
         <value>1000</value>
     </labels>
+    <labels>
+        <fullName>Stripe_Base_URL</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stripe Base URL</shortDescription>
+        <value>https://api.stripe.com</value>
+    </labels>
 </CustomLabels>

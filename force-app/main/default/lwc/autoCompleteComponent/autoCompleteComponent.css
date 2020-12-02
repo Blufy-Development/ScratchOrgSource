@@ -6,15 +6,18 @@
     overflow-y: hidden;
 } */
 
-.slds-listbox{
+/*.slds-listbox{
     position: relative;
     top: -4px;
 }
 
-.slds-dropdown_fluid{
+ .slds-dropdown_fluid{
     max-width: 30%;
 }
 
 .slds-dropdown {
-    left: 34%;
-}
+   left: 34%;
+}*/
+
+.slds-dropdown_length-5{position:absolute;}
+.slds-dropdown_fluid{min-width:auto;}

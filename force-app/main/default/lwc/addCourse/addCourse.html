@@ -1,9 +1,9 @@
 <template>
     <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
         aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
-        <template if:true={showSpinner}>
+        <!-- <template if:true={showSpinner}>
             <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
-        </template>
+        </template> -->
         <div class="slds-modal__container">
             <header class="slds-modal__header slds-text-align_left slds-p-around_none">
                 <h2 id="modal-heading-01"
@@ -24,7 +24,7 @@
                     <!-- ======================== First Page ================================ -->
                     <div class="slds-p-bottom_xx-small">
                         <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_xx-small">
-                            <div class="slds-col slds-medium-size_5-of-12 " style="position:relative;">
+                            <div class="slds-col slds-medium-size_5-of-12 ">
                                 <!-- <c:AutoCompleteCmp label="" objectApiName="Course__c" selectedOption="{crsId}"
                                     inputValue="{crsName}" showLabel="false"
                                     extendedWhereClause=" AND Status__c = 'Active'" /> -->
@@ -46,8 +46,11 @@
                                     <p
                                         class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
                                         <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
+                                        <lightning-icon icon-name="utility:notebook" size="x-small">
+                                        </lightning-icon>
                                         &nbsp;&nbsp;Selected
-                                        Course:</p>
+                                        Course:
+                                    </p>
                                     <p class="slds-text-heading_small"><strong>{courseName}</strong></p>
                                 </div>
                                 <div
@@ -97,7 +100,13 @@
                                                                 <p class="slds-text-body_small">Start Date:</p>
                                                                 <p class="slds-text-heading_x-small">
                                                                     <strong>
-                                                                        {clsItem.clsType}
+                                                                        <template if:true={clsItem.isFixed}>
+                                                                            {clsItem.clsSrtDate}
+                                                                        </template>
+                                                                        <template if:false={clsItem.isFixed}>
+                                                                            {clsItem.clsFrequency}
+                                                                        </template>
+
                                                                     </strong>
                                                                 </p>
                                                             </div>
@@ -144,6 +153,26 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <template if:true={clsItem.isFixed}>
+                                                        <div class="slds-col slds-size_1-of-3">
+                                                            <div
+                                                                class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                <div class="slds-media__figure">
+                                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                                        <lightning-icon icon-name="utility:date_input"
+                                                                            size="small">
+                                                                        </lightning-icon>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="slds-media__body">
+                                                                    <p class="slds-text-body_small">End Date:</p>
+                                                                    <p class="slds-text-heading_x-small">
+                                                                        <strong>{clsItem.clsEndDate}</strong>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
                                                     <div class="slds-col slds-size_1-of-3">
                                                         <div
                                                             class="slds-media slds-media_center  slds-p-vertical_xx-small">
@@ -293,7 +322,7 @@
                                                                                     hour="2-digit" minute="2-digit"
                                                                                     time-zone="UTC">
                                                                                 </lightning-formatted-date-time>
-                                                                                to&nbsp;
+                                                                                &nbsp;to&nbsp;
                                                                                 <lightning-formatted-date-time
                                                                                     value={classSessionItem.endTime}
                                                                                     hour="2-digit" minute="2-digit"
@@ -308,10 +337,14 @@
                                                             <div class="slds-col slds-text-align_right">
 
                                                                 <lightning-input type="checkbox"
-                                                                    class="class-session-chkbx" variant="label-hidden"
-                                                                    data-id={classSessionItem.id}
-                                                                    data-course={clsItem.clsName}
-                                                                    data-class={clsItem.course}
+                                                                    class="class-session-chkbx slds-m-top_small"
+                                                                    variant="label-hidden" data-id={classSessionItem.id}
+                                                                    data-clsid={clsItem.clsId}
+                                                                    data-locationid={clsItem.locationId}
+                                                                    data-teacherid={classSessionItem.teacherId}
+                                                                    data-teachername={classSessionItem.teacherName}
+                                                                    data-course={clsItem.course}
+                                                                    data-class={clsItem.clsName}
                                                                     data-day={classSessionItem.dayOfWeek}
                                                                     data-srttime={classSessionItem.startTime}
                                                                     data-endtime={classSessionItem.endTime}
@@ -375,7 +408,7 @@
                                     <strong>
                                         <lightning-formatted-date-time value={selectedClassSessionData.startTime}
                                             hour="2-digit" minute="2-digit" time-zone="UTC">
-                                        </lightning-formatted-date-time> to
+                                        </lightning-formatted-date-time>&nbsp;to&nbsp;
                                         <lightning-formatted-date-time value={selectedClassSessionData.endTime}
                                             hour="2-digit" minute="2-digit" time-zone="UTC">
                                         </lightning-formatted-date-time>
@@ -385,21 +418,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="slds-grid slds-wrap slds-gutters ">
+                    <!-- <div class="slds-grid slds-wrap slds-gutters ">
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_small">
                             <p class="slds-section_title slds-text-body_small slds-text-color_weak">Payment Plan:
                             </p>
                             <strong>
-                                <!-- <lightning:select label="" variant="label-hidden" class="label-hidden"
+                                 <lightning:select label="" variant="label-hidden" class="label-hidden"
                                     onchange="{!c.selectPlan}">
                                     <option value="custom-installments">Monthly</option>
                                     <option value="module-based">Term Based</option>
-                                </lightning:select> -->
+                                </lightning:select>
                             </strong>
                         </div>
 
 
-                    </div>
+                    </div> -->
 
                     <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
@@ -410,9 +443,9 @@
                             </p>
                         </div>
                     </div>
-                    <template if:true={feesData}>
+                    <template if:true={primaryFeesData}>
                         <ul class="list-num slds-p-bottom_xx-small">
-                            <template for:each={feesData} for:item="feesItem">
+                            <template for:each={primaryFeesData} for:item="feesItem">
                                 <li key={feesItem.parentFeeId}>
                                     <div
                                         class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
@@ -434,7 +467,14 @@
                                                 <div class="slds-media__body">
                                                     <p class="slds-text-body_small">Unit Price:</p>
                                                     <p class="slds-text-heading_x-small">
-                                                        <strong>${feesItem.parentTutionFeeUnitPrice}</strong></p>
+                                                        <strong>
+                                                            <lightning-formatted-number
+                                                                value={feesItem.parentTutionFeeUnitPrice}
+                                                                format-style="currency"
+                                                                currency-code={label.defaultCurrency}>
+                                                            </lightning-formatted-number>
+                                                        </strong>
+                                                    </p>
                                                 </div>
                                             </div>
 
@@ -451,17 +491,23 @@
                                                 <div class="slds-media__body">
                                                     <p class="slds-text-body_small">Fee Amount:</p>
                                                     <p class="slds-text-heading_x-small">
-                                                        <strong>${feesItem.parentAmount}</strong></p>
+                                                        <strong>
+                                                            <lightning-formatted-number value={feesItem.parentAmount}
+                                                                format-style="currency"
+                                                                currency-code={label.defaultCurrency}>
+                                                            </lightning-formatted-number>
+                                                        </strong>
+                                                    </p>
                                                 </div>
                                             </div>
 
                                         </div>
                                         <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
                                             <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                                Select:
+
                                             </p>
-                                            <lightning-input type="radio" class="primary-fees" variant="label-hidden"
-                                                name="fees" data-id={feesItem.parentFeeId}
+                                            <lightning-input type="radio" class="primary-fees slds-m-top_medium"
+                                                variant="label-hidden" name="fees" data-id={feesItem.parentFeeId}
                                                 onchange={handleFeesSelectChkbx}>
                                             </lightning-input>
                                         </div>
@@ -592,8 +638,7 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
+
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -655,8 +700,6 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -718,8 +761,7 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
+
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -782,8 +824,7 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
+
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -845,8 +886,7 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
+
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -907,8 +947,7 @@
 
                                     </div>
                                     <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                            Select:</p>
+
                                         <div class="slds-form-element ">
                                             <div class="slds-form-element__control">
                                                 <div class="slds-checkbox">
@@ -964,7 +1003,12 @@
                                                     <div class="slds-media__body">
                                                         <p class="slds-text-body_small">Fee Amount:</p>
                                                         <p class="slds-text-heading_x-small">
-                                                            <strong>${secondItem.feeAmount}</strong></p>
+                                                            <strong>
+                                                                <lightning-formatted-number value={secondItem.feeAmount}
+                                                                    format-style="currency"
+                                                                    currency-code={label.defaultCurrency}>
+                                                                </lightning-formatted-number>
+                                                            </strong></p>
                                                     </div>
                                                 </div>
 
@@ -972,65 +1016,20 @@
                                             <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
                                                 <p
                                                     class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                                    Select:
-                                                </p>
-                                                <lightning-input type="checkbox" class="secondary-fees"
-                                                    variant="label-hidden" label="" data-id={secondItem.feeId}>
-                                                </lightning-input>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </template>
-                            </ul>
-                        </template>
-                        <template if:true={showDepositFees}>
-                            <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
-                                <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
-                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
-                                        style="justify-content: start;">
-                                        <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
-                                            size="x-small"></lightning-icon>Deposit:
-                                    </p>
-                                </div>
-                            </div>
-                            <ul class="list-num slds-p-bottom_small">
-                                <template for:each={depositFeesData} for:item="depositItem">
-                                    <li key={depositItem.feeId}>
-                                        <div
-                                            class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
-                                            <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
-                                                <p class="slds-section_title slds-text-body_small slds-text-color_weak">
-                                                    Fee
-                                                    Type:</p>
-                                                <p class="slds-text-heading_x-small">
-                                                    <strong>{depositItem.feeName}</strong></p>
-                                            </div>
-                                            <div class="slds-col slds-large-size_3-of-12">
-                                            </div>
-                                            <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
-                                                <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                    <div class="slds-media__figure">
-                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                            <lightning-icon class="slds-text-color_success"
-                                                                icon-name="utility:moneybag"></lightning-icon>
 
-                                                        </span>
-                                                    </div>
-                                                    <div class="slds-media__body">
-                                                        <p class="slds-text-body_small">Fee Amount:</p>
-                                                        <p class="slds-text-heading_x-small">
-                                                            <strong>${depositItem.feeAmount}</strong></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
-                                                <p
-                                                    class="slds-section_title slds-text-body_small  slds-text-color_weak">
-                                                    Select:
                                                 </p>
-                                                <lightning-input type="checkbox" class="deposit-fees"
-                                                    variant="label-hidden" label="" data-id={depositItem.feeId}>
-                                                </lightning-input>
+                                                <template if:true={secondItem.required}>
+                                                    <lightning-input type="checkbox"
+                                                        class="secondary-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={secondItem.feeId} checked disabled>
+                                                    </lightning-input>
+                                                </template>
+                                                <template if:false={secondItem.required}>
+                                                    <lightning-input type="checkbox"
+                                                        class="secondary-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={secondItem.feeId}>
+                                                    </lightning-input>
+                                                </template>
                                             </div>
                                         </div>
                                     </li>
@@ -1038,6 +1037,74 @@
                             </ul>
                         </template>
                     </template>
+                    <template if:true={showDepositFees}>
+                        <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                            <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                    style="justify-content: start;">
+                                    <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                        size="x-small"></lightning-icon>Deposit:
+                                </p>
+                            </div>
+                        </div>
+                        <ul class="list-num slds-p-bottom_small">
+                            <template for:each={depositFeesData} for:item="depositItem">
+                                <li key={depositItem.parentFeeId}>
+                                    <div
+                                        class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                        <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                            <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                                Fee
+                                                Type:</p>
+                                            <p class="slds-text-heading_x-small">
+                                                <strong>{depositItem.parentFeeName}</strong></p>
+                                        </div>
+                                        <div class="slds-col slds-large-size_3-of-12">
+                                        </div>
+                                        <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                            <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon class="slds-text-color_success"
+                                                            icon-name="utility:moneybag"></lightning-icon>
+
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Fee Amount:</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>
+                                                            <lightning-formatted-number value={depositItem.parentAmount}
+                                                                format-style="currency"
+                                                                currency-code={label.defaultCurrency}>
+                                                            </lightning-formatted-number>
+                                                        </strong></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                            <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+
+                                            </p>
+                                            <template if:true={depositItem.required}>
+                                                <lightning-input type="checkbox" class="deposit-fees slds-m-top_medium"
+                                                    variant="label-hidden" label="" data-id={depositItem.parentFeeId}
+                                                    checked disabled>
+                                                </lightning-input>
+                                            </template>
+                                            <template if:false={depositItem.required}>
+                                                <lightning-input type="checkbox" class="deposit-fees slds-m-top_medium"
+                                                    variant="label-hidden" label="" data-id={depositItem.parentFeeId}>
+                                                </lightning-input>
+                                            </template>
+
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+
                 </div>
                 <!-- ======================== Third Page ================================ -->
                 <div class="courseSections courseSection3 slds-hide">
@@ -1081,7 +1148,7 @@
                                     <strong>
                                         <lightning-formatted-date-time value={selectedClassSessionData.startTime}
                                             hour="2-digit" minute="2-digit" time-zone="UTC">
-                                        </lightning-formatted-date-time> to
+                                        </lightning-formatted-date-time>&nbsp;to&nbsp;
                                         <lightning-formatted-date-time value={selectedClassSessionData.endTime}
                                             hour="2-digit" minute="2-digit" time-zone="UTC">
                                         </lightning-formatted-date-time>
@@ -1134,7 +1201,14 @@
                                                     <div class="slds-media__body">
                                                         <p class="slds-text-body_small">Unit Price:</p>
                                                         <p class="slds-text-heading_x-small">
-                                                            <strong>${primaryItem.parentTutionFeeUnitPrice}</strong></p>
+                                                            <strong>
+                                                                <lightning-formatted-number
+                                                                    value={primaryItem.parentTutionFeeUnitPrice}
+                                                                    format-style="currency"
+                                                                    currency-code={label.defaultCurrency}>
+                                                                </lightning-formatted-number>
+                                                            </strong>
+                                                        </p>
                                                     </div>
                                                 </div>
 
@@ -1151,7 +1225,14 @@
                                                     <div class="slds-media__body">
                                                         <p class="slds-text-body_small">Fee Amount:</p>
                                                         <p class="slds-text-heading_x-small">
-                                                            <strong>${primaryItem.parentAmount}</strong></p>
+                                                            <strong>
+                                                                <lightning-formatted-number
+                                                                    value={primaryItem.parentAmount}
+                                                                    format-style="currency"
+                                                                    currency-code={label.defaultCurrency}>
+                                                                </lightning-formatted-number>
+                                                            </strong>
+                                                        </p>
                                                     </div>
                                                 </div>
 
@@ -1200,10 +1281,15 @@
                                                     <div class="slds-media__body">
                                                         <p class="slds-text-body_small">Fee Amount:</p>
                                                         <p class="slds-text-heading_x-small">
-                                                            <strong>${secondItem.feeAmount}</strong></p>
+                                                            <strong>
+                                                                <lightning-formatted-number value={secondItem.feeAmount}
+                                                                    format-style="currency"
+                                                                    currency-code={label.defaultCurrency}>
+                                                                </lightning-formatted-number>
+                                                            </strong>
+                                                        </p>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </li>
@@ -1224,7 +1310,7 @@
 
                             <ul class="list-num">
                                 <template for:each={selectedFessData.deposit} for:item="depositItem">
-                                    <li class="slds-m-bottom_none" key={depositItem.feeId}>
+                                    <li class="slds-m-bottom_none" key={depositItem.parentFeeId}>
                                         <div
                                             class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
                                             <div class="slds-col slds-large-size_5-of-12 slds-p-vertical_x-small">
@@ -1233,18 +1319,31 @@
                                                     Type:
                                                 </p>
                                                 <p class="slds-text-heading_x-small">
-                                                    <strong>{depositItem.feeName}</strong></p>
+                                                    <strong>{depositItem.parentFeeName}</strong></p>
                                             </div>
                                             <div class="slds-col slds-large-size_3-of-12">
                                             </div>
                                             <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
-                                                <div class="slds-p-left_medium">
-                                                    <p
-                                                        class="slds-section_title slds-text-body_small slds-text-color_weak">
-                                                        Fee
-                                                        Amount:</p>
-                                                    <p class="slds-text-heading_x-small">
-                                                        <strong>${depositItem.feeAmount}</strong></p>
+                                                <div class="slds-media slds-media_center ">
+                                                    <div class="slds-media__figure">
+                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                            <lightning-icon class="slds-text-color_success"
+                                                                icon-name="utility:moneybag"></lightning-icon>
+
+                                                        </span>
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <p class="slds-text-body_small">Fee Amount:</p>
+                                                        <p class="slds-text-heading_x-small">
+                                                            <strong>
+                                                                <lightning-formatted-number
+                                                                    value={depositItem.parentAmount}
+                                                                    format-style="currency"
+                                                                    currency-code={label.defaultCurrency}>
+                                                                </lightning-formatted-number>
+                                                            </strong>
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1262,10 +1361,12 @@
                                     </span>
                                 </div>
                                 <div class="slds-media__body">
-                                    <p class="slds-text-body_small">Enrollment Start Date:</p>
+                                    <p class="slds-text-body_small"><span style="color:red">*</span> Enrollment Start
+                                        Date:</p>
                                     <p class="slds-text-heading_x-small "><strong>
-                                            <lightning-input type="date" aura:id="StuDetReqId" name="input5"
-                                                variant="label-hidden" value={maxBirthDate} autocomplete="off">
+                                            <lightning-input type="date" required="true" name="input5"
+                                                variant="label-hidden" class="req-fld enroll-date"
+                                                value={enrollmentSrtDt} autocomplete="off">
                                             </lightning-input>
                                         </strong></p>
                                 </div>
@@ -1282,7 +1383,8 @@
                                 </div>
                                 <div class="slds-media__body">
                                     <p class="slds-text-body_small">Notes:</p>
-                                    <textarea id="textarea-id-01" rows="5" class="slds-textarea"></textarea>
+                                    <lightning-textarea name="notes" label="" variant="label-hidden" class="notes-cls">
+                                    </lightning-textarea>
                                 </div>
                             </div>
                         </div>

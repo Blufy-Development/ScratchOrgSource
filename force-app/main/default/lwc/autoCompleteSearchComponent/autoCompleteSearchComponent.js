@@ -1,7 +1,7 @@
 import { LightningElement, track, api } from 'lwc';
 
 export default class AutoCompleteSearchComponent extends LightningElement {
-    @track searchKey;
+    @api searchKey;
     @track variant;
     @api label;
 

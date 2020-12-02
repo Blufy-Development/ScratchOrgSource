@@ -12,6 +12,15 @@
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Blufy Lightning</label>
     <navType>Standard</navType>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>Account_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Account</pageOrSobjectType>
+        <recordType>PersonAccount.Parent</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
     <tabs>standard-home</tabs>
     <tabs>standard-Account</tabs>
     <tabs>Course__c</tabs>
@@ -29,5 +38,11 @@
     <tabs>Module_Lesson__c</tabs>
     <tabs>Room__c</tabs>
     <tabs>StripeBankDebit</tabs>
+    <tabs>Deposit__c</tabs>
+    <tabs>Refund__c</tabs>
+    <tabs>Credit_Note__c</tabs>
+    <tabs>Service_Request__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>

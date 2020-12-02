@@ -12,24 +12,27 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Promo</fullName>
-                <default>false</default>
-                <label>Promo</label>
-            </value>
-            <value>
                 <fullName>Discount</fullName>
                 <default>false</default>
                 <label>Discount</label>
             </value>
             <value>
-                <fullName>Referral</fullName>
-                <default>false</default>
-                <label>Referral</label>
-            </value>
-            <value>
                 <fullName>Early Bird</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Early Bird</label>
+            </value>
+            <value>
+                <fullName>Promo</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Promo</label>
+            </value>
+            <value>
+                <fullName>Referral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Referral</label>
             </value>
         </valueSetDefinition>
     </valueSet>

@@ -1,7 +1,7 @@
 public class ConstantClass {
     
     
-    public static String customerRecTypeId     	 = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Customer').getRecordTypeId();
+    public static String customerRecTypeId     	 = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Parent').getRecordTypeId();
     public static String corporateRecTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Business_Account').getRecordTypeId();
     public static String familyAccRecTypeId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Family').getRecordTypeId();
     

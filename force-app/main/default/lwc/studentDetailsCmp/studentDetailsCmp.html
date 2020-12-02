@@ -1,59 +1,71 @@
 <template>
-<table id='stutable' class="table slds-p-bottom_small">
-<thead class="thead-dark">
-    <tr>
-        <th>#</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Gender</th>
-        <th>Date of Birth</th>
-        <th style="width:85px;">Add Class</th>
-        <th>Delete</th>
-    </tr>
-</thead>
-<tbody>
-    <template for:each={studetnDetailsArr} for:item="student" for:index="studentTableIndex">
-        <tr key={student.Id}>
-            <td>{index}</td>
-            <td>
-            <c-auto-complete-component iconname="standard:account" objectname="Account" studentindex={studentTableIndex}
-                label="" searchfield="Name" type="Student" onselectedrec={handleOnSelectStudent}
-                extendedwhereclause=" AND RecordType.DeveloperName = 'Student' ">
-            </c-auto-complete-component>
-                <!-- <div id={'requiredStuErrorMsg'+key} class="slds-form-element__help"
+    <table id='stutable' class="table slds-p-bottom_small">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Date of Birth</th>
+                <th style="width:85px;">Add Class</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody class="tBody">
+            <template for:each={studentDetail} for:item="student" for:index="studentTableIndex">
+                <tr key={student.Id} class="row-tr">
+                    <td class="row-td"></td>
+                    <td>
+                        <c-auto-complete-component iconname="standard:account" objectname="Account"
+                            index={studentTableIndex} label="" searchfield="Name" type="Student"
+                            onselectedrec={handleOnSelectStudent} value={student.Id} name={student.FirstName}
+                            extendedwhereclause=" AND RecordType.DeveloperName = 'Student' " onvaluechange={addNewName}>
+                        </c-auto-complete-component>
+                        <!-- <div id={'requiredStuErrorMsg'+key} class="slds-form-element__help"
                     style="color:rgb(194, 59, 54);display:none;">Complete this field</div> -->
-            </td>
-            <td>
-                <lightning-input name="inputb" label="" variant="label-hidden" required="true"
-                    value={student.LastName}>
-                </lightning-input>
-            </td>
-            <td>
-                <lightning-combobox name="gender" label="" variant="label-hidden" placeholder="Select Gender"
-                    value={student.educato__Gender__c} options={genderList}>
-                </lightning-combobox>
-            </td>
-            <td>
-                {student.PersonBirthDate}
-                <lightning-input type="date" name="input5" label="" variant="label-hidden" required="true"
-                    autocomplete="off" value={student.PersonBirthdate}>
-                </lightning-input>
-            </td>
-            <td class="slds-text-align_center">
-                <lightning-button-icon icon-name="utility:relate" data-index={studentTableIndex} variant="bare" class="icon-large"
-                onclick={openAddClassModal}>
-                </lightning-button-icon>
-            </td>
-            <td>
-                <lightning-button-icon icon-name="utility:delete" variant="bare"
-                    icon-class="slds-text-color_error icon-large" data-index={studentTableIndex} onclick={removeRow}>
-                </lightning-button-icon>
-            </td>
-        </tr>
+                    </td>
+                    <td>
+                        <lightning-input name="LastName" label="" variant="label-hidden" required="true"
+                            value={student.LastName} data-index={studentTableIndex} onchange={handleStudentDetails}
+                            class="req">
+                        </lightning-input>
+                    </td>
+                    <td>
+                        <lightning-combobox name="Gender" label="" required="true" variant="label-hidden"
+                            placeholder="Select Gender" value={student.Gender} options={genderList}
+                            data-index={studentTableIndex} onchange={handleStudentDetails} class="req">
+                        </lightning-combobox>
+                    </td>
+                    <td>
+                        {student.PersonBirthDate}
+                        <lightning-input type="date" name="PersonBirthdate" label="" variant="label-hidden"
+                            required="true" autocomplete="off" value={student.PersonBirthdate}
+                            data-index={studentTableIndex} onchange={handleStudentDetails} class="req">
+                        </lightning-input>
+                    </td>
+                    <td class="slds-text-align_center">
+                        <lightning-button-icon icon-name="utility:relate" data-index={studentTableIndex} variant="bare"
+                            class="icon-large" onclick={openAddClassModal}>
+                        </lightning-button-icon>
+                    </td>
+                    <td>
+                        <lightning-button-icon icon-name="utility:delete" variant="bare"
+                            icon-class="slds-text-color_error icon-large" data-index={studentTableIndex}
+                            onclick={removeRow}>
+                        </lightning-button-icon>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    <template if:true={showAddClassModal}>
+        <c-add-course onclosemodal={handleClasseModal} onsavemodal={handleSaveEvent} mode="new" index={studentindex}>
+        </c-add-course>
     </template>
-</tbody>
-</table>
-<template if:true={showModal}>
-<c-add-course onclosemodal={handleClassAndCourseModal} mode="new" index={studentIndex}></c-add-course>
-</template>
+    <div class="slds-text-align_right">
+        <strong class="btn-addstu">
+            <lightning-button label="Add Student" icon-name="utility:adduser" variant="base" onclick={addStudent}>
+            </lightning-button>
+        </strong>
+    </div>
 </template>

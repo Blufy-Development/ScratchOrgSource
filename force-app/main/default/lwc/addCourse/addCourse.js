@@ -1,12 +1,15 @@
-import { LightningElement, api,track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import getClassDetails from '@salesforce/apex/NewEnrollmentFormCntrl.fetchClassDetails';
 import getFessDetail from '@salesforce/apex/NewEnrollmentFormCntrl.fetchFessDetail';
+import getProratedAmount from '@salesforce/apex/NewEnrollmentFormCntrl.calculateProratedAmount';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import defaultCurrency from '@salesforce/label/c.Default_Currency';
 export default class AddCourse extends LightningElement {
     @api index;
     @api mode = 'new';
     @track classData = [];
     @track feesData = [];
+    @track primaryFeesData = [];
     @track secondayFeesData = [];
     @track anotherFeesData = [];
     @track depositFeesData = [];
@@ -16,6 +19,7 @@ export default class AddCourse extends LightningElement {
     @track title = 'Select Course and Class';
     @track locationName = '';
     @track courseName = '';
+    @track enrollmentSrtDt = new Date().toISOString();
     showAnotherFees = false;
     showSecondayFees = false;
     showDepositFees = false;
@@ -23,24 +27,29 @@ export default class AddCourse extends LightningElement {
     courseId = '';
     totalCheckedCount = 0;
     selectedClassSessionId = '';
-    isClassSessionIdChanged = false;
     showClassData = false;
     currentPage = 1;
     iconName = 'utility:jump_to_right';
     showBackButton = false;
     feesId = '';
+    label = {
+        defaultCurrency
+    }
 
     fetchClassDetailsFromApex() {
+        this.showSpinner = true;
         getClassDetails({
             crId: this.courseId,
         }).then(res => {
             console.log('res', res);
+            this.showSpinner = false;
             this.showClassData = true;
             this.classData = JSON.parse(JSON.stringify(res));
             this.locationName = this.classData.classWrapperList[0].location;
             this.courseName = this.classData.classWrapperList[0].course;
             console.log('classWrapperList', this.classData);
         }).catch(error => {
+            this.showSpinner = false;
             console.log('error while getting data', error);
         })
     }
@@ -52,15 +61,46 @@ export default class AddCourse extends LightningElement {
         this.showDepositFees = false;
         this.showSpinner = true;
         this.feesData = [];
+        this.primaryFeesData = [];
+        this.depositFeesData = [];
         getFessDetail({
             classSessionId: this.selectedClassSessionId
         }).then(result => {
             console.log('resuilt', result);
             this.feesData = JSON.parse(JSON.stringify(result));
+            if (this.feesData.length > 0) {
+                this.feesData.forEach(ele => {
+                    if (ele.parentFeeType == 'Tuition Fee') {
+                        this.primaryFeesData.push(ele);
+                    } else if (ele.parentFeeType == 'Deposit') {
+                        this.depositFeesData.push(ele);
+                    }
+                })
+            }
+            if (this.depositFeesData.length > 0) {
+                this.showDepositFees = true;
+            }
             this.showSpinner = false;
         }).catch(error => {
             console.log('Error while getting fees records', error);
             this.showSpinner = false;
+        })
+    }
+
+    fetchProrate(courseDetails) {
+        let selectedDate = courseDetails.enrollmentStartDate;
+        let primaryFeesDetail = courseDetails.classDetail.tuitionFeeList;
+        getProratedAmount({
+            classSessionId: this.selectedClassSessionId,
+            selectedFee: JSON.stringify(primaryFeesDetail),
+            enrolDate: selectedDate
+        }).then(result => {
+            console.log(result);
+            courseDetails.classDetail.tuitionFeeList[0].parentProratedAmount = result.parentProratedAmount;
+            console.log('courseDetails', courseDetails);
+            this.setSaveEvent(courseDetails);
+        }).catch(err => {
+            console.log('Error while getting prorated ', err);
         })
     }
 
@@ -108,12 +148,45 @@ export default class AddCourse extends LightningElement {
                     this.template.querySelector('.courseSection2').classList.remove('slds-hide');
                     this.title = 'Fees & Deposit';
                     this.currentPage += 1;
-                    if(this.isClassSessionIdChanged){
                     this.fetchFeesDetailsFromApex();
+
                 }
             }
+        } else if (this.btnName == 'Save') {
+            console.log('save');
+            if (this.validateEnrollmentAndNotes()) {
+                // console.log('this.enrollmentSrtDt',this.enrollmentSrtDt);
+                console.log(this.template.querySelector('.enroll-date').value);
+                console.log(this.template.querySelector('.notes-cls').value);
+                let courseDetails = {};
+                // courseDetails.tuitionFeeList = [this.anotherFeesData];
+                // courseDetails.secondaryFeeList = this.selectedFessData.second;
+                // courseDetails.depositfeelist = this.selectedFessData.deposit;            
+                courseDetails.classDetail = this.selectedClassSessionData;
+                courseDetails.classDetail.location = this.locationName;
+                courseDetails.classDetail.classSessionId = this.selectedClassSessionId;
+                courseDetails.classDetail.tuitionFeeList = [this.anotherFeesData];
+                courseDetails.classDetail.secondaryFeeList = this.selectedFessData.second;
+                courseDetails.classDetail.depositfeelist = this.selectedFessData.deposit;
+
+                courseDetails.enrollmentStartDate = this.template.querySelector('.enroll-date').value;
+                courseDetails.comments = this.template.querySelector('.notes-cls').value ?? '';
+                if (courseDetails.classDetail.tuitionFeeList[0].prorate == true) {
+                    //courseDetails.classDetail.tuitionFeeList[0].parentProratedAmount = ;
+                    this.fetchProrate(courseDetails);
+                    //this.selectedClassSessionId,  courseDetails.enrollmentStartDate, courseDetails.classDetail.tuitionFeeList
+                    //courseDetails.classDetail.tuitionFeeList[0].proratePrice = '';
+
+                } else {
+                    courseDetails.classDetail.tuitionFeeList[0].parentProratedAmount = courseDetails.classDetail.tuitionFeeList[0].parentAmount;
+                    this.setSaveEvent(courseDetails);
+                }
+                console.log('courseDetails', courseDetails);
+
+                // this.selectedFessData.second = [];
+                // this.selectedFessData.deposit = [];
+            }
         }
-    }
     }
 
     validateClassSession = () => {
@@ -136,19 +209,21 @@ export default class AddCourse extends LightningElement {
 
     hanldeSessionChkxBox(event) {
         console.log('event.currentTarget.checked', event.currentTarget.checked);
-        this.isClassSessionIdChanged = false;
         if (event.currentTarget.checked == true) {
             this.template.querySelectorAll(".class-session-chkbx").forEach(ele => {
                 ele.checked = false;
             });
             event.currentTarget.checked = true;
             if (this.selectedClassSessionId != event.currentTarget.dataset.id) {
-            this.selectedClassSessionId = event.currentTarget.dataset.id;
-                this.isClassSessionIdChanged = true;
+                this.selectedClassSessionId = event.currentTarget.dataset.id;
             }
             this.selectedClassSessionData = {
-                className: event.currentTarget.dataset.course,
-                courseName: event.currentTarget.dataset.class,
+                classId: event.currentTarget.dataset.clsid,
+                locationId: event.currentTarget.dataset.locationid,
+                teacherId: event.currentTarget.dataset.teacherid,
+                teacherName: event.currentTarget.dataset.teachername,
+                className: event.currentTarget.dataset.class,
+                courseName: event.currentTarget.dataset.course,
                 dayOfWeek: event.currentTarget.dataset.day,
                 startTime: event.currentTarget.dataset.srttime,
                 endTime: event.currentTarget.dataset.endtime
@@ -175,9 +250,26 @@ export default class AddCourse extends LightningElement {
         return true;
     }
 
+    validateEnrollmentAndNotes() {
+        const allValid = [...this.template.querySelectorAll('.req-fld')]
+            .reduce((validSoFar, inputCmp) => {
+                inputCmp.reportValidity();
+                return validSoFar && inputCmp.checkValidity();
+            }, true);
+        if (allValid) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    // handleEnrollmentDate = (evt) => this.enrollmentSrtDt = evt.currentTarget.value; 
+
     collectFeesDetails() {
         this.selectedFessData = {};
         let feesChildIds = [];
+        let depositId = [];
         if (this.template.querySelectorAll(".secondary-fees")) {
             this.template.querySelectorAll(".secondary-fees").forEach(ele => {
                 if (ele.checked == true) {
@@ -189,7 +281,8 @@ export default class AddCourse extends LightningElement {
         if (this.template.querySelectorAll(".deposit-fees")) {
             this.template.querySelectorAll(".deposit-fees").forEach(ele => {
                 if (ele.checked == true) {
-                    feesChildIds.push(ele.dataset.id);
+                    // feesChildIds.push(ele.dataset.id);
+                    depositId.push(ele.dataset.id);
                 }
             });
         }
@@ -197,22 +290,38 @@ export default class AddCourse extends LightningElement {
         //this.selectedFessData.push(this.anotherFeesData);
         //console.log( 'this.selectedFessData,',this.selectedFessData);
         this.selectedFessData.primary = [this.anotherFeesData];
-        if (feesChildIds.length > 0) {   
-            this.selectedFessData.second = [];    
-            this.selectedFessData.deposit = []; 
+        if (feesChildIds.length > 0) {
+            this.selectedFessData.second = [];
+            //this.selectedFessData.deposit = [];
             this.anotherFeesData.childFeeWrapper.forEach(ele => {
                 console.log('ele.feeId ', ele.feeId);
                 if (feesChildIds.includes(ele.feeId)) {
                     console.log('inside');
                     if (ele.feeType == "Other Fee") {
                         this.selectedFessData.second.push(ele);
-                    } else {
-                        this.selectedFessData.deposit.push(ele);
-                    }
+                    } //else {
+                    //  this.selectedFessData.deposit.push(ele);
+                    // }
                 }
-            });        
+            });
+            if (this.selectedFessData.second.length == 0) {
+                this.selectedFessData.second = undefined;
+            } //else if (this.selectedFessData.deposit.length == 0) {
+            //this.selectedFessData.deposit = undefined;
+            //}
         }
-        console.log( this.selectedFessData);
+        if (depositId.length > 0) {
+            this.selectedFessData.deposit = [];
+            this.depositFeesData.forEach(ele => {
+                if (depositId.includes(ele.parentFeeId)) {
+                    this.selectedFessData.deposit.push(ele);
+                }
+            });
+            if (this.selectedFessData.deposit.length == 0) {
+                this.selectedFessData.deposit = undefined;
+            }
+        }
+        console.log(this.selectedFessData);
     }
 
     hideAllScreen() {
@@ -264,10 +373,10 @@ export default class AddCourse extends LightningElement {
     handleFeesSelectChkbx(event) {
         console.log(event.currentTarget.dataset.id);
         this.secondayFeesData = [];
-        this.depositFeesData = [];
+        // this.depositFeesData = [];
         this.showAnotherFees = false;
         this.showSecondayFees = false;
-        this.showDepositFees = false;
+        // this.showDepositFees = false;
 
         this.anotherFeesData = this.feesData.find(ele => ele.parentFeeId == (event.currentTarget.dataset.id));
         console.log(this.anotherFeesData.childFeeWrapper);
@@ -277,10 +386,10 @@ export default class AddCourse extends LightningElement {
                 if (ele.feeType == "Other Fee") {
                     this.secondayFeesData.push(ele);
                     this.showSecondayFees = true;
-                } else {
-                    this.depositFeesData.push(ele);
-                    this.showDepositFees = true;
-                }
+                }// else {
+                //     this.depositFeesData.push(ele);
+                //     this.showDepositFees = true;
+                // }
             });
             this.showAnotherFees = true;
         }
@@ -288,5 +397,9 @@ export default class AddCourse extends LightningElement {
         //this.secondayFeesData = ;
         //this.showSecondayFees = true;
 
+    }
+
+    setSaveEvent(courseDetails) {
+        this.dispatchEvent(new CustomEvent('savemodal', { detail: { relatedCourseDetails: courseDetails, index: this.index } }));
     }
 }

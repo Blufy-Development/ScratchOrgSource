@@ -12,6 +12,10 @@
         <restricted>true</restricted>
         <valueSetName>Frequency</valueSetName>
         <valueSettings>
+            <controllingFieldValue>Fixed</controllingFieldValue>
+            <valueName>One-Time</valueName>
+        </valueSettings>
+        <valueSettings>
             <controllingFieldValue>Ongoing</controllingFieldValue>
             <valueName>Monthly</valueName>
         </valueSettings>
