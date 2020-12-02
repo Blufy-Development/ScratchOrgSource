@@ -1,0 +1,147 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium modal2"
+        aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header slds-text-align_left slds-p-around_none">
+                <h2 class="slds-modal__title slds-hyphenate title slds-text-heading_xx-small slds-p-bottom_small">
+                    Additional Discounts
+                    <lightning-button-icon variant="bare" size="large" class="slds-float_right"
+                        icon-name="utility:close" alternative-text="close" onclick={closeModal}></lightning-button-icon>
+                </h2>
+            </header>
+            <div class="slds-modal__content slds-p-vertical_small slds-p-horizontal_medium">
+                <div class="slds-p-bottom_small">
+                    <div>
+                        <template if:true={discountData}>
+                            <div class="slds-col slds-media" style="padding-bottom: 10px;">
+                                <span class="slds-avatar slds-avatar_x-small slds-m-right_x-small">
+                                    <lightning-icon icon-name="utility:quote" size="small">
+                                    </lightning-icon>
+                                </span>Discount
+                            </div>
+                            <table class="table table-custom">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Format</th>
+                                        <th>Amount</th>
+                                        <th>Select</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tBody">
+                                    <template for:each={discountData} for:item="disItem" for:index="disIndex">
+                                        <tr key={disItem.disId}>
+                                            <td></td>
+                                            <td>{disItem.name}</td>
+                                            <td>{disItem.type}</td>
+                                            <td>{disItem.format}</td>
+                                            <td>
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="slds-col">
+                                                        <template if:true={disItem.isOverride}>
+                                                            <lightning-input variant="label-hidden" name="amount"
+                                                                label="" value={disItem.amount} data-index={disIndex}
+                                                                data-name="global" onchange={handleAmount}>
+                                                            </lightning-input>
+                                                        </template>
+                                                        <template if:false={disItem.isOverride}>
+                                                            <lightning-formatted-number value={disItem.amount}
+                                                                format-style="currency"
+                                                                currency-code={label.defaultCurrency}>
+                                                            </lightning-formatted-number>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <template if:true={disItem.isSelected}>
+                                                    <lightning-input type="checkbox" variant="label-hidden"
+                                                        name="discountChk" label="" checked class="discountChkbx"
+                                                        data-id={disItem.disId}></lightning-input>
+                                                </template>
+                                                <template if:false={disItem.isSelected}>
+                                                    <lightning-input type="checkbox" variant="label-hidden"
+                                                        name="discountChk" label="" class="discountChkbx"
+                                                        data-id={disItem.disId}></lightning-input>
+                                                </template>
+
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                        <!-- <template if:true={courseDiscount}>
+                            <div class="slds-col slds-media" style="padding-top: 10px;padding-bottom: 10px;">
+                                <span class="slds-avatar slds-avatar_x-small slds-m-right_x-small">
+                                    <lightning-icon icon-name="utility:quote" size="small">
+                                    </lightning-icon>
+                                </span> Course Discount
+                            </div>
+
+                            <table class="table table-custom">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Format</th>
+                                        <th>Amount</th>
+                                        <th>Select</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tBody">
+                                    <template for:each={courseDiscount} for:item="courseItem" for:index="courseIndex">
+                                        <tr key={courseItem.disId}>
+                                            <td></td>
+                                            <td>{courseItem.name}</td>
+                                            <td>{courseItem.type}</td>
+                                            <td>{courseItem.format}</td>
+                                            <td>
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <div class="slds-col">
+                                                        
+                                                        <lightning-input variant="label-hidden" name="amount" label=""
+                                                            value={courseItem.amount} data-index={courseIndex}
+                                                            data-name="course" onchange={handleAmount}>
+                                                        </lightning-input>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <template if:true={courseItem.isSelected}>
+                                                    <lightning-input type="checkbox" variant="label-hidden"
+                                                        name="discountChk" label="" checked class="discountChkbx"
+                                                        data-id={courseItem.disId}></lightning-input>
+                                                </template>
+                                                <template if:false={courseItem.isSelected}>
+                                                    <lightning-input type="checkbox" variant="label-hidden"
+                                                        name="discountChk" label="" class="discountChkbx"
+                                                        data-id={courseItem.disId}></lightning-input>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template> -->
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer slds-p-vertical_medium">
+                <lightning-button label="Close" variant="destructive" title="Base action" icon-name="utility:close"
+                    onclick={closeModal} class="slds-m-right_medium"></lightning-button>
+                <span>
+                    <lightning-button label="Save" variant="brand" title="Base action" icon-name="utility:download"
+                        onclick={saveDiscountModal}>
+                    </lightning-button>
+                </span>
+
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open "></div>
+</template>

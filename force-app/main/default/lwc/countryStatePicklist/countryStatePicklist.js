@@ -1,4 +1,4 @@
-import { LightningElement, wire, track } from 'lwc';
+import { LightningElement, wire, track, api } from 'lwc';
 import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import ACCOUNT_OBJECT from '@salesforce/schema/Account';
@@ -8,10 +8,10 @@ export default class DependentPickListInLWC extends LightningElement {
     // Reactive variables
     @track controllingValues = [];
     @track dependentValues = [];
-    @track selectedCountry;
-    @track selectedState;
     @track isEmpty = false;
     @track error;
+    @api selectedCountry = '';
+    @api selectedState = '';
     controlValues;
     totalDependentValues = [];
 
@@ -24,9 +24,7 @@ export default class DependentPickListInLWC extends LightningElement {
     countryPicklistValues({error, data}) {
         if(data) {
             this.error = null;
-
-            let countyOptions = [{label:'--None--', value:'--None--'}];
-
+            let countyOptions = [{label:'--None--', value:''}];
             // Account Country Control Field Picklist values
             data.picklistFieldValues.BillingCountryCode.values.forEach(key => {
                 countyOptions.push({
@@ -37,7 +35,7 @@ export default class DependentPickListInLWC extends LightningElement {
 
             this.controllingValues = countyOptions;
 
-            let stateOptions = [{label:'--None--', value:'--None--'}];
+            let stateOptions = [{label:'--None--', value:''}];
 
              // Account State Control Field Picklist values
             this.controlValues = data.picklistFieldValues.BillingStateCode.controllerValues;
@@ -50,7 +48,6 @@ export default class DependentPickListInLWC extends LightningElement {
                     value: key.value
                 })
             });
-
             this.dependentValues = stateOptions;
         }
         else if(error) {
@@ -58,17 +55,26 @@ export default class DependentPickListInLWC extends LightningElement {
         }
     }
 
+    connectedCallback(){
+        if(this.selectedCountry === '') {
+            alert('ggg')
+            this.isEmpty = true;
+            this.dependentValues = [{label:'--None--', value:''}];
+            this.selectedCountry = null;
+            this.selectedState = null;
+            return;
+        }
+    }
     handleCountryChange(event) {
         // Selected Country Value
         this.selectedCountry = event.target.value;
         this.isEmpty = false;
         let dependValues = [];
-
         if(this.selectedCountry) {
             // if Selected country is none returns nothing
-            if(this.selectedCountry === '--None--') {
+            if(this.selectedCountry === '') {
                 this.isEmpty = true;
-                dependValues = [{label:'--None--', value:'--None--'}];
+                dependValues = [{label:'--None--', value:''}];
                 this.selectedCountry = null;
                 this.selectedState = null;
                 return;
@@ -83,7 +89,6 @@ export default class DependentPickListInLWC extends LightningElement {
                     })
                 }
             })
-
             this.dependentValues = dependValues;
         }
     }

@@ -1,0 +1,76 @@
+<template>
+    <div class="slds-text-align_right slds-p-horizontal_large slds-p-top_small">
+        <strong class="btn-addstu">
+            <lightning-button label="Add Discount" icon-name="utility:new" variant="base" onclick={toggleDiscountModal}>
+            </lightning-button>
+        </strong>
+    </div>
+    <div class="slds-p-bottom_small slds-p-horizontal_large slds-grid slds-grid_vertical-align-end"
+        style="min-height:145px;">
+        <div class="slds-col slds-size_1-of-1">
+            <div class="slds-grid slds-gutters slds-p-top_small slds-grid_align-end">
+                <div class="slds-col slds-size_7-of-12 slds-p-vertical_xx-small">
+                </div>
+                <div class="slds-col slds-size_5-of-12 slds-p-vertical_xx-small">
+                    <!-- <aura:iteration items={globalDisList} var="globalDis" indexVar="j"> -->
+                    <template if:true={selectedDiscounts}>
+                        <template for:each={selectedDiscounts} for:item="discountItem">
+                            <div class="slds-grid slds-gutters border-b-dashed" key={discountItem.disId} style="border-bottom: 1px dashed #dddbda;">
+                                <div class="slds-col slds-size_8-of-12 slds-p-bottom_xx-small">{discountItem.name}
+                                </div>
+                                <div class="slds-col slds-p-bottom_xx-small slds-text-align_right slds-size_4-of-12">
+                                    <strong style="color:red;">
+                                        <!--{globalDis.amount}-->
+                                        <lightning-formatted-number value={discountItem.amount} format-style="currency"
+                                             currency-code={label.defaultCurrency}></lightning-formatted-number>
+                                        <!-- <lightning:formatted-number value={discountItem.amount}>
+                                        </lightning:formatted-number> -->
+                                    </strong></div>
+                            </div>
+                        </template>
+                    </template>
+                    <!-- </aura:iteration> -->
+                    <!-- <aura:if isTrue={gstAmount > 0}> -->
+                    <div class="slds-grid slds-gutters border-b-dashed">
+                        <div class="slds-col slds-size_8-of-12 slds-p-bottom_xx-small">GST Amount</div>
+                        <div class="slds-col slds-p-bottom_xx-small slds-text-align_right slds-size_4-of-12">
+                            <strong class="">
+                                <!--${gstAmount}-->
+                                <!-- <lightning:formattedNumber value={gstAmount} 
+                            currencyCode={$Label.c.Default_Currency}
+                            currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                            <lightning-formatted-number value={gstAmount} format-style="currency"
+                             currency-code={label.defaultCurrency}></lightning-formatted-number>
+                            </strong>
+                        </div>
+                    </div>
+                    <!-- </aura:if> -->
+                    <div class="slds-grid slds-gutters slds-wrap ">
+                        <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                            <p class="slds-text-body_small slds-text-heading_small"><strong class="">Grand
+                                    Total:</strong></p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                            <p class="slds-text-body_small slds-text-align_right slds-text-heading_small">
+                                <strong>
+
+                                    <!--${grandTotAmt}-->
+                                    <!-- <lightning:formattedNumber value={grandTotAmt} 
+                            currencyCode={$Label.c.Default_Currency}
+                            currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                                    <lightning-formatted-number value={grandTotal} format-style="currency"
+                                        currency-code={label.defaultCurrency}></lightning-formatted-number>
+
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template if:true={showDiscountModal}>
+        <c-additional-discount-modal onclosediscountmodal={toggleDiscountModal}
+            onsavediscount={handleSaveDiscountModal} pre-selected-discount={selectedDiscounts} ></c-additional-discount-modal>
+    </template>
+</template>

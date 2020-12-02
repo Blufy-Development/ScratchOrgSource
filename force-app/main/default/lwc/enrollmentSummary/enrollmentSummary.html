@@ -1,0 +1,387 @@
+<template>
+
+    <!-- <aura-iteration items={stuClsWrapperList} var="stuWraper" indexVar="key"> -->
+    <!-- <aura-if isTrue={not(empty(stuWraper.slctdClsDetails))}> -->
+
+    <template if:true={studetnDetailsArr}>
+        <template for:each={studetnDetailsArr.studentDetail} for:item="student" for:index="studentIndex">
+
+            <template for:each={student.classDetails} for:item="clsDetail" for:index="classIndex">
+                <!-- <aura-iteration items={stuWraper.slctdClsDetails} var="cls" indexVar="j"> -->
+                <fieldset key={student.key} class="slds-border_bottom slds-p-top_xx-small">
+                    <div key={student.key} class="border-dash">
+                        <div class="accordioncustom">
+                            <div class="slds-grid slds-gutters enrol-name slds-grid_vertical-align-center">
+                                <!--For Now I commented Code Asif-->
+                                <div class="slds-col slds-medium-size_7-of-12 ">
+                                    <!-- <aura-if isTrue={j==0}> -->
+                                    <template if:true={clsDetail.classDetail.showName}>
+                                        <p class="slds-text-heading_small slds-p-bottom_small slds-p-top_small">
+                                            <!--    <aura-if 
+                                        isTrue={stuWraper.studentDetails.educato__Gender__c == 'Female'}>
+                                    <img src={$Resource.lady} alt="user"
+                                        style="width: 25px;" />
+                                    <aura-set attribute="else">
+                                        <img src={$Resource.men} alt="user"
+                                            style="width: 25px;" />
+                                    - </aura-set> 
+                                    </aura-if> 
+                                    &nbsp;&nbsp;-->
+                                            <strong>{student.FirstName}&nbsp;
+                                                {student.LastName}</strong>
+                                        </p>
+                                    </template>
+                                    <!-- </aura-if> -->
+                                </div>
+                                <div class="slds-col slds-medium-size_5-of-12 ">
+                                    <p class="slds-text-heading_x-small slds-p-vertical_small slds-text-align_right">
+                                        <span>
+                                            <!--For Now I commented Code Asif-->
+                                            <!-- <div id={key+'_'+j}
+                                    style="display:inline-block; padding-right:12px;"
+                                    onclick={deleteCls}>
+                                    <lightning-buttonIcon icon-name="utility:delete"
+                                        variant="bare" alternativeText="Delete"
+                                        class="slds-text-color_error " ></lightning-buttonIcon>
+                                </div>
+                                <div id={key+'_'+j} onclick={editCls}
+                                    style="display:inline-block; padding-right:12px;">
+                                    <lightning-buttonIcon icon-name="utility:edit_form"
+                                        variant="bare" alternativeText="Edit"
+                                        class="slds-text-color_success" ></lightning-buttonIcon>
+                                </div>
+                                <div id={key+'_'+j} onclick={handleCourseDiscount}
+                                    style="display:inline-block;">
+                                    <lightning-buttonIcon icon-name="utility:moneybag"
+                                        variant="bare" 
+                                        class="slds-text-color_success" ></lightning-buttonIcon>
+                                </div> -->
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="slds-grid slds-gutters  slds-grid_vertical-align-center ">
+                                <div class="slds-col  slds-medium-size_7-of-12">
+                                    <div class="demo-only demo-only--sizing slds-grid slds-wrap slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:description">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Class Name</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>{clsDetail.classDetail.className}</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:money">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Class Fee</p>
+                                                    <p class="slds-text-heading_x-small"><strong>
+                                                            ${clsDetail.classDetail.classFee}
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:date_input">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Start Date</p>
+                                                    <p class="slds-text-heading_x-small"><strong>
+                                                            <lightning-formatted-date-time
+                                                                value={clsDetail.enrollmentStartDate} year="numeric"
+                                                                day="2-digit" month="2-digit">
+                                                            </lightning-formatted-date-time>
+                                                        </strong></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:date_input" size="small">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Days of Week</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>
+                                                            {clsDetail.classDetail.dayOfWeek}
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:date_time">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Time</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>
+                                                            <lightning-formatted-date-time
+                                                                value={clsDetail.classDetail.startTime} hour="2-digit"
+                                                                minute="2-digit" time-zone="UTC">
+                                                            </lightning-formatted-date-time>
+                                                            &nbsp;to&nbsp;
+                                                            <lightning-formatted-date-time
+                                                                value={clsDetail.classDetail.endTime} hour="2-digit"
+                                                                minute="2-digit" time-zone="UTC">
+                                                            </lightning-formatted-date-time>
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:resource_territory">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Teacher</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>{clsDetail.classDetail.teacherName}</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-media slds-media_center  slds-p-bottom_medium">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                        <lightning-icon icon-name="utility:checkin">
+                                                        </lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-text-body_small">Location</p>
+                                                    <p class="slds-text-heading_x-small">
+                                                        <strong>{clsDetail.classDetail.location}</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-medium-size_5-of-12">
+                                    <div
+                                        class="slds-p-bottom_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small">
+                                        <strong>Fee Details</strong>
+                                    </div>
+                                    <!-- <aura:if isTrue={not(empty(cls.tutionFeeWrapperList))}> -->
+                                    <!-- <aura:iteration items={cls.tutionFeeWrapperList} var="tf" 
+                                indexVar="j">-->
+                                    <template if:true={clsDetail.classDetail.tuitionFeeList}>
+                                        <template for:each={clsDetail.classDetail.tuitionFeeList} for:item="tuitionFee"
+                                            for:index="tuitionFeeIndex">
+                                            <div key={student.key} class="slds-grid slds-gutters border-b-dashed">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small"><span
+                                                            class="slds-text-body_small slds-p-right_small">{tuitionFee.parentFeeName}:</span>
+                                                    </p>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small slds-text-align_right">
+                                                        <strong>
+                                                            {tuitionFee.parentProratedAmount}
+                                                            <!--${tf.feeProratedAmount}-->
+                                                            <!-- <lightning:formattedNumber
+                                                    value={(tf.feeProratedAmount > 0 ? tf.feeProratedAmount : tf.feeAmount)}                                                                                
+                                                    currencyCode={$Label.c.Default_Currency}
+                                                    currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <!-- </aura:iteration> -->
+                                    <!-- </aura:if> -->
+                                    <!-- <aura:if isTrue={not(empty(cls.feeWrapperList))}> -->
+                                    <!-- <aura:iteration items={cls.feeWrapperList} var="rf" indexVar="j">-->
+                                    <template if:true={clsDetail.classDetail.secondaryFeeList}>
+                                        <template for:each={clsDetail.classDetail.secondaryFeeList}
+                                            for:item="secondaryFee" for:index="secondaryFeeIndex">
+                                            <div key={student.key} class="slds-grid slds-gutters border-b-dashed">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small"><span
+                                                            class="slds-text-body_small slds-p-right_small">{secondaryFee.feeName}:</span>
+                                                    </p>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small slds-text-align_right">
+                                                        <strong>
+                                                            {secondaryFee.feeAmount}
+                                                            <!--${rf.feeAmount}-->
+                                                            <!-- <lightning:formattedNumber
+                                                    value={rf.feeAmount} 
+                                                    currencyCode={$Label.c.Default_Currency}
+                                                    currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <!-- </aura:iteration> -->
+                                    <!-- </aura:if> -->
+                                    <!-- <aura:if isTrue={not(empty(cls.depositWrapperList))}> -->
+                                    <!-- <aura:iteration items={cls.depositWrapperList} var="dep" 
+                                indexVar="j">-->
+                                    <template if:true={clsDetail.classDetail.depositfeelist}>
+                                        <template for:each={clsDetail.classDetail.depositfeelist} for:item="depositfee"
+                                            for:index="depositfeeIndex">
+                                            <div key={student.key} class="slds-grid slds-gutters border-b-dashed">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small"><span
+                                                            class="slds-text-body_small slds-p-right_small">{depositfee.parentFeeName}:</span>
+                                                    </p>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                                    <p class="slds-text-body_small slds-text-align_right">
+                                                        <strong style="color:green ;">
+                                                            {depositfee.parentAmount}
+                                                            <!-- <lightning:formattedNumber
+                                                    value={dep.feeAmount}
+                                                    
+                                                    currencyCode={$Label.c.Default_Currency}
+                                                    currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <!-- </aura:iteration> -->
+                                    <!-- </aura:if> -->
+                                    <!-- <aura:if isTrue={not(empty(cls.disWrapperList))}> -->
+                                    <!-- <aura:iteration items={cls.disWrapperList} var="dis"
+                                indexVar="j">
+                                <div class="slds-grid slds-gutters border-b-dashed">
+                                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                        <p class="slds-text-body_small"><span
+                                                class="slds-text-body_small slds-p-right_small">{dis.name}:</span>
+                                        </p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                        <p class="slds-text-body_small slds-text-align_right">
+                                            <strong style="color:red;">
+                                                {dis.amount}-->
+                                    <!-- <lightning:formattedNumber
+                                                    value={dis.amount} 
+                                                    currencyCode={$Label.c.Default_Currency}
+                                                    currencyDisplayAs="symbol" ></lightning:formattedNumber> 
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                                 </aura:iteration> -->
+                                    <!-- </aura:if> -->
+                                    <!-- <aura:if isTrue={not(empty(cls.earlybirdDisWrapperList))}> -->
+                                    <!-- <aura:iteration items={cls.earlybirdDisWrapperList} var="dis" 
+                                indexVar="j">
+                                <div class="slds-grid slds-gutters border-b-dashed">
+                                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                        <p class="slds-text-body_small"><span
+                                                class="slds-text-body_small slds-p-right_small">{dis.name}:</span>
+                                        </p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                        <p class="slds-text-body_small slds-text-align_right">
+                                            $<strong style="color:red;">
+                                                {dis.amount}
+                                                 <lightning:formattedNumber
+                                                    value={dis.amount} 
+                                                    currencyCode={$Label.c.Default_Currency}
+                                                    currencyDisplayAs="symbol" ></lightning:formattedNumber> 
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                                </aura:iteration> -->
+                                    <!-- </aura:if> -->
+                                    <div class="slds-grid slds-gutters" style="background-color:#f7f7f7;">
+                                        <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                            <p class="slds-text-body_small"><span
+                                                    class="slds-text-body_small slds-p-right_small">Total:</span>
+                                            </p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                                            <p class="slds-text-body_small slds-text-align_right">
+                                                <strong>
+                                                    ${clsDetail.classDetail.totalAmount}
+                                                    <!--${cls.totWithProratedFee}-->
+                                                    <!-- <lightning:formattedNumber 
+                                                value={cls.totWithProratedFee}
+
+                                                currencyCode={$Label.c.Default_Currency}
+                                                currencyDisplayAs="symbol" ></lightning:formattedNumber>-->
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </template>
+            <!-- </aura:iteration> -->
+
+        </template>
+    </template>
+    <!-- </aura:if> -->
+    <!-- </aura:iteration> -->
+    <div class="slds-grid slds-gutters slds-p-top_xx-small slds-grid_align-end">
+        <div class="slds-col slds-size_7-of-12 slds-p-vertical_xx-small">
+        </div>
+        <div class="slds-col slds-size_5-of-12 slds-p-vertical_xx-small">
+            <div class="slds-grid slds-gutters slds-wrap ">
+                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                    <p class="slds-text-body_small slds-text-heading_small"><strong class="">Enrollment
+                            Fee Total:</strong></p>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
+                    <p class="slds-text-body_small slds-text-align_right slds-text-heading_small">
+                        <strong>${enrolTotalAmt}
+                            <!--${enrFeeTotAmt}-->
+                            <!-- <lightning:formattedNumber value={enrFeeTotAmt} 
+                    currencyCode={$Label.c.Default_Currency}
+                    currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
+                        </strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

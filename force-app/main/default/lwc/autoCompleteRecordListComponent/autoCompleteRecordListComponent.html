@@ -10,19 +10,19 @@
             </lightning-layout-item>
         </lightning-layout>
     </a> -->
-   
-                        <li role="presentation" class="slds-listbox__item">
-                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" 
-                                                        role="option"
-                                onclick={handleSelect}>
-                                <span class="slds-media__figure slds-listbox__option-icon">
-                                    <lightning-icon icon-name={iconname} size="small"></lightning-icon>
-                                </span>
-                                <span class="slds-media__body">
-                                    <span class="slds-truncate">
-                                        {record.Name}
-                                    </span>
-                                </span>
-                            </div>
-                        </li>
+
+    <li role="presentation" class="slds-listbox__item">
+        <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option"
+            onclick={handleSelect}>
+            <span class="slds-media__figure slds-listbox__option-icon">
+                <lightning-icon icon-name={iconname} size="small"></lightning-icon>
+            </span>
+            <span class="slds-media__body">
+                <span class="slds-truncate">
+                    {record.Name}
+                    {infoToDisplay}
+                </span>
+            </span>
+        </div>
+    </li>
 </template>

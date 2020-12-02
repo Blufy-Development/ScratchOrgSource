@@ -1,0 +1,56 @@
+<template>
+    <div class="slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-small-size_12-of-12 ">
+    <div class="slds-col slds-size_12-of-12 slds-p-bottom_small">
+        <p class=" slds-p-top_medium"><strong>Add an ACH Debit Bank Account</strong></p>
+          <div class="slds-grid slds-gutters slds-p-top_medium" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Add Holder Type:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                <lightning-combobox name="accountHolderType" label="" value={value} placeholder="Select Holder Type" data-my-id="holderType" variant="label-hidden"
+                options={options} required class='req'></lightning-combobox>
+              </div>
+          </div>
+
+            <div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Account Holder Name:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input type="text" class='req' name="holderName" label="" placeholder="Account Holder Name" variant="label-hidden" data-my-id="holderName" required></lightning-input>
+              </div>
+          </div>
+          <!--Commented as ACH is only for US to not neccesary to define that-->
+          <!--<div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Country:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input  name="inputb" label="" placeholder="US" variant = "label-hidden" required></lightning-input>
+              </div>
+          </div>
+          
+          <div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Currency:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input  name="inputb" label="" placeholder="USD" variant = "label-hidden" required></lightning-input>
+              </div>
+          </div>-->
+
+         <div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Routing Number:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input  name="routingNo" class='req' placeholder="Routing Number" label="" variant = "label-hidden" data-my-id="routingNumber" required></lightning-input>
+              </div>
+          </div>
+
+         <div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Account Number:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input  name="accountNo" class='req' placeholder="Account Number" label="" variant = "label-hidden"  data-my-id="AccountNumber" onfocusout ={validateConfirAccNo} required></lightning-input>
+              </div>
+          </div>
+         <div class="slds-grid slds-gutters" >
+              <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small" >Confirm Account Number:</div>
+              <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small" >
+                  <lightning-input  name="confirmAccountNo" class='req' placeholder="Confirm Account Number" label="" variant = "label-hidden" data-my-id="ConfirmAccNumber"  onfocusout ={validateConfirAccNo} required></lightning-input>
+              </div>
+          </div> 
+       
+    </div>
+</div>
+</template>

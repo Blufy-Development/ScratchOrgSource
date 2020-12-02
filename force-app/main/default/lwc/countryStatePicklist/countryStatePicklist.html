@@ -1,17 +1,14 @@
 <template>
-        <div class="slds-col slds-size_1-of-1">
+    <div class="demo-only demo-only--sizing slds-grid slds-wrap slds-gutters">
+        <div class="slds-col slds-size_1-of-2">
             <lightning-combobox label="Country" 
                                 name="country" 
                                 onchange={handleCountryChange} 
                                 options={controllingValues} 
                                 placeholder="--None--" 
                                 value={selectedCountry}></lightning-combobox><br/>
-            
-            <div if:true={selectedCountry}>
-                Selected Country: <b>{selectedCountry}</b>
-            </div>
         </div>
-        <div class="slds-col slds-size_1-of-1">
+        <div class="slds-col slds-size_1-of-2">
             <lightning-combobox label="State" 
                                 name="state"
                                 onchange={handleStateChange} 
@@ -19,11 +16,8 @@
                                 placeholder="--None--" 
                                 value={selectedState}
                                 disabled={isEmpty}></lightning-combobox><br/>
-            <div if:true={selectedState}>
-                Selected State: <b>{selectedState}</b>
-            </div>
         </div>
-
+    </div>
     <div if:true={error}>
         <p>{error}</p>
     </div>

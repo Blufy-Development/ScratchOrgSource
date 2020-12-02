@@ -37,6 +37,13 @@ public class AutoCompleteCmpController {
         System.debug(System.LoggingLevel.DEBUG,extendedWhereClause );
         String key = '%' + searchKey + '%';
         String QUERY = 'Select Id, '+searchField+' From '+objectName +' Where '+searchField +' LIKE :key';
+        
+        if(String.isNotBlank(extendedWhereClause) && (extendedWhereClause.containsIgnoreCase('Parent') || extendedWhereClause.containsIgnoreCase('Student'))){
+            QUERY = 'Select Id, '+searchField+',FirstName From '+objectName +' Where '+searchField +' LIKE :key';
+        }
+        if(objectName.equalsIgnoreCase('Course__c')){
+            QUERY = 'Select Id, '+searchField+',Location__r.Name From '+objectName +' Where '+searchField +' LIKE :key';
+        }
         if(String.isNotBlank(extendedWhereClause))
             QUERY += extendedWhereClause;
         QUERY += ' WITH SECURITY_ENFORCED LIMIT 5';

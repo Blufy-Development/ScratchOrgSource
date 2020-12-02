@@ -349,20 +349,21 @@ public class ClassTriggerHelper {
             
             Date eDate = cls.End_Date__c;
            // if(cls.Auto_Schedule__c && cls.Advance_Scheduling_Period__c != null){
-            if(cls.Advance_Scheduling_Period__c != null){
+            if(cls.Frequency__c.equalsIgnoreCase(ConstantClass.monthlyFrequency) && cls.Advance_Scheduling_Period__c != null){
                 Date endDateMonthDays = cls.Start_Date__c.addMonths(Integer.valueOf(cls.Advance_Scheduling_Period__c));
                 Integer numberOfDays = Date.daysInMonth(endDateMonthDays.year(), endDateMonthDays.month());
                 eDate = Date.newInstance(endDateMonthDays.year(), endDateMonthDays.month(), numberOfDays);
-                
+            }    
+            if(eDate != null){
                 DateTime endDateTm = DateTime.newInstance(eDate.year(),eDate.month(),eDate.day(),00,00,00);
                 
                 Integer seq = 0;
                 List<Session__c> listSession = UtilityClass.createSessions(cls,strtDateTm,endDateTm,seq,null,
-                                                                           mapClassIdToClassSessions.get(cls.Id),
-                                                                           null);
+                                                                            mapClassIdToClassSessions.get(cls.Id),
+                                                                            null);
                 mapClassIdToSessions.put(cls.Id,listSession); 
-                cls.put('Scheduled_Till__c',eDate);
-            }
+                cls.put('Scheduled_Till__c',eDate);  
+            }          
         }
         
         if(mapClassIdToSessions.keySet().size() > 0){
