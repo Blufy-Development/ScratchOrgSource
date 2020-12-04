@@ -1,9 +1,7 @@
 public class FamilyService {
     public static List<Family__c> insertRecords(List<Family__c> obList){
         if(obList.size() > 0){
-            SObjectAccessDecision securityDecision = Security.stripInaccessible(
-                AccessType.CREATABLE, obList, true);
-            
+            SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.CREATABLE, obList, true);
             try {
                 insert securityDecision.getRecords();
                 return securityDecision.getRecords();
@@ -17,8 +15,7 @@ public class FamilyService {
     
     public static List<Family__c> upsertRecords(List<Family__c> obList){
         if(obList.size() > 0){
-            SObjectAccessDecision securityDecision = Security.stripInaccessible(
-                AccessType.UPSERTABLE, obList, true);
+            SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.UPSERTABLE, obList, true);
             try{
                 upsert securityDecision.getRecords();
                 return securityDecision.getRecords();

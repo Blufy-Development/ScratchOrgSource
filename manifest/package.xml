@@ -101,56 +101,7 @@
         <name>GlobalValueSet</name>
     </types>
     <types>
-        <members>Account-Location</members>
-        <members>Assessment_Content__c-Assessment Module Layout</members>
-        <members>Assessment_Model__c-Assessment Model Layout</members>
-        <members>Assessment_Module_Lesson__c-Assessment Module Lesson Layout</members>
-        <members>Assessment__c-Assessment Layout</members>
-        <members>Blufy_Config__mdt-Blufy Config Layout</members>
-        <members>Blufy_Error_Log__c-Blufy Error Log Layout</members>
-        <members>Class_Session__c-ClassSessionPerDay Layout</members>
-        <members>Class_Term__c-Class Term Layout</members>
-        <members>Class_Term__c-Teacher Layout</members>
-        <members>Class__c-Class Layout</members>
-        <members>Course_Assessment__c-Course Assessment Layout</members>
-        <members>Course_Discount__c-Class Discount Layout</members>
-        <members>Course_Fee__c-Course Fee Layout</members>
-        <members>Course_Module__c-Course Module Layout</members>
-        <members>Course__c-Course Layout</members>
-        <members>Discount__c-Discount Layout</members>
-        <members>Enrollment__c-Enrollment Layout</members>
-        <members>Enrollment__c-Teacher Layout</members>
-        <members>Fee_Allocation__c-Fee Allocation Layout</members>
-        <members>Fee__c-Fee Layout</members>
-        <members>Fee__c-Secondary Fee Layout</members>
-        <members>Full_Calendar_Configuration__mdt-Full Calendar Configuration Layout</members>
-        <members>Holiday__c-Holiday Layout</members>
-        <members>Invoice_Line_Item__c-Invoice Line Item Layout</members>
-        <members>Invoice__c-Invoice Layout</members>
-        <members>Lesson__c-Lesson Layout</members>
-        <members>Location_Working_Hours__c-Location Working Hour Layout</members>
-        <members>Module_Lesson__c-Module Lesson Layout</members>
-        <members>Module__c-Module Layout</members>
-        <members>Payment__c-Payment As Credit</members>
-        <members>Payment__c-Payment Layout</members>
-        <members>PersonAccount-Customer</members>
-        <members>PersonAccount-Teacher</members>
-        <members>Resource__c-Resource Layout</members>
-        <members>Room__c-Room Layout</members>
-        <members>Service_Request__c-Service Request Layout</members>
-        <members>Service__c-Service Layout</members>
-        <members>Session_Module__c-Session Module Layout</members>
-        <members>Session_Resource__c-Session Resource Layout</members>
-        <members>Session__c-Services</members>
-        <members>Session__c-Session Layout</members>
-        <members>Student_Session__c-Student Session Layout</members>
-        <members>Subscription_Line_Item__c-Subscription Line Item Layout</members>
-        <members>Subscription__c-Subscription Layout</members>
-        <members>Teacher_Leave__c-Teacher Layout</members>
-        <members>Teacher_Leave__c-Teacher Leave Layout</members>
-        <members>Teacher_Working_Hours__c-Teacher Working Hours Layout</members>
-        <members>Term__c-Term Layout</members>
-        <members>User_Interface_Settings__mdt-User Interface Settings Layout</members>
+        <members>*</members>
         <name>Layout</name>
     </types>
     <types>
@@ -262,17 +213,26 @@
         <members>OperationsReports/Revenue_By_Location_s3y</members>
         <members>OperationsReports/Teachers_Daily_Average_Utilization_HBb</members>
         <members>OperationsReports/Top_Courses_By_Invoiced_Amount_I9k</members>
+        <members>BlufyReports</members>
+        <members>BlufyReports/Revenue_Forecast_yks</members>
+        <members>BlufyReports/Revenue_Trend_9se</members>
+        <members>BlufyReports/Enquiry_Trend_anv</members>
+        <members>BlufyReports/Enrollments_Trend_1zn</members>
+        <members>BlufyReports/Revenue_This_Month_qNL</members>
+        <members>BlufyReports/Revenue_Last_Month</members>
+        <members>BlufyReports/Total_Deposit</members>
+        <members>BlufyReports/Total_Active_Enrollments_ivW</members>
+        <members>BlufyReports/Student_Requests_6aB</members>
+        <members>BlufyReports/Revenue_Report_TjJ</members>
+        <members>BlufyReports/Enrollment_Pipeline</members>
+        <members>BlufyReports/Open_Enquiries</members>
+        <members>BlufyReports/New_Accounts_with_Enrollments_Report_xcp</members>
+        <members>BlufyReports/Class_Availability_Report</members>
+        <members>BlufyReports/New_Courses_with_Classes_Report_sx7</members>
         <name>Report</name>
     </types>
     <types>
-        <members>Accounts_with_Enrollments</members>
-        <members>Classes</members>
-        <members>Courses_with_Classes_with_Enrollments</members>
-        <members>Enrollment_with_Invoices_with_Invoice_Line_Items</members>
-        <members>Enrollment_with_Student_Sessions</members>
-        <members>Enrollments</members>
-        <members>Invoice</members>
-        <members>Invoice_with_Invoice_Line_Items</members>
+        <members>*</members>
         <name>ReportType</name>
     </types>
     <types>

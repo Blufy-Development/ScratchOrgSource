@@ -11,7 +11,7 @@ public class StripeUtility {
     
     public static final educato__Stripe_Metadata__mdt stripeMeta;
     static{
-        educato__Stripe_Metadata__mdt stripeMetaData = [select id,educato__publishKey__c, educato__secretKey__c from educato__Stripe_Metadata__mdt LIMIT 1];
+        educato__Stripe_Metadata__mdt stripeMetaData = [select id,publishKey__c, secretKey__c from Stripe_Metadata__mdt LIMIT 1];
         stripeMeta = stripeMetaData;
     }
 
@@ -26,10 +26,13 @@ public class StripeUtility {
             
             Http http = new Http();
             HttpRequest request = new HttpRequest();
-            request.setEndpoint(System.label.Stripe_Base_URL+stripeMeta.educato__secretKey__c);
+            String autorizationKey = 'Bearer '+stripeMeta.secretKey__c;
+               
+            system.debug('autorizationKey '+autorizationKey);
+            request.setEndpoint(System.label.Stripe_Base_URL+'/v1/tokens');
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-            request.setHeader('Authorization', 'Bearer sk_test_51Hs5GNBceq9TTrxisdc1CVAUSMwknkLh3UZSyqVx4BrCVRF37IIgQM9wDoJt3kjJ9ApKdEttxVoJ6JQinh61YM0w00Sybyotcl');
+            request.setHeader('Authorization', autorizationKey);
             // Set the body as a JSON object
             request.setBody(createTokenBody);
             HttpResponse response = http.send(request);
@@ -64,13 +67,13 @@ public class StripeUtility {
             createTokenBody += string.isNotBlank(source) ? '&source='+source : '';
 
             System.debug('@@@@createTokenBody'+createTokenBody);
-
+            String autorizationKey = 'Bearer '+stripeMeta.educato__secretKey__c;
             Http http = new Http();
             HttpRequest request = new HttpRequest();
             request.setEndpoint(System.label.Stripe_Base_URL+'/v1/customers');
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-            request.setHeader('Authorization', 'Bearer sk_test_51Hs5GNBceq9TTrxisdc1CVAUSMwknkLh3UZSyqVx4BrCVRF37IIgQM9wDoJt3kjJ9ApKdEttxVoJ6JQinh61YM0w00Sybyotcl');
+            request.setHeader('Authorization',autorizationKey );
             // Set the body as a JSON object
             request.setBody(createTokenBody);
             HttpResponse response = http.send(request);
@@ -87,6 +90,41 @@ public class StripeUtility {
         }
         return customerId;
     }
+
+
+  public static string createStripeBankVerify(Integer ammt1 , Integer ammt2, String customerId, String bankTokenId){
+        String verifiedStatus = '';
+        if(ammt1 != null && ammt2 != null  && customerId != null && bankTokenId != null){
+            String createStripeBankVerifyBody = 'amounts[]='+ammt1+'&amounts[]='+ammt2;
+            System.debug('@@@@createStripeBankVerifyBody'+createStripeBankVerifyBody);
+            String autorizationKey = 'Bearer '+stripeMeta.secretKey__c;
+            Http http = new Http();
+        
+            string endUrl = System.label.Stripe_Base_URL + '/v1/customers/' + customerId + '/sources/' + bankTokenId + '/verify';
+            system.debug('endUrl-->'+endUrl);
+            HttpRequest request = new HttpRequest();
+            request.setEndpoint(endUrl);
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+            request.setHeader('Authorization',autorizationKey);
+            // Set the body as a JSON object
+            request.setBody(createStripeBankVerifyBody);
+            HttpResponse response = http.send(request);
+            System.debug(response);
+            // Parse the JSON response
+            if (response.getStatusCode() == 200) {
+                System.debug(response.getBody());
+                Map<String, Object> results = (Map<String, Object>) JSON.deserializeUntyped(response.getBody()); 
+                verifiedStatus = results.containsKey('status') ? String.valueOf(results.get('status'))  : NULL;
+            } else {
+                System.debug(response.getStatusCode()+ ' - ' +response.getBody());
+            }
+        
+       }
+
+       return verifiedStatus;
+    }
+
     
     @future(callout=true)
     public static void createStripeCustomerUsingACH(String accountSFId, string country, String currencyCode, String holderName, String accountHolderType, String  routingNumber, String accountNumber, String email){
@@ -114,6 +152,10 @@ public class StripeUtility {
             UPDATE paymentAccountObj;
         }
     }
+
+
+
+
 
     Public Class StripeCustomerDetails{
         Public String accountHolderName;

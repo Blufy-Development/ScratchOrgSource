@@ -34,8 +34,22 @@
                                     <!-- </aura-if> -->
                                 </div>
                                 <div class="slds-col slds-medium-size_5-of-12 ">
-                                    <p class="slds-text-heading_x-small slds-p-vertical_small slds-text-align_right">
+                                    <span
+                                        class="slds-text-heading_x-small slds-p-vertical_small slds-text-align_right slds-float_right">
                                         <span>
+                                            <!-- <div style="display:inline-block; padding-right:12px;">
+                                                <lightning-button-icon variant="bare" style="color:#c23934"
+                                                    icon-name="utility:delete" alternative-text="opne" size="large"
+                                                    icon-class="slds-text-color_error">
+                                                </lightning-button-icon>
+                                            </div> -->
+                                            <div style="display:inline-block; padding-right:12px;">
+                                                <lightning-button-icon variant="bare" icon-name="utility:edit_form"
+                                                    alternative-text="open" size="large"
+                                                    icon-class="slds-text-color_success" onclick={editClass}
+                                                    data-classindex={classIndex} data-studentindex={studentIndex}>
+                                                </lightning-button-icon>
+                                            </div>
                                             <!--For Now I commented Code Asif-->
                                             <!-- <div id={key+'_'+j}
                                     style="display:inline-block; padding-right:12px;"
@@ -57,7 +71,7 @@
                                         class="slds-text-color_success" ></lightning-buttonIcon>
                                 </div> -->
                                         </span>
-                                    </p>
+                                    </span>
                                 </div>
                             </div>
 
@@ -384,4 +398,8 @@
             </div>
         </div>
     </div>
+    <template if:true={showEditClassForm}>
+        <c-add-course mode="edit" previous-data={currentClassDetail} onsavemodal={handleSaveEvent}
+            onclosemodal={handleClasseModal} index={currentIndex}></c-add-course>
+    </template>
 </template>

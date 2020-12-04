@@ -8,6 +8,6 @@
     </values>
     <values>
         <field>secretKey__c</field>
-        <value xsi:type="xsd:string">/v1/customers</value>
+        <value xsi:type="xsd:string">sk_test_51Hs5GNBceq9TTrxisdc1CVAUSMwknkLh3UZSyqVx4BrCVRF37IIgQM9wDoJt3kjJ9ApKdEttxVoJ6JQinh61YM0w00Sybyotcl</value>
     </values>
 </CustomMetadata>

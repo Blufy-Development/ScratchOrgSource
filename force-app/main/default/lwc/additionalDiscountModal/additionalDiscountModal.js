@@ -2,8 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import fetchDiscount from '@salesforce/apex/NewEnrollmentFormCntrl.fetchAllDiscount';
 import defaultCurrency from '@salesforce/label/c.Default_Currency';
 export default class AdditionalDiscountModal extends LightningElement {
-    @api preSelectedDiscount;
-    @api mode = 'global';
+    @api preSelectedDiscount;    
     @api courseId = '';
     discountData;
     label = {

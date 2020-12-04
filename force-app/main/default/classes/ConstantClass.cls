@@ -22,7 +22,7 @@ public class ConstantClass {
     public static String completedStatus     	 = 'Completed';
     public static String approvedStatus     	 = 'Approved';
     public static String termFrequency       	 = 'Term';
-    public static String oneTimeFrequency        = 'One-time';  
+    public static String oneTimeFrequency        = 'One-Time';  
     
     public static String draftStatus           	 = 'Draft';
     public static String openStatus  	    	 = 'Open';
@@ -108,4 +108,9 @@ public class ConstantClass {
     public static String childFmlyRelationPicklist = 'Child';
     public static String siblingFmlyRelationPicklist = 'Sibling';
     public static String spouseFmlyRelationPicklist = 'Spouse';
+    
+    public static String ACHHolderType = 'ACH';
+    
+    public static String relationshipSpouse = 'Spouse';
+    public static String relationshipChild = 'Child';
 }

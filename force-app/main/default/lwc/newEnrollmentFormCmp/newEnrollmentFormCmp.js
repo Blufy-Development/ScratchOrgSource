@@ -17,17 +17,20 @@ export default class NewEnrollmentFormCmp extends LightningElement {
     @track enrolTotalAmt = 0.0;
     @track gstAmt = 0.0;
     @track grandTotal = 0.0;
+    @track paymentRefNumber = '';
+    @track paymentComments = '';    
 
     objectApiName = 'Account';
     fieldName = 'educato__Gender__c';
     stuClsWrapperList;
     globalDisList;
     gstAmount = 0;
-    paymentRefNumber;
     toggleSpinner = false;
     showCourseAndClassModal = false;
     showAddClassAndCourseModal = false;
-
+    paymentType = 'ACH';
+    showAchPayment = true;
+    achRelatedDetails = [{}];
     get relationshipoptions() {
         return [
             { label: 'Parent', value: 'Parent' },
@@ -35,6 +38,13 @@ export default class NewEnrollmentFormCmp extends LightningElement {
         ];
     }
 
+
+    get paymentOptions() {
+        return [
+            { label: 'ACH', value: 'ACH' },
+            { label: 'Offline', value: 'offline' }
+        ];
+    }
     @wire(getGender, {
         "ObjectApi_name": '$objectApiName',
         "Field_name": '$fieldName'
@@ -179,17 +189,23 @@ export default class NewEnrollmentFormCmp extends LightningElement {
         console.log('enrol Total Amount', this.enrolTotalAmt)
         console.log('gst Amount', this.gstAmt);
         console.log('grand total', this.grandTotal)
-        console.log('Student Details-->', this.studetnDetailsArr)
+        console.log('Student Details-->', this.studetnDetailsArr);        
     }
 
     saveEnrolments(event) {
+        //console.log(this.validateForm());
         if (this.validateForm() == true) {
             console.log('this.contactDetail', this.contactDetail);
             doSaveEnrollmentApex({
                 "studentDetails": JSON.stringify(this.studetnDetailsArr),
                 "parentDetail": JSON.stringify(this.contactDetail),
                 "secondaryDetail": JSON.stringify(this.secondaryContactDetail),
-                "btnLabel" : event.target.label
+                "btnLabel": event.target.label,
+                "grandTotal": this.grandTotal,
+                "paymentRefNumber": this.paymentRefNumber,
+                "paymentComments": this.paymentComments,
+                "showAchPayment": this.showAchPayment,
+                "achRelatedInfo": JSON.stringify(this.achRelatedDetails)
             }).then(res => {
                 console.log('res-->', res)
             }).catch(error => {
@@ -209,6 +225,7 @@ export default class NewEnrollmentFormCmp extends LightningElement {
         console.log('json', bankData);
         if (allValid && bankData.length > 0) {
             console.log('all valid');
+            this.achRelatedDetails = bankData;
             return true;
         }
         this.showNotification('Error', 'Please fill the details', 'error');
@@ -228,5 +245,12 @@ export default class NewEnrollmentFormCmp extends LightningElement {
         });
         this.dispatchEvent(evt);
     }
-
+    handlePaymentChange(event) {
+        this.paymentType = event.detail.value;
+        if (this.paymentType == 'ACH') {
+            this.showAchPayment = true;
+        } else {
+            this.showAchPayment = false;
+        }
+    }
 }

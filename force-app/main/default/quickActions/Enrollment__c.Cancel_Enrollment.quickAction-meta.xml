@@ -2,7 +2,7 @@
 <QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
     <height>550</height>
     <label>Cancel Enrollment</label>
-    <lightningComponent>EnrollmentCancellation</lightningComponent>
+    <lightningComponent>cancelEnrollmentComponent</lightningComponent>
     <optionsCreateFeedItem>false</optionsCreateFeedItem>
     <type>LightningComponent</type>
     <width>-100</width>

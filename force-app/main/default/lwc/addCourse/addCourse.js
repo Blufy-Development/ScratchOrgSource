@@ -7,6 +7,7 @@ import defaultCurrency from '@salesforce/label/c.Default_Currency';
 export default class AddCourse extends LightningElement {
     @api index;
     @api mode = 'new';
+    @api previousData;
     @track classData = [];
     @track feesData = [];
     @track primaryFeesData = [];
@@ -20,6 +21,7 @@ export default class AddCourse extends LightningElement {
     @track locationName = '';
     @track courseName = '';
     @track enrollmentSrtDt = new Date().toISOString();
+    @track comment = '';
     showAnotherFees = false;
     showSecondayFees = false;
     showDepositFees = false;
@@ -32,8 +34,18 @@ export default class AddCourse extends LightningElement {
     iconName = 'utility:jump_to_right';
     showBackButton = false;
     feesId = '';
+    isChanged = false;
     label = {
         defaultCurrency
+    }
+
+    connectedCallback() {
+        if (this.mode == 'edit') {
+            this.courseId = this.previousData.classDetails[0].classDetail.courseId;
+            console.log(this.previousData);
+            this.fetchClassDetailsFromApex();
+
+        }
     }
 
     fetchClassDetailsFromApex() {
@@ -48,6 +60,66 @@ export default class AddCourse extends LightningElement {
             this.locationName = this.classData.classWrapperList[0].location;
             this.courseName = this.classData.classWrapperList[0].course;
             console.log('classWrapperList', this.classData);
+            // let classIndex;
+            if (this.mode == 'edit' && this.previousData) {
+                console.log('inside');
+                let clasSessionObj;
+                this.previousData.classDetails.forEach((classEle, index) => {
+                    clasSessionObj = this.classData.classWrapperList.find(disEle => disEle.clsId == classEle.classDetail.classId);
+                    console.log('clasSessionObj', console.log(clasSessionObj));
+                    if (clasSessionObj) {
+                        this.index = index;
+                        this.comment = classEle.comments;
+                        this.enrollmentSrtDt = classEle.enrollmentStartDate;
+                        clasSessionObj.dayOfWeekClsList.forEach(dayObj => {
+                            if (classEle.classDetail.dayOfWeek == dayObj.nameOfDay) {
+                                console.log(dayObj.nameOfDay);
+                                dayObj.classSessionWrapperList.forEach(clsObj => {
+                                    if (clsObj.id == classEle.classDetail.classSessionId) {
+                                        clsObj.selected = true;
+                                        this.selectedClassSessionId = classEle.classDetail.classSessionId;
+                                        this.selectedClassSessionData = {
+                                            classId: classEle.classDetail.classId,
+                                            locationId: classEle.classDetail.locationId,
+                                            teacherId: classEle.classDetail.teacherId,
+                                            teacherName: classEle.classDetail.teacherName,
+                                            className: classEle.classDetail.className,
+                                            courseName: classEle.classDetail.courseName,
+                                            dayOfWeek: classEle.classDetail.dayOfWeek,
+                                            startTime: classEle.classDetail.startTime,
+                                            endTime: classEle.classDetail.endTime,
+                                            clsFrequency: classEle.classDetail.clsFrequency,
+                                            clsType: classEle.classDetail.clsType,
+                                            courseId: this.courseId
+                                        };
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                console.log('clasSessionObj', clasSessionObj);
+                //     if (ele.clsId == this.previousData.classDetails[0].classDetail.classId) {
+                //         console.log(index);
+                //         // classIndex = index;
+                //         let classObj = ele;
+                //         if (classObj) {
+                //             console.log(classObj.dayOfWeekClsList);
+                //             classObj.dayOfWeekClsList.forEach(dayObj => {
+                //                 if (this.previousData.classDetails[0].classDetail.dayOfWeek == dayObj.nameOfDay) {
+                //                     console.log(dayObj);
+                //                     dayObj.classSessionWrapperList.forEach(clsObj => {
+                //                         if (clsObj.id == this.previousData.classDetails[0].classDetail.classSessionId) {
+                //                             console.log(clsObj);
+                //                             clsObj.selected = true;
+                //                         }
+                //                     })
+                //                 }
+                //             })
+                //         }
+                //     }
+                // }
+            }
         }).catch(error => {
             this.showSpinner = false;
             console.log('error while getting data', error);
@@ -70,6 +142,38 @@ export default class AddCourse extends LightningElement {
             this.feesData = JSON.parse(JSON.stringify(result));
             if (this.feesData.length > 0) {
                 this.feesData.forEach(ele => {
+                    //for edit functionality when a user reopen modal 
+                    if (this.mode == 'edit' && this.isChanged == false) {
+                        console.log('not changed');
+                        this.previousData.classDetails.forEach((classEle) => {
+                            classEle.classDetail.tuitionFeeList.forEach(tutEle => {
+                                if (tutEle.parentFeeId == ele.parentFeeId) {
+                                    ele.selected = true;
+                                    this.anotherFeesData = ele;
+                                    if (classEle.classDetail.secondaryFeeList) {
+                                        classEle.classDetail.secondaryFeeList.forEach(secondayEle => {
+                                            let secFeesObj = ele.childFeeWrapper.find(res => res.feeId == secondayEle.feeId);
+                                            console.log('secFeesObj,', secFeesObj);
+                                            if (secFeesObj) {
+                                                secFeesObj.selected = true;
+                                                this.secondayFeesData.push(secFeesObj);
+                                                this.showSecondayFees = true;
+                                                this.showAnotherFees = true;
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            if (classEle.classDetail.depositfeelist) {
+                                classEle.classDetail.depositfeelist.forEach(depoEle => {
+                                    if (depoEle.parentFeeId == ele.parentFeeId) {
+                                        ele.selected = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    //end
                     if (ele.parentFeeType == 'Tuition Fee') {
                         this.primaryFeesData.push(ele);
                     } else if (ele.parentFeeType == 'Deposit') {
@@ -215,6 +319,11 @@ export default class AddCourse extends LightningElement {
             });
             event.currentTarget.checked = true;
             if (this.selectedClassSessionId != event.currentTarget.dataset.id) {
+                if (this.mode == 'edit') {
+                    this.isChanged = true;
+                    this.enrollmentSrtDt = new Date().toISOString();;
+                    this.comment = '';
+                }
                 this.selectedClassSessionId = event.currentTarget.dataset.id;
             }
             this.selectedClassSessionData = {
@@ -226,7 +335,10 @@ export default class AddCourse extends LightningElement {
                 courseName: event.currentTarget.dataset.course,
                 dayOfWeek: event.currentTarget.dataset.day,
                 startTime: event.currentTarget.dataset.srttime,
-                endTime: event.currentTarget.dataset.endtime
+                endTime: event.currentTarget.dataset.endtime,
+                clsFrequency: event.currentTarget.dataset.clsfrequency,
+                clsType: event.currentTarget.dataset.clstype,
+                courseId: this.courseId
             };
         } else {
             this.selectedClassSessionId = '';
@@ -342,7 +454,7 @@ export default class AddCourse extends LightningElement {
 
     toggleSection = (evt) => {
         let { name } = evt.currentTarget;
-        let { index } = evt.currentTarget.dataset;
+        //let { index } = evt.currentTarget.dataset;
         this.template.querySelectorAll('.collapse-class-session').forEach(ele => {
             ele.classList.add('slds-hide');
             ele.classList.remove('slds-show');
@@ -359,7 +471,7 @@ export default class AddCourse extends LightningElement {
             evt.currentTarget.parentNode.parentNode.nextSibling.classList.add('slds-show');
         }
         console.log(name);
-        console.log(index);
+        //console.log(index);
     }
 
     handleCourseSelect(event) {

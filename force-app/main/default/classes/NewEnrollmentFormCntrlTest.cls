@@ -78,8 +78,8 @@ public class NewEnrollmentFormCntrlTest {
         clsWrp.fees = 400;
         Test.startTest();
         
-        NewEnrollmentFormCntrl.fetchCourses();
-        NewEnrollmentFormCntrl.fetchTermAndCondition();
+        //NewEnrollmentFormCntrl.fetchCourses();
+       // NewEnrollmentFormCntrl.fetchTermAndCondition();
         NewEnrollmentFormCntrl.getchSlcdAccDetails(customerObj.Id, true);
         NewEnrollmentFormCntrl.CourseFeeWrapper curseFeeWrp = NewEnrollmentFormCntrl.fetchCrsClsDetails(courseObj.Id);
         curseFeeWrp.slcdClsWrapObj = clsWrp;
@@ -190,14 +190,14 @@ public class NewEnrollmentFormCntrlTest {
         clsWrp.fees = 400;
         Test.startTest();
         
-        NewEnrollmentFormCntrl.fetchCourses();
+        //NewEnrollmentFormCntrl.fetchCourses();
         NewEnrollmentFormCntrl.getchSlcdAccDetails(customerObj.Id, true);
         NewEnrollmentFormCntrl.CourseFeeWrapper curseFeeWrp = NewEnrollmentFormCntrl.fetchCrsClsDetails(courseObj.Id);
         curseFeeWrp.slcdClsWrapObj = clsWrp;
         curseFeeWrp.tutionFeeWrapperList = NewEnrollmentFormCntrl.fetchClsTermSessionAmount(JSON.serialize(clsWrp),JSON.serialize(curseFeeWrp.tutionFeeWrapperList));
         system.debug('curseFeeWrp-->'+curseFeeWrp.tutionFeeWrapperList);
         curseFeeWrp.tutionFeeWrapperList[0].isSelected = true;
-        NewEnrollmentFormCntrl.calculateProratedAmount(JSON.serialize(curseFeeWrp));
+       // NewEnrollmentFormCntrl.calculateProratedAmount(JSON.serialize(curseFeeWrp));
         
         NewEnrollmentFormCntrl.CustomerWrapper custWrp = new NewEnrollmentFormCntrl.CustomerWrapper();
         custWrp.studentDetails = studentObj;
@@ -205,7 +205,7 @@ public class NewEnrollmentFormCntrlTest {
         custWrp.slctdClsDetails = new List<NewEnrollmentFormCntrl.CourseFeeWrapper>{curseFeeWrp};
         List<NewEnrollmentFormCntrl.CustomerWrapper> listTest = new List<NewEnrollmentFormCntrl.CustomerWrapper>{custWrp};
         NewEnrollmentFormCntrl.doSaveApex(JSON.serialize(customerObj),JSON.serialize(customerObj),JSON.serialize(listTest),JSON.serialize(curseFeeWrp.disWrapperList),500,'1','Credit Card','Confirm','Test');
-        NewEnrollmentFormCntrl.addStudents(listTest);
+        //NewEnrollmentFormCntrl.addStudents(listTest);
         NewEnrollmentFormCntrl.fetchCourseDiscount(courseObj.Id);
         
         NewEnrollmentFormCntrl.blankInitializeCstmrWrpr();

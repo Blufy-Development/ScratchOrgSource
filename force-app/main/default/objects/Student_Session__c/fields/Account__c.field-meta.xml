@@ -6,16 +6,10 @@
     <label>Account</label>
     <lookupFilter>
         <active>true</active>
-        <booleanFilter>1 OR 2</booleanFilter>
         <filterItems>
             <field>Account.RecordType.DeveloperName</field>
             <operation>equals</operation>
-            <value>Parent</value>
-        </filterItems>
-        <filterItems>
-            <field>Account.RecordType.DeveloperName</field>
-            <operation>equals</operation>
-            <value>Business_Account</value>
+            <value>Student</value>
         </filterItems>
         <isOptional>false</isOptional>
     </lookupFilter>

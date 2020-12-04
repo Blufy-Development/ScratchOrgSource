@@ -335,21 +335,44 @@
                                                             </div>
 
                                                             <div class="slds-col slds-text-align_right">
-
-                                                                <lightning-input type="checkbox"
-                                                                    class="class-session-chkbx slds-m-top_small"
-                                                                    variant="label-hidden" data-id={classSessionItem.id}
-                                                                    data-clsid={clsItem.clsId}
-                                                                    data-locationid={clsItem.locationId}
-                                                                    data-teacherid={classSessionItem.teacherId}
-                                                                    data-teachername={classSessionItem.teacherName}
-                                                                    data-course={clsItem.course}
-                                                                    data-class={clsItem.clsName}
-                                                                    data-day={classSessionItem.dayOfWeek}
-                                                                    data-srttime={classSessionItem.startTime}
-                                                                    data-endtime={classSessionItem.endTime}
-                                                                    onchange={hanldeSessionChkxBox}>
-                                                                </lightning-input>
+                                                                <template if:true={classSessionItem.selected}>
+                                                                    <lightning-input type="checkbox" checked
+                                                                        class="class-session-chkbx slds-m-top_small"
+                                                                        variant="label-hidden"
+                                                                        data-id={classSessionItem.id}
+                                                                        data-clsid={clsItem.clsId}
+                                                                        data-locationid={clsItem.locationId}
+                                                                        data-teacherid={classSessionItem.teacherId}
+                                                                        data-teachername={classSessionItem.teacherName}
+                                                                        data-course={clsItem.course}
+                                                                        data-class={clsItem.clsName}
+                                                                        data-day={classSessionItem.dayOfWeek}
+                                                                        data-srttime={classSessionItem.startTime}
+                                                                        data-endtime={classSessionItem.endTime}
+                                                                        data-clsfrequency={clsItem.clsFrequency}
+                                                                        data-clstype={clsItem.clsType}
+                                                                        onchange={hanldeSessionChkxBox}>
+                                                                    </lightning-input>
+                                                                </template>
+                                                                <template if:false={classSessionItem.selected}>
+                                                                    <lightning-input type="checkbox"
+                                                                        class="class-session-chkbx slds-m-top_small"
+                                                                        variant="label-hidden"
+                                                                        data-id={classSessionItem.id}
+                                                                        data-clsid={clsItem.clsId}
+                                                                        data-locationid={clsItem.locationId}
+                                                                        data-teacherid={classSessionItem.teacherId}
+                                                                        data-teachername={classSessionItem.teacherName}
+                                                                        data-course={clsItem.course}
+                                                                        data-class={clsItem.clsName}
+                                                                        data-day={classSessionItem.dayOfWeek}
+                                                                        data-srttime={classSessionItem.startTime}
+                                                                        data-endtime={classSessionItem.endTime}
+                                                                        data-clsfrequency={clsItem.clsFrequency}
+                                                                        data-clstype={clsItem.clsType}
+                                                                        onchange={hanldeSessionChkxBox}>
+                                                                    </lightning-input>
+                                                                </template>
                                                             </div>
                                                         </div>
                                                     </template>
@@ -504,12 +527,20 @@
                                         </div>
                                         <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
                                             <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-
                                             </p>
-                                            <lightning-input type="radio" class="primary-fees slds-m-top_medium"
-                                                variant="label-hidden" name="fees" data-id={feesItem.parentFeeId}
-                                                onchange={handleFeesSelectChkbx}>
-                                            </lightning-input>
+                                            <template if:true={feesItem.selected}>
+                                                <lightning-input type="radio" class="primary-fees slds-m-top_medium"
+                                                    variant="label-hidden" checked name="fees"
+                                                    data-id={feesItem.parentFeeId} onchange={handleFeesSelectChkbx}>
+                                                </lightning-input>
+                                            </template>
+                                            <template if:false={feesItem.selected}>
+                                                <lightning-input type="radio" class="primary-fees slds-m-top_medium"
+                                                    variant="label-hidden" name="fees" data-id={feesItem.parentFeeId}
+                                                    onchange={handleFeesSelectChkbx}>
+                                                </lightning-input>
+                                            </template>
+
                                         </div>
                                     </div>
                                 </li>
@@ -1025,10 +1056,19 @@
                                                     </lightning-input>
                                                 </template>
                                                 <template if:false={secondItem.required}>
-                                                    <lightning-input type="checkbox"
-                                                        class="secondary-fees slds-m-top_medium" variant="label-hidden"
-                                                        label="" data-id={secondItem.feeId}>
-                                                    </lightning-input>
+                                                    <template if:true={secondItem.selected}>
+                                                        <lightning-input type="checkbox"
+                                                            class="secondary-fees slds-m-top_medium"
+                                                            variant="label-hidden" label="" data-id={secondItem.feeId}
+                                                            checked></lightning-input>
+                                                    </template>
+                                                    <template if:false={secondItem.selected}>
+                                                        <lightning-input type="checkbox"
+                                                            class="secondary-fees slds-m-top_medium"
+                                                            variant="label-hidden" label="" data-id={secondItem.feeId}>
+                                                        </lightning-input>
+                                                    </template>
+
                                                 </template>
                                             </div>
                                         </div>
@@ -1093,9 +1133,19 @@
                                                 </lightning-input>
                                             </template>
                                             <template if:false={depositItem.required}>
-                                                <lightning-input type="checkbox" class="deposit-fees slds-m-top_medium"
-                                                    variant="label-hidden" label="" data-id={depositItem.parentFeeId}>
-                                                </lightning-input>
+                                                <template if:true={depositItem.selected}>
+                                                    <lightning-input type="checkbox"
+                                                        class="deposit-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={depositItem.parentFeeId} checked>
+                                                    </lightning-input>
+                                                </template>
+                                                <template if:false={depositItem.selected}>
+                                                    <lightning-input type="checkbox"
+                                                        class="deposit-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={depositItem.parentFeeId}>
+                                                    </lightning-input>
+                                                </template>
+
                                             </template>
 
                                         </div>
@@ -1383,7 +1433,8 @@
                                 </div>
                                 <div class="slds-media__body">
                                     <p class="slds-text-body_small">Notes:</p>
-                                    <lightning-textarea name="notes" label="" variant="label-hidden" class="notes-cls">
+                                    <lightning-textarea name="notes" value={comment} label="" variant="label-hidden"
+                                        class="notes-cls">
                                     </lightning-textarea>
                                 </div>
                             </div>

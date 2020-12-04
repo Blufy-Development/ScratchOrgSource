@@ -164,7 +164,8 @@
             <div class="section-enrol slds-grid  slds-grid_vertical-align-end slds-p-bottom_small slds-p-horizontal_large"
                 style="min-height:170px;">
                 <div class="slds-col slds-size_1-of-1">
-                    <c-enrollment-summary studetn-details-arr={studetnDetailsArr} enrol-total-amt={enrolTotalAmt}>
+                    <c-enrollment-summary studetn-details-arr={studetnDetailsArr} enrol-total-amt={enrolTotalAmt}
+                        onsavestudentdetails={handleStudentDetails}>
                     </c-enrollment-summary>
                 </div>
             </div>
@@ -190,86 +191,94 @@
                 <div class="slds-grid slds-gutters">
                     <!--<div class="slds-col slds-size_6-of-12 slds-p-bottom_xx-small slds-p-right_large" style="border-right:1px dashed rgb(221, 219, 218);">-->
                     <div class="slds-col slds-size_6-of-12 slds-p-bottom_small slds-p-right_large">
-                        <c-stripe-a-c-h-verification></c-stripe-a-c-h-verification>
-                    </div>
-                    <div class="slds-col slds-size_6-of-12 slds-p-bottom_small">
-                        <!--<p class="slds-p-top_x-large"><strong></strong></p>
-                        <div class="slds-grid slds-gutters slds-p-top_medium">
-                            <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small">Payment Amount:</div>
-                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                <lightning:input type="number" name="inputb"  label="" variant="label-hidden"
-                        value={grandTotAmt} disabled="true" ></lightning:input> -->
-                        <!-- <lightning:formattedNumber value={grandTotAmt}  currencyCode={$Label.c.Default_Currency} currencyDisplayAs="symbol"/>-->
-                        <!--- <lightning-input type="number" value={grandTotAmt} name="pamentAmount" label=""
-                                    variant="label-hidden" required="true"></lightning-input>
+                        <lightning-combobox name="progress" label="Payment Type" value={paymentType}
+                            placeholder="Select Progress" options={paymentOptions} onchange={handlePaymentChange}>
+                        </lightning-combobox>
+                        <template if:true={showAchPayment}>
+                            <c-stripe-a-c-h-verification></c-stripe-a-c-h-verification>
+                        </template>
+                        <template if:false={showAchPayment}>
+                            <!--<p class="slds-p-top_x-large"><strong></strong></p>-->
+                            <div class="slds-grid slds-gutters slds-p-top_medium">
+                                <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small">Payment Amount:</div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
+                                    <!-- <lightning:input type="number" name="inputb"  label="" variant="label-hidden" 
+                                value={grandTotAmt} disabled="true" ></lightning:input> -->
+                                    <!-- <lightning:formattedNumber value={grandTotAmt}  currencyCode={$Label.c.Default_Currency} currencyDisplayAs="symbol"/>-->
+                                    <lightning-input type="number" value={grandTotal} name="pamentAmount" label=""
+                                        disabled="true" variant="label-hidden" required="true"></lightning-input>
+                                </div>
                             </div>
-                        </div>
-                        <div class="slds-grid slds-gutters">
-                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                <abbr class="slds-required">*</abbr>Payment Reference No:
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
+                                    <abbr class="slds-required">*</abbr>Payment Reference No:
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
+                                    <!-- <lightning:input name="inputb" aura:id="confirmPay" label="" variant="label-hidden"
+                                placeholder="Reference No" value={paymentRefNumber} required="true" ></lightning:input> -->
+                                    <lightning-input type="text" value={paymentRefNumber} name="inputb" label=""
+                                        variant="label-hidden" placeholder="Reference No" required="true">
+                                    </lightning-input>
+                                </div>
                             </div>
-                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                <lightning:input name="inputb" aura:id="confirmPay" label="" variant="label-hidden"
-                        placeholder="Reference No" value={paymentRefNumber} required="true" ></lightning:input>
-                                <lightning-input type="text" value={paymentRefNumber} name="inputb" label=""
-                                    variant="label-hidden" placeholder="Reference No" required="true"></lightning-input>
-                            </div>
-                        </div>
-                        <div class="slds-grid slds-gutters">
-                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                <abbr class="slds-required">*</abbr>Payment Mode:
-                            </div>
-                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                <lightning:input name="inputb" aura:id="" label="" variant = "label-hidden"  placeholder="Payment Mode" value="" required="true" />-->
-                        <!-- <lightning:select class="label-hidden" name="payMode" aura:id="confirmPay" label=""
-                        variant="label-hidden" value={payModeSlcdStr} required="true">
-                        <option value="">--None--</option>
-                        <aura:iteration items={payModeList} var="payMod"> 
-                            <option value={payMod}>{payMod}</option>
-                            </aura:iteration> 
-                    </lightning:select>
-                            </div>
+                            <!-- <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
+                                        <abbr class="slds-required">*</abbr>Payment Mode:
+                                    </div> -->
+                            <!-- <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"> -->
+                            <!-- <lightning:input name="inputb" aura:id="" label="" variant = "label-hidden"  placeholder="Payment Mode" value="" required="true" />-->
+                            <!-- <lightning:select class="label-hidden" name="payMode" aura:id="confirmPay" label=""
+                                variant="label-hidden" value={payModeSlcdStr} required="true">
+                                <option value="">--None--</option>
+                                <aura:iteration items={payModeList} var="payMod"> 
+                                    <option value={payMod}>{payMod}</option>
+                                    </aura:iteration> 
+                            </lightning:select> -->
+                            <!-- </div> -->
 
-                        </div>
+                            <!-- </div> -->
                             <div class="slds-grid slds-gutters">
                                 <div class="slds-col slds-size_1-of-2 slds-p-top_medium slds-p-bottom_xx-small">
                                     <abbr class="slds-required">*</abbr>Comments
                                 </div>
                                 <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
-                                    <lightning:textarea name="payComment" aura:id="payComment" label=""
-                            value={paymentComments} ></lightning:textarea>
+                                    <!-- <lightning:textarea name="payComment" aura:id="payComment" label=""
+                                    value={paymentComments} ></lightning:textarea> -->
                                     <lightning-textarea name="payComment" value={paymentComments} label=""
                                         variant="label-hidden"></lightning-textarea>
                                 </div>
                                 <div class="slds-size_1-of-1 slds slds-p-bottom_small">
-                                
+
                                 </div>
                             </div>
-                        
 
-                    
-                <div class="slds-col slds-size_6-of-12 slds-p-bottom_xx-small  slds-p-right_large">
-                    <p class="slds-p-bottom_small"><strong>Online Payment:</strong></p>
-                    
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Reference No:
-                    </div>
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
-                </div>
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Mode:
-                    </div>
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
-                </div>
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Amount:							</div>
-                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
-                </div>
-                <div class="slds-text-align_right slds-p-vertical_small">
-                    <lightning-button label="Pay Now &amp; Confirm"  icon-name="action:update" variant="success" class="icon-large text-white "/>
-                </div>-->
 
+
+                            <!--<div class="slds-col slds-size_6-of-12 slds-p-bottom_xx-small  slds-p-right_large">
+                            <p class="slds-p-bottom_small"><strong>Online Payment:</strong></p>
+                            
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Reference No:
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
+                        </div>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Mode:
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
+                        </div>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">Payment Amount:							</div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"><lightning:input name="inputb" label="" variant = "label-hidden"  placeholder="Referral Code" value="" /></div>
+                        </div>
+                        <div class="slds-text-align_right slds-p-vertical_small">
+                            <lightning-button label="Pay Now &amp; Confirm"  icon-name="action:update" variant="success" class="icon-large text-white "/>
+                        </div>-->
+
+
+                        </template>
                     </div>
+
                 </div>
 
                 <div class="slds-grid slds-gutters slds-p-top_large /*slds-grid_align-spread*/">

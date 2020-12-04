@@ -1,0 +1,19 @@
+.bg-lite{background-color:#fafafa;}
+.icon-large .slds-button__icon {
+    width: 30px;
+    height: 20px;
+  }
+  .text-white {
+    color: #fff;
+  }
+  .title {
+    background-color: #2f5597;
+    padding: 8px 1.5rem;
+    font-weight: bold;
+    color: #fff;
+  }
+  .border{border:1px solid #ccc;}
+  .slds-input[readonly]{font-weight:bold !important;}
+  .label-hidden label {
+    display: none;
+  }
