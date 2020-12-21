@@ -3,6 +3,18 @@
     <label>Default</label>
     <protected>false</protected>
     <values>
+        <field>GST_VAT_Applicable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>GST_VAT_Rate__c</field>
+        <value xsi:type="xsd:double">7.0</value>
+    </values>
+    <values>
+        <field>Invoice_Due_Days__c</field>
+        <value xsi:type="xsd:double">7.0</value>
+    </values>
+    <values>
         <field>Monthly_Invoice_Cycle__c</field>
         <value xsi:type="xsd:string">Next_Month</value>
     </values>
@@ -12,7 +24,7 @@
     </values>
     <values>
         <field>Terms_and_Conditions_Description__c</field>
-        <value xsi:type="xsd:string">In addition to, and without limiting any of Seller’s other representations and warranties, express or implied, Seller expressly represents and warrants to NYU that: (a) all Goods and/or Services conform and will continue to conform to the highest applicable industry standards and to any description, sample, specifications or other documentation related to the Goods and/or Services that is included in this Purchase Order or otherwise requested or approved by NYU, and that any Services will be provided in a diligent and highly professional manner by appropriately qualified and trained individuals; (b) the Goods and/or necessary...</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Terms_and_Conditions_Title__c</field>

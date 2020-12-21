@@ -1,8 +1,8 @@
 global with sharing class SessionActionController {
-    static Set<String> fieldsApiName;
-    static boolean isSessionAccessible = false;
-    static boolean isStudentSessionAccessible = false;
-    static boolean isHistoryAccessible = false;    
+    // static Set<String> fieldsApiName;
+    //static boolean isSessionAccessible = false;
+    // static boolean isStudentSessionAccessible = false;
+    //static boolean isHistoryAccessible = false;    
     
     /**
     Name        :   fetchSessionsDetail
@@ -13,18 +13,18 @@ global with sharing class SessionActionController {
     @RemoteAction
     global static List<Session__c> fetchSessionsDetail(String sessionId){ 
         if(FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Id','Name'}, false) && FieldPremissionCrudUtility.checkReadPermission('Class__c', new Set<String>{'Id','Name'}, false)){
-            fieldsApiName = new Set<String>{'Id', 'Duration_in_Minutes__c', 'Duration_Unit__c', 'Session_date__c', 'Start_Time__c', 'Notes__c', 'Type__c','Lesson__c', 'Module__c'};
-                isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-            if(isSessionAccessible){
-                String query = 'SELECT Name, Teacher__r.location__r.Name, Teacher__r.Name, Class__r.Name, Duration_in_Minutes__c, Duration_Unit__c, Session_date__c, Start_Time__c, Notes__c, Type__c, Lesson__c, Module__c, Class__r.Course__r.Name FROM Session__c ';
-                if(String.isNotBlank(sessionId)){
-                    query += 'WHERE Id =: sessionId ';
-                }                
-                List<Session__c> sessionList = Database.query(query);
-                if(sessionList.size() > 0){
-                    return sessionList;
-                }
-            }        
+            // fieldsApiName = new Set<String>{'Id', 'Duration_in_Minutes__c', 'Duration_Unit__c', 'Session_date__c', 'Start_Time__c', 'Notes__c', 'Type__c','Lesson__c', 'Module__c'};
+            //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+            //if(isSessionAccessible){
+            String query = 'SELECT Name, Teacher__r.location__r.Name, Teacher__r.Name, Class__r.Name, Duration_in_Minutes__c, Duration_Unit__c, Session_date__c, Start_Time__c, Notes__c, Type__c, Lesson__c, Module__c, Class__r.Course__r.Name FROM Session__c ';
+            if(String.isNotBlank(sessionId)){
+                query += 'WHERE Id =\''+string.escapeSingleQuotes(sessionId)+'\'';
+            }                
+            List<Session__c> sessionList = SessionService.getByStringQuery(query);//Database.query(query);
+            if(sessionList.size() > 0){
+                return sessionList;
+            }
+            //}        
         }    
         return null;
     }      
@@ -55,21 +55,28 @@ Description :   it's use for to get the detail from Student_Session__c based on 
 Developer   :   
 */
     @RemoteAction
-    global static List<Student_Session__c> getSessionStudent(string sessionId){
+    global static List<StudentSessionWrapper> getSessionStudent(string sessionId){
         List<Student_Session__c> studentList = new List<Student_Session__c>();
+        List<StudentSessionWrapper> studentSessionList = new List<StudentSessionWrapper>();
         if(String.isNotBlank(sessionId)){
-            fieldsApiName = new Set<String>{'Id', 'Status__c', 'Notes__c'};         
-                if(FieldPremissionCrudUtility.checkReadPermission('Session__c', new Set<String>{'Id','Name'}, false) &&  FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Id','Name'}, false) && FieldPremissionCrudUtility.checkReadPermission('Class__c', new Set<String>{'Id','Name'}, false)){
-                    isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, false);
-                    if(isStudentSessionAccessible){
-                        studentList = StudentSessionService.getBySessionId(new Set<Id>{sessionId});//[SELECT Session__c, Session__r.Teacher__r.Name, Account__r.Name, Session__r.Class__r.Name, Status__c, Notes__c, Session__r.Class__r.Course__r.Name, Enrollment__c  FROM Student_Session__c WHERE Session__c =: sessionId];
-                        if(studentList.size() > 0){
-                            return studentList;
-                        }
+            //fieldsApiName = new Set<String>{'Id', 'Status__c', 'Notes__c'};         
+            //if(FieldPremissionCrudUtility.checkReadPermission('Session__c', new Set<String>{'Id','Name'}, false) &&  FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Id','Name'}, false) && FieldPremissionCrudUtility.checkReadPermission('Class__c', new Set<String>{'Id','Name'}, false)){
+            //isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, false);
+            // if(isStudentSessionAccessible){
+            studentList = StudentSessionService.getBySessionId(new Set<Id>{sessionId});//[SELECT Session__c, Session__r.Teacher__r.Name, Account__r.Name, Session__r.Class__r.Name, Status__c, Notes__c, Session__r.Class__r.Course__r.Name, Enrollment__c  FROM Student_Session__c WHERE Session__c =: sessionId];
+            if(studentList.size() > 0){
+                for(Student_Session__c sessionObj : studentList){  
+                    String srtDate = '';
+                    if(sessionObj.Enrollment__r.Start_Date__c != null){
+                        srtDate = sessionObj.Enrollment__r.Start_Date__c.format();
                     }
-                }        
+                    studentSessionList.add(new StudentSessionWrapper(sessionObj,srtDate));
+                }                          
+            }
+            //}
+            //}        
         }
-        return studentList;
+        return studentSessionList;
     }
     
     /**
@@ -98,8 +105,8 @@ Developer   :
                 studentAssessmentList.add(sObj);
             }
             // List<String> grdList = UtilityClass.getPickValues('Assessment__c', 'Score_Grade__c');
-            for(Student_Session__c stu: getSessionStudent(sessionId)){
-                StudentSessionAssModel stuSessAss = new StudentSessionAssModel(stu, false, studentAssessmentList); 
+            for(StudentSessionWrapper stu: getSessionStudent(sessionId)){
+                StudentSessionAssModel stuSessAss = new StudentSessionAssModel(stu.sessionObj, false, studentAssessmentList); 
                 studentSessAssList.add(stuSessAss);
             }
             System.debug('studentSessAssList@@'+studentSessAssList);
@@ -190,35 +197,35 @@ Developer   :
     @RemoteAction
     global static void changeStudentsStatus(String sessionStudentsId,String status, String sessionId){ 
         List<Student_Session__c> studentList = new List<Student_Session__c>();
-        fieldsApiName = new Set<String>{'Status__c'};
-            isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, true);
-        system.debug('isStudentSessionAccessible-->'+isStudentSessionAccessible);
-        if(isStudentSessionAccessible){
-            if(String.isNotBlank(sessionStudentsId)){
-                List<String> ids = sessionStudentsId.split(',');
-                for(String strObj : ids){
-                    Student_Session__c sessionObj = new Student_Session__c(id = strObj);
-                    if(status == 'Completed'){
-                        sessionObj.Status__c = 'Attended';
-                    }else if(status == 'No-show'){
-                        sessionObj.Status__c = 'Not Attended';
-                    }  
-                    studentList.add(sessionObj);
-                }
-                if(studentList.size() > 0){
-                    try{
-                        update studentList;
-                        if(String.isNotBlank(sessionId) && status == 'Completed'){
-                            session__c sessObj = new session__c(id = sessionId);
-                            sessObj.Attendance_Update__c = true;
-                            update sessObj;
-                            
-                        }
-                    }catch(Exception ex){
-                        system.debug('Error -> '+ex.getMessage());                   
+        //fieldsApiName = new Set<String>{'Status__c'};
+        //isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, true);
+        //system.debug('isStudentSessionAccessible-->'+isStudentSessionAccessible);
+        //if(isStudentSessionAccessible){
+        if(String.isNotBlank(sessionStudentsId)){
+            List<String> ids = sessionStudentsId.split(',');
+            for(String strObj : ids){
+                Student_Session__c sessionObj = new Student_Session__c(id = strObj);
+                if(status == 'Completed'){
+                    sessionObj.Status__c = 'Attended';
+                }else if(status == 'No-show'){
+                    sessionObj.Status__c = 'Not Attended';
+                }  
+                studentList.add(sessionObj);
+            }
+            if(studentList.size() > 0){
+                try{
+                    StudentSessionService.updateStudentSessionRecords(studentList);//update studentList;
+                    if(String.isNotBlank(sessionId) && status == 'Completed'){
+                        session__c sessObj = new session__c(id = sessionId);
+                        sessObj.Attendance_Update__c = true;
+                        SessionService.updateSessionRecords(new List<Session__c>{sessObj});//update sessObj;
+                        
                     }
+                }catch(Exception ex){
+                    system.debug('Error -> '+ex.getMessage());                   
                 }
             }
+            //}
         }
     }
 
@@ -241,9 +248,9 @@ Developer   :
     */
     @RemoteAction
     global static void cancelStudentForSession(String sessionStudentsId){
-        fieldsApiName = new Set<String>{'Status__c'};
-            isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, true);
-        if(isStudentSessionAccessible){
+        //fieldsApiName = new Set<String>{'Status__c'};
+           // isStudentSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Student_Session__c', fieldsApiName, true);
+        //if(isStudentSessionAccessible){
             if(String.isNotBlank(sessionStudentsId)){
                 Student_Session__c sessionStuObj = new Student_Session__c(id = sessionStudentsId);            
                 sessionStuObj.status__c = ConstantClass.cancelledStatus;
@@ -254,7 +261,7 @@ Developer   :
                     system.debug('Error -> '+ex.getMessage());                   
                 }
             }
-        }
+        //}
     }
     
     /**
@@ -287,9 +294,9 @@ Developer   :
     global static List<SessionHistoryModal> getSessionHistoryRecords(String sessionId){
         
         List<SessionHistoryModal> sessionHistoryModalList = new List<SessionHistoryModal>();       
-        fieldsApiName = new Set<String>{'Id', 'ParentId',  'CreatedById', 'CreatedDate', 'Field', 'OldValue', 'NewValue'};
-            isHistoryAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__History', fieldsApiName, false); 
-        if(isHistoryAccessible){
+        //fieldsApiName = new Set<String>{'Id', 'ParentId',  'CreatedById', 'CreatedDate', 'Field', 'OldValue', 'NewValue'};
+           // isHistoryAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__History', fieldsApiName, false); 
+        //if(isHistoryAccessible){
             if(String.isNotBlank(sessionId)){
                 for(Session__History sessionHistoryObj : [SELECT Id, ParentId, CreatedBy.Name, CreatedById, CreatedDate, Field, OldValue, NewValue FROM Session__History WHERE ParentId =: sessionId ORDER BY CreatedDate desc]){
                     SessionHistoryModal sessionModalObj = new SessionHistoryModal();
@@ -297,7 +304,7 @@ Developer   :
                     sessionModalObj.historyBy = sessionHistoryObj.CreatedBy.Name;
                     sessionModalObj.createdDate = sessionHistoryObj.CreatedDate.format('EEE, MMM dd yyyy h:mm a');
                     Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-                    Schema.SObjectType leadSchema = schemaMap.get('Session__c');
+                    Schema.SObjectType leadSchema = schemaMap.get('educato__Session__c');
                     Map<String, Schema.SObjectField> fieldMap = leadSchema.getDescribe().fields.getMap();                                                                                   
                     description += 'Session ';
                     if(sessionHistoryObj.Field != 'created' && fieldMap.containsKey(sessionHistoryObj.Field)){
@@ -324,7 +331,7 @@ Developer   :
                     sessionModalObj.description = description;
                     sessionHistoryModalList.add(sessionModalObj);
                 }           
-            }
+            //}
         }
         return sessionHistoryModalList;
     }
@@ -385,4 +392,13 @@ Developer   :
         public String value;
         public String type;
     }
+    
+    global class StudentSessionWrapper{
+        public Student_Session__c sessionObj;
+        public String srtDate;
+        StudentSessionWrapper(Student_Session__c sessionObj, String srtDate){
+            this.sessionObj = sessionObj;
+        	this.srtDate = srtDate;
+        }
+    } 
 }

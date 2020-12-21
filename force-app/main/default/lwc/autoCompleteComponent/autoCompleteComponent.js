@@ -121,7 +121,7 @@ export default class AutoCompleteComponent extends LightningElement {
                 let event = new CustomEvent(
                     "valuechange",
                     {
-                        detail: { 'value': this.searchKey, index: this.index }
+                        detail: { 'value': this.searchKey,type: this.type, index: this.index }
                     }
                 );
                 this.dispatchEvent(event);

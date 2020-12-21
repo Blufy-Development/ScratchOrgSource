@@ -2,6 +2,7 @@
 	Name		 : ClassSessionService	
 	Description	 : This Service Class is used for DML operations.
 	CH1			 : Updated on 20th Nov 2020 by Mohit, this method will update the Class Session records.
+	CH2			 : Updated on 11th Dec 2020 by Mohit, this method will retrieve the Class Session records. 
 */
 public class ClassSessionService {
     //CH1
@@ -25,7 +26,40 @@ public class ClassSessionService {
         return null;
     }
     //CH1
-    
+
+	//CH2
+    public static List<Class_Session__c> getClassSessionsByIds(List<Class_Session__c> clsSessList){  
+        try{
+            if(clsSessList.size() > 0){
+                List<Class_Session__c> listClassSession = [SELECT Id, Name, Class__c, Class__r.Status__c, Class__r.Scheduled_Till__c, 
+                                                            Class__r.Location__c, Class__r.Course__c
+                                                            FROM Class_Session__c WHERE Id IN:clsSessList AND 
+                                                            Class__r.Status__c =:ConstantClass.openStatus AND 
+                                                            Class__r.Scheduled_Till__c != null];
+                return listClassSession;   
+            }            
+        }
+        catch (System.QueryException e){
+            System.debug(e.getMessage());
+        }
+        return null;    
+    }
+	
+    public static List<Class_Session__c> getClassSessionsById(set<String> clsSessList){  
+        try{
+            if(clsSessList.size() > 0){
+                List<Class_Session__c> listClassSession = [SELECT Id, Name, Class__c, Class__r.Status__c, Class__r.Scheduled_Till__c, 
+                                                            Class__r.Location__c, Class__r.Course__c, Class__r.Course__r.Name
+                                                            FROM Class_Session__c WHERE Id IN:clsSessList];
+                return listClassSession;   
+            }            
+        }
+        catch (System.QueryException e){
+            System.debug(e.getMessage());
+        }
+        return null;    
+    }
+
     public static List<Class_Session__c> getClassSessionsByClssId(Set<String> setClassId){  
         try{
             if(setClassId.size() > 0){
@@ -42,4 +76,18 @@ public class ClassSessionService {
         return null;    
     }
     
+    //Added on 10-12-20 get records by teacher Id
+    public static List<Class_Session__c> getByTeacherId(Set<String> teacherIds){
+        if(teacherIds.size() > 0){
+            try{
+                return [SELECT Id, Class__c, Class__r.Course__c 
+                        FROM Class_Session__c 
+                        WHERE Teacher__c IN: teacherIds
+                        WITH SECURITY_ENFORCED];             
+            }catch(System.QueryException e) {
+                System.debug(e.getMessage());
+            }             
+        }
+        return null;
+    }
 }

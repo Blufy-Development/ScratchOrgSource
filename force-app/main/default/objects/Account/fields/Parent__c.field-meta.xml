@@ -3,7 +3,7 @@
     <fullName>Parent__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
     <externalId>false</externalId>
-    <label>Parent</label>
+    <label>Account</label>
     <lookupFilter>
         <active>true</active>
         <booleanFilter>1 OR 2</booleanFilter>

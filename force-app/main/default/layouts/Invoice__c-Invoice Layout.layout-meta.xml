@@ -123,11 +123,15 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>Payment_Date__c</fields>
-        <fields>Cash_Mode__c</fields>
+        <fields>Payment_Mode__c</fields>
         <fields>Amount__c</fields>
         <fields>Status__c</fields>
         <fields>Type__c</fields>
         <relatedList>Payment__c.Invoice__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Payment_Log__c.Invoice__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

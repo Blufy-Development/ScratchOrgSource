@@ -105,8 +105,9 @@
                                                 <div class="slds-media__body">
                                                     <p class="slds-text-body_small">Class Fee</p>
                                                     <p class="slds-text-heading_x-small"><strong>
-                                                            ${clsDetail.classDetail.classFee}
-                                                        </strong>
+                                                            <lightning-formatted-number value={clsDetail.classDetail.classFee} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
+                                                            </strong>                                                
                                                     </p>
                                                 </div>
                                             </div>
@@ -125,7 +126,7 @@
                                                     <p class="slds-text-heading_x-small"><strong>
                                                             <lightning-formatted-date-time
                                                                 value={clsDetail.enrollmentStartDate} year="numeric"
-                                                                day="2-digit" month="2-digit">
+                                                                day="2-digit" month="2-digit" time-zone="UTC">
                                                             </lightning-formatted-date-time>
                                                         </strong></p>
                                                 </div>
@@ -228,8 +229,9 @@
                                                 </div>
                                                 <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
                                                     <p class="slds-text-body_small slds-text-align_right">
-                                                        <strong>
-                                                            {tuitionFee.parentProratedAmount}
+                                                        <strong>    
+                                                            <lightning-formatted-number value={tuitionFee.parentProratedAmount} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                                                             <!--${tf.feeProratedAmount}-->
                                                             <!-- <lightning:formattedNumber
                                                     value={(tf.feeProratedAmount > 0 ? tf.feeProratedAmount : tf.feeAmount)}                                                                                
@@ -256,8 +258,9 @@
                                                 </div>
                                                 <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
                                                     <p class="slds-text-body_small slds-text-align_right">
-                                                        <strong>
-                                                            {secondaryFee.feeAmount}
+                                                        <strong>                
+                                                            <lightning-formatted-number value={secondaryFee.feeAmount} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                                                             <!--${rf.feeAmount}-->
                                                             <!-- <lightning:formattedNumber
                                                     value={rf.feeAmount} 
@@ -285,8 +288,9 @@
                                                 </div>
                                                 <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
                                                     <p class="slds-text-body_small slds-text-align_right">
-                                                        <strong style="color:green ;">
-                                                            {depositfee.parentAmount}
+                                                        <strong style="color:green ;">                                                            
+                                                            <lightning-formatted-number value={depositfee.parentAmount} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                                                             <!-- <lightning:formattedNumber
                                                     value={dep.feeAmount}
                                                     
@@ -355,7 +359,8 @@
                                         <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
                                             <p class="slds-text-body_small slds-text-align_right">
                                                 <strong>
-                                                    ${clsDetail.classDetail.totalAmount}
+                                                    <lightning-formatted-number value={clsDetail.classDetail.totalAmount} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                                                     <!--${cls.totWithProratedFee}-->
                                                     <!-- <lightning:formattedNumber 
                                                 value={cls.totWithProratedFee}
@@ -388,7 +393,9 @@
                 </div>
                 <div class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
                     <p class="slds-text-body_small slds-text-align_right slds-text-heading_small">
-                        <strong>${enrolTotalAmt}
+                        <strong>
+                            <lightning-formatted-number value={enrolTotalAmt} format-style="currency"
+                                                            currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                             <!--${enrFeeTotAmt}-->
                             <!-- <lightning:formattedNumber value={enrFeeTotAmt} 
                     currencyCode={$Label.c.Default_Currency}

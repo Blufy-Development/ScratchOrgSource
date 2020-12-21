@@ -1,6 +1,7 @@
 import { LightningElement,wire,api,track } from 'lwc';
 import getEnrolmentDetail from '@salesforce/apex/CancelEnrolmentController.getEnrolmentDetail';
 import updateEnrolment from '@salesforce/apex/CancelEnrolmentController.cancelEnrolmentProcess';
+import enrolmentLastSessionDate from '@salesforce/apex/CancelEnrolmentController.getEnrolmentLastSessionDate';
 import ENROLMENT from '@salesforce/resourceUrl/enrolment';
 import {reduceErrors } from 'c/utilJs';
 
@@ -95,12 +96,29 @@ export default class CancelEnrollment extends LightningElement {
             var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
             console.log('Difference_In_Days',Difference_In_Days);
             this.noticePeriod=Difference_In_Days+' Days';
+            this.getLastSessiondate();
         }else if(typeSearch == 'lastSessiondate'){
             this.lastSessiondate = event.target.value;
         }else if(typeSearch == 'commment'){
             this.commment = event.target.value;
         }else if(typeSearch == 'noticePeriod'){
             this.noticePeriod = event.target.value;
+        }
+    }
+    getLastSessiondate(){
+        var enrollmentEndDate = this.template.querySelector('.EnrollmentEndDate');
+        var enrollmentEndDateValue = enrollmentEndDate.value;
+        if(enrollmentEndDateValue !== '' && enrollmentEndDateValue !== null && enrollmentEndDateValue !== undefined){
+            enrolmentLastSessionDate({ enrolmentid: this.enrolmentid,
+                enrolCanDate: this.enrolCanDate})
+            .then(result => {
+                this.lastSessiondate = result;
+                console.log('result'+result);
+            })
+            .catch(error => {
+                let readableError = (error) ? reduceErrors(error) : [];
+                console.log('readableError'+readableError);
+            });
         }
     }
 

@@ -9,7 +9,7 @@ global with sharing class FullCalendarDataService {
     static boolean isTeacherLeaveAccessible;
     
     private static String getSOQLQuery(){      
-        return 'SELECT Id, Name, Sequence__c, Class__c, Session_Date__c, Start_Time__c, End_Time__c, Teacher__c, Teacher__r.Name, Status__c, '+ system.label.Event_Color_Field +', '+system.label.Event_Color_Text+', Type__c, Room__c,Room__r.Name, Class__r.Name, Class__r.Capacity__c, Class__r.Enrollments__c,Class__r.Seats_Available__c  FROM Session__c WHERE  Status__c !=: status  AND ';
+       return 'SELECT Id, Name, Sequence__c, Class__c, Session_Date__c, Start_Time__c, End_Time__c, Teacher__c, Teacher__r.Name, Status__c, '+ system.label.Event_Color_Field +', '+system.label.Event_Color_Text+', Type__c, Class__r.Name, Class_Session__c,Class_Session__r.Enrollments__c, Class_Session__r.Seats_Left__c, Class_Session__r.Capacity__c, Class_Session__r.Room__c, Class_Session__r.Room__r.Name  FROM Session__c WHERE  Status__c != \''+string.escapeSingleQuotes(status)+ '\'   AND ';
     }
     
     /**
@@ -29,27 +29,29 @@ Developer   :
             if(isSessionAccessible){
                 String query = getSOQLQuery();                
                 if(String.isNotBlank(selectedLocation)){
-                    query += ' location__c =: selectedLocation AND ';
+                    query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
                 }
                 if(selectedTeacher == 'All_Teachers'){            
                     query += ' Session_Date__c = TODAY ';
                 }else{          
-                    query += ' teacher__c =: selectedTeacher AND Session_Date__c = TODAY ';   
+                    query += '  Class_Session__r.teacher__c = \''+string.escapeSingleQuotes(selectedTeacher)+ '\' AND Session_Date__c = TODAY ';   
                 }      
                 system.debug('selectedClass '+selectedClass);
                 if(String.isNotBlank(selectedClass) && selectedClass != 'All_Class'){
                     if(isPhSessionNeed == false){
-                        query += ' AND Class__c IN ('+ selectedClass+') ' ;
+                        query += ' AND Class_Session__r.Class__c IN ('+ selectedClass+') ' ;
                     }else if(isPhSessionNeed){
-                        query += 'AND ( Class__c IN ('+ selectedClass+') OR (Type__c =: sessionType) ) '  ;
+                        query += 'AND ( Class_Session__r.Class__c IN ('+ selectedClass+') OR (Type__c = \''+string.escapeSingleQuotes(sessionType)+ '\') ) '  ;
                     }                
+                }else if(!String.isNotBlank(selectedClass)){
+                     query += ' AND Class_Session__r.Class__c != null ' ;
                 }
                 
                 if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses' && String.isBlank(selectedClass)){
                     sessionList = new List<Session__c>();
                 }else{
                     system.debug('query '+query);
-                    sessionList = Database.query(query);
+                    sessionList = SessionService.getByStringQuery(query);//Database.query(query); 
                 }                  
             }
             else{
@@ -82,28 +84,30 @@ Developer   :
                 date selectDate = date.valueOf(selectedDate);   
                 
                 if(String.isNotBlank(selectedLocation)){
-                    query += ' location__c =: selectedLocation AND ';
+                    query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\'  AND ';
                 }     
                 
                 if(selectedTeacher == 'All_Teachers'){                
-                    query += ' Session_Date__c =: selectDate ';
+                    query += ' Session_Date__c ='+ DateTime.newInstance(selectDate, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') ;
                 }else{                
-                    query += ' teacher__c =: selectedTeacher AND Session_Date__c =: selectDate ';   
+                    query += '  Class_Session__r.teacher__c = \''+string.escapeSingleQuotes(selectedTeacher)+ '\' AND Session_Date__c ='+ DateTime.newInstance(selectDate, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') ;   
                 }
                 system.debug('selectedClass '+selectedClass);
                 if(String.isNotBlank(selectedClass) && selectedClass != 'All_Class'){
                     if(isPhSessionNeed == false){
-                        query += ' AND Class__c IN ('+ selectedClass+') ' ;
+                        query += ' AND Class_Session__r.Class__c IN ('+ selectedClass+') ' ;
                     }else if(isPhSessionNeed){
-                        query += 'AND ( Class__c IN ('+ selectedClass+') OR (Type__c =: sessionType) ) '  ;
+                        query += 'AND ( Class_Session__r.Class__c IN ('+ selectedClass+') OR (Type__c = \''+string.escapeSingleQuotes(sessionType)+ '\' ) ) '  ;
                     }  
+                }else if(!String.isNotBlank(selectedClass)){
+                     query += ' AND Class_Session__r.Class__c != null ' ;
                 }
                 
                 system.debug('query '+query);
                 if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses' && String.isBlank(selectedClass)){
                     sessionList = new List<Session__c>();
                 }else{
-                    sessionList = Database.query(query);
+                    sessionList = SessionService.getByStringQuery(query);//Database.query(query);
                 }      
                 system.debug('query '+query);
                 //sessionList = Database.query(query);
@@ -135,21 +139,23 @@ Developer   :
                 date endDt = date.valueOf(endDate);   
                 
                 if(String.isNotBlank(selectedLocation)){
-                    query += ' location__c =: selectedLocation AND ';
+                    query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
                 }                 
                 
                 if(selectedTeacher == 'All_Teachers'){               
-                    query += ' Session_Date__c >=: startDt AND  Session_Date__c <=: endDt ';
+                    query += ' Session_Date__c >='+ DateTime.newInstance(startDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') +' AND  Session_Date__c <='+ DateTime.newInstance(endDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') ;
                 }else{               
-                    query += ' teacher__c =: selectedTeacher AND Session_Date__c >=: startDt AND  Session_Date__c <=: endDt ';   
+                    query += '  Class_Session__r.teacher__c = \''+string.escapeSingleQuotes(selectedTeacher)+ '\' AND Session_Date__c >=' + DateTime.newInstance(startDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') +' AND  Session_Date__c <= '+ DateTime.newInstance(endDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd');   
                 }        
                 system.debug('selectedClass '+selectedClass);          
                 if(String.isNotBlank(selectedClass) && selectedClass != 'All_Class'){
                     if(isPhSessionNeed == false){
-                        query += ' AND Class__c IN ('+ selectedClass+') ' ;
+                        query += ' AND Class_Session__r.Class__c IN ('+ selectedClass+') ' ;
                     }else if(isPhSessionNeed){
-                        query += 'AND ( Class__c IN ('+ selectedClass+') OR (Type__c =: sessionType) ) '  ;
+                        query += 'AND ( Class_Session__r.Class__c IN ('+ selectedClass+') OR (Type__c = \''+string.escapeSingleQuotes(sessionType)+ '\') ) '  ;
                     }  
+                }else if(!String.isNotBlank(selectedClass)){
+                     query += ' AND Class_Session__r.Class__c != null ' ;
                 }//else if(isPhSessionNeed == false){
                 //     query += ' AND Class__c != null';
                 // }                       
@@ -157,7 +163,7 @@ Developer   :
                 if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses' && String.isBlank(selectedClass)){
                     sessionList = new List<Session__c>();
                 }else{
-                    sessionList = Database.query(query);
+                    sessionList = SessionService.getByStringQuery(query);//Database.query(query);
                 }      
                 //system.debug('query '+query);
                 //sessionList = Database.query(query);
@@ -288,11 +294,11 @@ Developer   :
             date selectDate = date.valueOf(selectedDate);   
             
             if(String.isNotBlank(selectedLocation)){
-                query += ' location__c =: selectedLocation AND ';
+                query += ' location__c =  \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
             }     
-            query += ' Room__c IN('+ selectedRoomValue +') AND Session_Date__c =: selectDate WITH SECURITY_ENFORCED';
+            query += ' Room__c IN('+ selectedRoomValue +') AND Session_Date__c = '+DateTime.newInstance(selectDate, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd');
             system.debug('query '+query);
-            sessionRoomList = Database.query(query);
+            sessionRoomList = SessionService.getByStringQuery(query);//Database.query(query);
             if(sessionRoomList.size() > 0){
                 sessionModelObj.locationId = selectedLocation;
                 //sessionModelObj.teacherId = teacherId;
@@ -318,11 +324,11 @@ Developer   :
             date endDt = date.valueOf(endDate);   
             
             if(String.isNotBlank(selectedLocation)){
-                query += ' location__c =: selectedLocation AND ';
+                query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
             }                 
-            query += ' Room__c IN('+ selectedRoomValue +')AND Session_Date__c >=: startDt AND  Session_Date__c <=: endDt WITH SECURITY_ENFORCED';                                                      
+            query += ' Room__c IN('+ selectedRoomValue +')AND Session_Date__c >='+ DateTime.newInstance(startDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd') +' AND  Session_Date__c <= '+ DateTime.newInstance(endDt, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd');                                                      
             system.debug('query '+query);
-            sessionRoomList = Database.query(query);
+            sessionRoomList = SessionService.getByStringQuery(query);//Database.query(query);
             if(sessionRoomList.size() > 0){
                 sessionModelObj.locationId = selectedLocation;
                 //sessionModelObj.teacherId = teacherId;
@@ -394,7 +400,10 @@ sessionResList[0].Resource__c = parentId;
                                               ,0);    
             sessionObj.Start_Time__c = startTime; 
             sessionObj.Session_Date__c = date.valueOf(currentDate);
-            try{
+            List<Session__c> sessionList = new List<Session__c>();
+            sessionList.add(sessionObj);
+            SessionService.updateSessionRecords(sessionList);
+            /*try{
                 fieldsApiName = new Set<String>{'Session_Date__c', 'Start_Time__c','Teacher__c'};
                     isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, true);
                 if(isSessionAccessible){
@@ -405,7 +414,7 @@ sessionResList[0].Resource__c = parentId;
                 // }
             }catch(Exception ex){
                 system.debug('Error--> '+ ex.getMessage() +' ---- '+ ex.getLineNumber());
-            }
+            }*/
         }
     }
     /**
@@ -437,7 +446,8 @@ Developer   :
                     sessionObj.Start_Time__c = startTime; 
                 }
                 
-                try{
+                SessionService.updateSessionRecords(sessionList);
+                /*try{
                     fieldsApiName = new Set<String>{'Start_Time__c'};
                         isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, true);
                     if(isSessionAccessible){
@@ -445,7 +455,7 @@ Developer   :
                     }
                 }catch(Exception ex){
                     system.debug('Error--> '+ ex.getMessage() +' ---- '+ ex.getLineNumber());
-                }
+                }*/
             }
         }
     }
@@ -555,8 +565,9 @@ Developer   :
                         }
                         
                     }  
-                    
-                    try{
+
+                    SessionService.updateSessionRecords(sessionList);
+                    /*try{
                         fieldsApiName = new Set<String>{'Start_Time__c','Teacher__c','Type__c'};
                             isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, true);
                         if(isSessionAccessible){
@@ -564,7 +575,7 @@ Developer   :
                         }
                     }catch(Exception ex){
                         system.debug('Error--> '+ ex.getMessage() +' ---- '+ ex.getLineNumber());
-                    }
+                    }*/
                 }
             }
         }
@@ -679,11 +690,12 @@ Developer   :
                 }
             }
             if(sessionList.size() > 0){
-                try{
+                SessionService.insertSessionRecords(sessionList);
+                /*try{
                     insert sessionList;
                 }catch(Exception ex){
                     system.debug('ex Error -> '+ ex.getMessage() +' - '+ ex.getLineNumber());
-                }
+                }*/
             }
         }
         

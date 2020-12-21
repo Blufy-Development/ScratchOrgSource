@@ -1,14 +1,8 @@
 <template>
     <template if:true={toggleSpinner}>
-        <div class="slds-spinner_container">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                <span class="slds-assistive-text">Loading</span>
-                <div class="slds-spinner__dot-a"></div>
-                <div class="slds-spinner__dot-b"></div>
-            </div>
-        </div>
+        <lightning-spinner class="exampleHolder" alternative-text="Loading" variant="brand" size="medium"></lightning-spinner>
     </template>
-    <div class="slds-grid bg slds-grid_align-center" style="margin-top:-13px;">
+    <div class="slds-grid bg slds-grid_align-center slds-gutters mainContainer" >
         <div class="slds-large-size_8-of-12 " style="background-color: #fff; border:1px solid #c6c8ca; ">
             <h2 class="slds-text-heading_small slds-m-bottom_small title">
                 <!-- <img src={$Resource.enrolment} style="height:23px;" alt="Enrollment" /> -->
@@ -19,19 +13,19 @@
                         <h2 class="slds-section_title slds-text-heading_small "><strong>Contact Details</strong></h2>
                     </div>
                     <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <div class="slds-float_right">
+                      <!--  <div class="slds-float_right">
                             <lightning-input type="toggle" name="toggleButton" label="Individual / Corporate Account"
                                 checked={isCorporateAccount} onchange={handleAccountChange}></lightning-input>
-                        </div>
+                        </div>-->
                     </div>
 
                     <template if:true={isCorporateAccount}>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <c-auto-complete-component iconname="standard:account" objectname="Account"
+                            <c-auto-complete iconname="standard:account" objectname="Account"
                                 type="PrimaryCorpContact" label="Name" searchfield="Name" onselectedrec={handleOnSelect}
                                 extendedwhereclause=" AND RecordType.DeveloperName = 'Business_Account' "
                                 onvaluechange={addNewName}>
-                            </c-auto-complete-component>
+                            </c-auto-complete>
                             <div id="requiredContactErrorMsg" class="slds-form-element__help"
                                 style="color:rgb(194, 59, 54);display:none;">Complete this field</div>
                         </div>
@@ -42,12 +36,12 @@
                             class="slds-p-horizontal_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small  slds-p-top_small">
                             Primary</h2>
                         <div class="slds-col slds-medium-size_1-of-2 ">
-                            <c-auto-complete-component iconname="standard:account" objectname="Account"
+                            <c-auto-complete iconname="standard:account" objectname="Account"
                                 type="PrimaryCustContact" label="First Name" searchfield="Name"
                                 onselectedrec={handleOnSelect}
                                 extendedwhereclause=" AND RecordType.DeveloperName = 'Parent' "
                                 onvaluechange={addNewName}>
-                            </c-auto-complete-component>
+                            </c-auto-complete>
                             <div class="slds-form-element__help" style="color:rgb(194, 59, 54);display:none;">Complete
                                 this field</div>
                         </div>
@@ -62,8 +56,8 @@
                                 required="true" name="PersonEmail" onchange={handleContactUserInput}></lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput req" label="Phone" value={contactDetail.Phone}
-                                required="true" name="Phone" onchange={handleContactUserInput}>
+                            <lightning-input class="myinput req" label="Phone" value={contactDetail.PersonMobilePhone}
+                                required="true" name="PersonMobilePhone" onchange={handleContactUserInput}>
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
@@ -83,11 +77,11 @@
                             class="slds-p-horizontal_small slds-section_title slds-medium-size_1-of-1 slds-text-heading_small  slds-p-top_medium">
                             Secondary</h2>
                         <div class="slds-col slds-medium-size_1-of-2">
-                            <c-auto-complete-component iconname="standard:account" objectname="Account"
+                            <c-auto-complete iconname="standard:account" objectname="Account"
                                 type="SecondaryCustContact" label="First Name" searchfield="Name"
-                                onselectedrec={handleOnSelect}
+                                onselectedrec={handleOnSelect} onvaluechange={addNewName}
                                 extendedwhereclause=" AND RecordType.DeveloperName = 'Parent' ">
-                            </c-auto-complete-component>
+                            </c-auto-complete>
                             <!--<div id="requiredSecondaryContactErrorMsg" class="slds-form-element__help" style="color-rgb(194, 59, 54);display-none;">Complete this field</div>-->
                         </div>
 
@@ -103,8 +97,8 @@
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput" label="Phone" value={secondaryContactDetail.Phone}
-                                name="Phone" onchange={handleSecondContactUserInput}>
+                            <lightning-input class="myinput" label="Phone" value={secondaryContactDetail.PersonMobilePhone}
+                                name="PersonMobilePhone" onchange={handleSecondContactUserInput}>
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
@@ -126,26 +120,29 @@
                             <strong>Address Details</strong>
                         </h2>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput req" label="Address 1" required="true" value={addressLine1}>
+                            <lightning-input class="myinput req" name="AddressLine1" label="Address 1" required="true" value={addressLine1}
+                            onchange={handleAddressLinesUserInput}>
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput req" label="Address 2" required="true" value={addressLine2}>
+                            <lightning-input class="myinput req" name="AddressLine2"  label="Address 2" required="true" value={addressLine2} 
+                            onchange={handleAddressLinesUserInput}>
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput req" label="City" required="true"
-                                value={contactDetail.PersonMailingCity}>
+                            <lightning-input class="myinput req" label="City" required="true" name="PersonMailingCity"
+                                value={contactDetail.PersonMailingCity} onchange={handleAddressUserInput}> 
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                            <lightning-input class="myinput req" label="Postal Code" required="true"
-                                value={contactDetail.PersonMailingPostalCode}>
+                            <lightning-input class="myinput req" label="Postal Code" required="true" name="PersonMailingPostalCode"
+                                value={contactDetail.PersonMailingPostalCode} onchange={handleAddressUserInput}>
                             </lightning-input>
                         </div>
                         <div class="slds-col slds-medium-size_1-of-1 slds-p-top_small">
                             <c-country-state-picklist selected-country={contactDetail.PersonMailingCountryCode}
-                                selected-state={contactDetail.PersonMailingStateCode}></c-country-state-picklist>
+                                selected-state={contactDetail.PersonMailingStateCode} onsendcountrystate={handleSelectedCountryState}
+                                ></c-country-state-picklist>
                         </div>
                     </template>
                 </div>
@@ -155,7 +152,7 @@
                 <!-- <img src={$Resource.stu} style="height: 23px;" alt="Students" /> -->
                 &nbsp;&nbsp;Student Details</h2>
             <div class="slds-p-vertical_small slds-p-horizontal_large" style="min-height: 170px;">
-                <c-student-details-cmp onsavestudentdetails={handleStudentDetails} onrowdeletion={handleStudentDetails}>
+                <c-student-details-cmp class-session-id={classSessionId} onsavestudentdetails={handleStudentDetails} onrowdeletion={handleStudentDetails}>
                 </c-student-details-cmp>
             </div>
 
@@ -169,14 +166,8 @@
                     </c-enrollment-summary>
                 </div>
             </div>
-
+            <c-additional-discount gst-amount={gstAmt} fee-amount={grandTotal}  onsavediscountdetails={handleSaveDiscountModal}></c-additional-discount>
             <!--=============================Additional Discount====================-->
-
-            <h2 class="slds-text-heading_small title">
-                <!-- <img src={$Resource.discount} style="height:23px;"
-    alt="pay" /> -->
-                &nbsp;&nbsp;Additional Discounts</h2>
-            <c-additional-discount gst-amount={gstAmt} fee-amount={grandTotal}></c-additional-discount>
 
             <!-- =======================Confrim and pay=========================== -->
             <h2 class="slds-text-heading_small title">
@@ -200,13 +191,14 @@
                         <template if:false={showAchPayment}>
                             <!--<p class="slds-p-top_x-large"><strong></strong></p>-->
                             <div class="slds-grid slds-gutters slds-p-top_medium">
-                                <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small">Payment Amount:</div>
+                                <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small">
+                                    <abbr class="slds-required">*</abbr>Payment Amount:</div>
                                 <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
                                     <!-- <lightning:input type="number" name="inputb"  label="" variant="label-hidden" 
                                 value={grandTotAmt} disabled="true" ></lightning:input> -->
                                     <!-- <lightning:formattedNumber value={grandTotAmt}  currencyCode={$Label.c.Default_Currency} currencyDisplayAs="symbol"/>-->
-                                    <lightning-input type="number" value={grandTotal} name="pamentAmount" label=""
-                                        disabled="true" variant="label-hidden" required="true"></lightning-input>
+                                    <lightning-input type="number" value={paymentAmount} name="PaymentAmount" label=""
+                                        disabled="true" variant="label-hidden" required="true" onchange={handlePaymentDetailsUserInput}></lightning-input>
                                 </div>
                             </div>
                             <div class="slds-grid slds-gutters">
@@ -216,27 +208,22 @@
                                 <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
                                     <!-- <lightning:input name="inputb" aura:id="confirmPay" label="" variant="label-hidden"
                                 placeholder="Reference No" value={paymentRefNumber} required="true" ></lightning:input> -->
-                                    <lightning-input type="text" value={paymentRefNumber} name="inputb" label=""
-                                        variant="label-hidden" placeholder="Reference No" required="true">
+                                    <lightning-input class="req" type="text" value={paymentRefNumber} name="PaymentRefNumber" label=""
+                                        variant="label-hidden" placeholder="Reference No" required="true" onchange={handlePaymentDetailsUserInput} >
                                     </lightning-input>
                                 </div>
                             </div>
-                            <!-- <div class="slds-grid slds-gutters">
+                           <div class="slds-grid slds-gutters">
                                     <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
                                         <abbr class="slds-required">*</abbr>Payment Mode:
-                                    </div> -->
-                            <!-- <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"> -->
-                            <!-- <lightning:input name="inputb" aura:id="" label="" variant = "label-hidden"  placeholder="Payment Mode" value="" required="true" />-->
-                            <!-- <lightning:select class="label-hidden" name="payMode" aura:id="confirmPay" label=""
-                                variant="label-hidden" value={payModeSlcdStr} required="true">
-                                <option value="">--None--</option>
-                                <aura:iteration items={payModeList} var="payMod"> 
-                                    <option value={payMod}>{payMod}</option>
-                                    </aura:iteration> 
-                            </lightning:select> -->
-                            <!-- </div> -->
-
-                            <!-- </div> -->
+                                    </div> 
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small"> 
+                            <lightning-combobox class="req" name="PaymentMode" variant="label-hidden" value={paymentMode}
+                                placeholder="-Select-" options={payModeList} required="true" onchange={handlePaymentDetailsUserInput}
+                                >
+                            </lightning-combobox>        
+                            </div> 
+                            </div>
                             <div class="slds-grid slds-gutters">
                                 <div class="slds-col slds-size_1-of-2 slds-p-top_medium slds-p-bottom_xx-small">
                                     <abbr class="slds-required">*</abbr>Comments
@@ -244,8 +231,8 @@
                                 <div class="slds-col slds-size_1-of-2 slds-p-bottom_xx-small">
                                     <!-- <lightning:textarea name="payComment" aura:id="payComment" label=""
                                     value={paymentComments} ></lightning:textarea> -->
-                                    <lightning-textarea name="payComment" value={paymentComments} label=""
-                                        variant="label-hidden"></lightning-textarea>
+                                    <lightning-textarea class="req" name="PaymentComments" value={paymentComments} label=""
+                                       required="true" variant="label-hidden" onchange={handlePaymentDetailsUserInput}></lightning-textarea>
                                 </div>
                                 <div class="slds-size_1-of-1 slds slds-p-bottom_small">
 

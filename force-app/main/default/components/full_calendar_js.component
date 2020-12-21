@@ -249,9 +249,9 @@
         var difference_In_Days;
         var currentUserProfileName = '{!$Profile.Name}';
         var nameSpace = '{!nameSpace}';    
-        var count = 0;
+        var count = 0;    	
         //classname.addEventListener('click', myFunction(), false);
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {        	
             console.log('beggining');
             console.log('nameSpace',nameSpace);
             getSearchCriteria();
@@ -287,7 +287,7 @@
                 defaultDate: selectedDate,
                 editable: true,
                 selectable: true,
-                eventLimit: true, // allow "more" link when too many events
+                eventLimit: false, // allow "more" link when too many events
                 customButtons: {
                     dataPicker: {
                         text: 'Date Picker!',
@@ -307,6 +307,13 @@
                         duration: { days: 2 },
                         buttonText: '2 days',
                     }
+                    // resourceTimeGridDay:{
+                    //     titleFormat: { year: 'numeric', month: 'long', day: '2-digit' }
+                    // },timeGridWeek:{
+                    //     titleFormat: { year: 'numeric', month: 'long', day: '2-digit' }
+                    // },dayGridMonth:{
+                    //     titleFormat: { year: 'numeric', month: 'long', day: '2-digit' }
+                    // }
                 },
                 businessHours: createWholeWeekTeacherWorkingHours(document.querySelector('.select-teacher').value),
                 height: "auto",
@@ -348,10 +355,9 @@
                     let localName = calendarInfo?.jsEvent?.toElement?.localName;
                     //console.log(localName);
                     if(localName == 'button'){
-                     console.log(localName);
-                    let sessionId = calendarInfo.event.id;                   
+                     console.log(localName);                                     
                     //window.location.href = '/lightning/cmp/educato__NewEnrollmentForm?educato__sessId='+sessionId;
-                    redirectEnrol(sessionId);
+                    redirectEnrol(calendarInfo.event.id,calendarInfo.event.extendedProps.classSessionId);
                     }else{
                     	showSessionDetailModal();
                     }
@@ -401,6 +407,9 @@
             });
             //console.log(calendarEl);
             calendar.render();
+                if( selectedViewType == 'resourceTimeGridDay')
+                document.querySelector('.fc-toolbar').children[1].children[0].innerText = convertDay(calendar.getDate().getDay())+', '+document.querySelector('.fc-toolbar').children[1].children[0].innerText;
+                
             if (selectedModeView == 'Teacher' && selectedViewType != 'dayGridMonth') {
                 document.querySelector('.fc-body').style.backgroundColor = '{!customMetaDataConfig.Business_Hours_Color__c}';
             }else{
@@ -445,20 +454,23 @@
             });
             $("#fullCalendarDate").datepicker("option", "showAnim", "slideDown");
         }
-
+        
         function showDatePicker() {
             $('#fullCalendarDate').datepicker("show");
         }
-    	function redirectEnrol(sessionId){
-        	window.open('/lightning/cmp/educato__NewEnrollmentForm?educato__sessId='+sessionId);
+    
+    	function redirectEnrol(sessionId, classSessionId){
+            //window.open('/lightning/cmp/educato__NewEnrollmentForm?educato__sessId='+sessionId);
+            window.open(window.location.origin+'/lightning/o/educato__Enrollment__c/new?count=1&educato__sessId='+sessionId+'&educato__classSessionId='+classSessionId);
         }
-         function customizeSessionEvent (evt){
+    
+        function customizeSessionEvent (evt){
             //console.log(evt);
             let sessionEventType = evt.event._def.extendedProps.type;
              console.log(sessionEventType);
             if(sessionEventType != 'Placeholder'){
                 let cls = '';
-                if(evt.event._def.extendedProps.enrollments == evt.event._def.extendedProps.capacity){
+                if(evt.event._def.extendedProps.enrollments >= evt.event._def.extendedProps.capacity){
                     cls = 'slds-p-around_none slds-button slds-button_destructive evt-enrolno';
                 }else if(evt.event._def.extendedProps.capacity > 0){
                     let capacity = evt.event._def.extendedProps.capacity; 
@@ -1016,8 +1028,8 @@
                         let startEndtime =  '('+timeConvert(msToTime(element[nameSpace+'Start_Time__c'],true))+'-'+timeConvert(msToTime(element[nameSpace+'End_Time__c'],true))+')';
                         let sessionTime =  '\n'+startEndtime;
                         let room = '';
-                        if(element[nameSpace+'Room__r'] != undefined){
-                        	room = '('+element[nameSpace+'Room__r']['Name']+')';
+                        if(element[nameSpace+'Class_Session__r']?.[nameSpace+'Room__r'] != undefined){
+                        	room = '('+element[nameSpace+'Class_Session__r']?.[nameSpace+'Room__r']['Name']+')';
                     	}
                         if (selectedModeView == 'Location') {
                             let locationId = document.querySelector('.select-location').value;
@@ -1053,11 +1065,12 @@
                                     'teacherName':teacherName,
                                     'teacher': element[nameSpace+'Teacher__c'],
                                     'type'  : element[nameSpace+'Type__c'],
-                                    'capacity': element[nameSpace+'Class__r']?.[nameSpace+'Capacity__c'] ?? 0,
-                                    'enrollments':element[nameSpace+'Class__r']?.[nameSpace+'Enrollments__c'] ?? 0,
-                                    'seatsAvailable':element[nameSpace+'Class__r']?.[nameSpace+'Seats_Available__c'] ?? 0 ,
+                                    'capacity': element[nameSpace+'Class_Session__r']?.[nameSpace+'Capacity__c'] ?? 0,
+                                    'enrollments':element[nameSpace+'Class_Session__r']?.[nameSpace+'Enrollments__c'] ?? 0,
+                                    'seatsAvailable':element[nameSpace+'Class_Session__r']?.[nameSpace+'Seats_Left__c'] ?? 0 ,
                                     'time' : startEndtime,
-                                    'className' : className
+                                    'className' : className,
+                                    'classSessionId' : element[nameSpace+'Class_Session__c']
                                 }
                             });
                         } else if (selectedModeView == 'Teacher') {
@@ -1082,7 +1095,7 @@
                                 //end: createDateFormat(sessionDate) + 'T' + msToTime(element.End_Time__c),
                                 start: sessionDate.toISOString().split('T')[0] + 'T' + msToTime(element[nameSpace+'Start_Time__c']),
                                 end: sessionDate.toISOString().split('T')[0] + 'T' + msToTime(element[nameSpace+'End_Time__c']),
-                                 title: className +'\n'+ teacherName +room+ sessionTime,
+                                title: className +'\n'+ teacherName +room+ sessionTime,
                                 color: element['{!$Label.Event_Color_Field}'],
                                 textColor: element['{!$Label.Event_Color_Text}'],
                                 editable: false,
@@ -1090,33 +1103,38 @@
                                 extendedProps: {
                                     'class': element[nameSpace+'Class__c'],
                                     'teacher': element[nameSpace+'Teacher__c'],
+                                    'teacherName': teacherName,
                                     'type'  : element[nameSpace+'Type__c'],
-                                    'capacity': element[nameSpace+'Class__r']?.[nameSpace+'Capacity__c'] ?? 0,
-                                    'enrollments':element[nameSpace+'Class__r']?.[nameSpace+'Enrollments__c'] ?? 0,
-                                    'seatsAvailable':element[nameSpace+'Class__r']?.[nameSpace+'Seats_Available__c'] ?? 0,
+                                    'capacity': element[nameSpace+'Class_Session__r']?.[nameSpace+'Capacity__c'] ?? 0,
+                                    'enrollments':element[nameSpace+'Class_Session__r']?.[nameSpace+'Enrollments__c'] ?? 0,
+                                    'seatsAvailable':element[nameSpace+'Class_Session__r']?.[nameSpace+'Seats_Left__c'] ?? 0,
                                     'time' : startEndtime,
-                                    'className' : className
+                                    'className' : className,
+                                    'classSessionId' : element[nameSpace+'Class_Session__c']
                                 }
                             });
-                        }else if(selectedModeView == 'Room'){
+                        }else if(selectedModeView == 'Room'){                           
                             let sessionDate = new Date(element[nameSpace+'Session_Date__c']);                            
-                            let  className = element[nameSpace+'Class__r']?.['Name'];                            
+                            let className = element[nameSpace+'Class__r']?.['Name'];     
+                            let teacherName = element[nameSpace+'Teacher__r']?.['Name'];                           
                             events.push({
                                 id: element.Id,
-                                resourceId: element[nameSpace+'Room__c'],
+                                resourceId: element[nameSpace+'Class_Session__r']?.[nameSpace+'Room__c'],
                                 start: sessionDate.toISOString().split('T')[0] + 'T' + msToTime(element[nameSpace+'Start_Time__c']),
                                 end: sessionDate.toISOString().split('T')[0] + 'T' + msToTime(element[nameSpace+'End_Time__c']),
-                                title: className+'\n'+element[nameSpace+'Teacher__r']['Name'] +' ('+element[nameSpace+'Room__r']['Name']+')'+ sessionTime,
+                                title: className+'\n'+element[nameSpace+'Teacher__r']['Name'] +' ('+element[nameSpace+'Class_Session__r']?.[nameSpace+'Room__r']['Name']+')'+ sessionTime,
                                 color: element['{!$Label.Event_Color_Field}'],
                                 extendedProps: {
                                     'class': element[nameSpace+'Class__c'],
                                     'teacher': element[nameSpace+'Teacher__c'],
+                                    'teacherName': teacherName,
                                     'type'  : element[nameSpace+'Type__c'],
-                                    'capacity': element[nameSpace+'Class__r']?.[nameSpace+'Capacity__c'] ?? 0,
-                                    'enrollments':element[nameSpace+'Class__r']?.[nameSpace+'Enrollments__c'] ?? 0,
-                                    'seatsAvailable':element[nameSpace+'Class__r']?.[nameSpace+'Seats_Available__c'] ?? 0,
+                                    'capacity': element[nameSpace+'Class_Session__r']?.[nameSpace+'Capacity__c'] ?? 0,
+                                    'enrollments':element[nameSpace+'Class_Session__r']?.[nameSpace+'Enrollments__c'] ?? 0,
+                                    'seatsAvailable':element[nameSpace+'Class_Session__r']?.[nameSpace+'Seats_Left__c'] ?? 0,
                                     'time' : startEndtime,
-                                    'className' : className
+                                    'className' : className,
+                                    'classSessionId' : element[nameSpace+'Class_Session__c']
                                 }
                             });
                         }

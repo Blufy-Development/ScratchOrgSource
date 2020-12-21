@@ -106,14 +106,14 @@ getClassData on  10-07-20  get the class data based on class set Ids
             try {
                 List<Class__c> clasList = [SELECT Id, Name, Enrollments__c,Start_Date__c, End_Date__c, Start_Time__c, End_Time__c,Location__c, 
                                            Location__r.Name,Teacher__c,Teacher__r.Name, Course__r.Name,Type__c, Frequency__c, Status__c, Capacity__c, 
-                                           Days_of_Week__c,Seats_Available__c,
+                                           Days_of_Week__c,Seats_Available__c,Mode__c,
                                            (SELECT Id, Name, Start_Date__c, End_Date__c,Sessions__c, Status__c 
                                             FROM  Class_Terms__r WHERE Status__c =:ConstantClass.ScheduledStatus AND 
                                             Allow_Enrollment__c = True AND  Start_Date__c != null AND  
                                             End_Date__c != null ORDER BY Sequence__c
                                            ),(SELECT Id, Enrollments__c, Type__c, Teacher__c,Teacher__r.name, 
                                                 Start_Time__c, End_Time__c,Seats_Left__c, 
-                                                Day_of_Week__c FROM Class_Sessions__r ORDER BY educato__Day_of_Week__c  ASC) FROM Class__c 
+                                                Day_of_Week__c FROM Class_Sessions__r ORDER BY educato__Day_of_Week__c  ASC, Start_Time__c ASC) FROM Class__c 
                                            WHERE Course__c =:courseId AND  Type__c != null AND Frequency__c != null 
                                            AND (Status__c =: ConstantClass.clsOpenStatus OR 
                                                 (Allow_Overbooking__c = True AND Status__c =: ConstantClass.clsClosedStatus))

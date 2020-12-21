@@ -15,7 +15,9 @@
             });
             toastEvent.fire();
             $A.get("e.force:closeQuickAction").fire();
+            location.reload();
         }else if(state =='Cancel'){
+            //$A.get('e.force:refreshView').fire();
             $A.get("e.force:closeQuickAction").fire();
         }
         else{
@@ -26,7 +28,9 @@
                 "type" : "error"
             });
             toastEvent.fire();
+            //$A.get('e.force:refreshView').fire();
             $A.get("e.force:closeQuickAction").fire();
+            location.reload();
         }
     }
 })

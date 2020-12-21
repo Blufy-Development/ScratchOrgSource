@@ -188,9 +188,9 @@ Developer   :
             teacherIds.add(selectedTeacher);
         }
         if(String.isNotBlank(selectedTeacher) && teacherIds.size() > 0){
-            for(Class__c classObj : ClassService.getByTeacherId(teacherIds)){//[SELECT id, Course__c FROM Class__c WHERE Teacher__c IN: teacherIds]
-                if(classObj.Course__c != null)
-                    courseId.add(classObj.Course__c);
+            for(Class_Session__c classObj : ClassSessionService.getByTeacherId(teacherIds)){
+                if(classObj.Class__r.Course__c != null)
+                    courseId.add(classObj.Class__r.Course__c);
             }
         }
         if(courseId.size() > 0){
@@ -222,33 +222,56 @@ Developer   :
     private void populateClasses(){
         classList  = new list<SelectOption>();
         classList.add(new SelectOption('All_Class', 'All Class'));
+        Set<String>teacherIds = new Set<String>();
+        String classIds = '';
         String query = 'SELECT Id, Course__c, Name, Teacher__c FROM Class__c WHERE ';
         //system.debug('selectedCourse  ->'+selectedCourse);
         if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses'){
             query += ' Course__c =\''+string.escapeSingleQuotes(selectedCourse)+'\' AND ';
         }
         if(String.isNotBlank(selectedTeacher) && selectedTeacher == 'All_Teachers' && teacherList.size() > 1){
-            query += 'Teacher__c IN (';
+            //query += 'Teacher__c IN (';
             for(SelectOption selectOpt : teacherList){
                 if(selectOpt.getValue() != 'All_Teachers')
-                    query += '\''+string.escapeSingleQuotes(selectOpt.getValue())+ '\',';
+                    teacherIds.add(selectOpt.getValue());
+                    //query += '\''+string.escapeSingleQuotes(selectOpt.getValue())+ '\',';
             }
-            query = query.removeEnd(',');
-            query += ') AND ';
+            //query = query.removeEnd(',');
+           // query += ') AND ';
         }else if(String.isNotBlank(selectedTeacher) && selectedTeacher != 'All_Teachers'){
-            query += ' Teacher__c =\''+string.escapeSingleQuotes(selectedTeacher)+'\' AND';
+            teacherIds.add(selectedTeacher);
+            //query += ' Teacher__c =\''+string.escapeSingleQuotes(selectedTeacher)+'\' AND';
         }
-        if(String.isNotBlank(selectedLocation)){
-            query += ' Location__c = \''+string.escapeSingleQuotes(selectedLocation)+'\'';
-        }else{
-            query = query.removeEnd(' AND');    
-        }    
-        //system.debug('selectedTeacher '+selectedTeacher);
-        //system.debug('selectedLocation '+selectedLocation);
-        system.debug(query);
-        for(Class__c classObj : ClassService.getByStringQuery(query)){//Database.query(query)
-            classList.add(new SelectOption(classObj.Id, classObj.Name));
-        }
+        
+		system.debug('teacherIds'+teacherIds);   
+        if(teacherIds.size() > 0){
+            for(Class_Session__c classObj : ClassSessionService.getByTeacherId(teacherIds)){
+                if(classObj.Class__c != null)
+                    // courseId.add(classObj.Class__c);
+                    classIds += '\''+classObj.Class__c+'\',';
+            }
+            
+            if(String.isNotBlank(classIds)){
+                query += 'id IN (';          
+                classIds = classIds.removeEnd(',');
+                query += classIds;
+                query += ') AND ';
+                
+            }
+            
+            if(String.isNotBlank(selectedLocation)){
+                query += ' Location__c = \''+string.escapeSingleQuotes(selectedLocation)+'\'';
+            }else{
+                query = query.removeEnd(' AND');    
+            }   
+            
+            //system.debug('selectedTeacher '+selectedTeacher);
+            //system.debug('selectedLocation '+selectedLocation);
+            system.debug(query);
+            for(Class__c classObj : ClassService.getByStringQuery(query)){//Database.query(query)
+                classList.add(new SelectOption(classObj.Id, classObj.Name));
+            }  
+        }      
     }
     
     /**

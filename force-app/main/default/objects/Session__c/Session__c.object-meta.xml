@@ -162,6 +162,7 @@
     </nameField>
     <pluralLabel>Sessions</pluralLabel>
     <searchLayouts>
+        <searchResultsAdditionalFields>Class_Session__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Session_Date__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Start_Time__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>End_Time__c</searchResultsAdditionalFields>

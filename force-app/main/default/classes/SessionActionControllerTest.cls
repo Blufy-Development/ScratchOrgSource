@@ -17,7 +17,7 @@ public class SessionActionControllerTest {
         List<Session__c> sessionNewList = SessionActionController.fetchSessionsDetail(sessionList[0].id);
         System.assertEquals(sessionNewList[0].Session_date__c, sessionList[0].Session_date__c);
     }
-    @isTest static void getSessionStudentTest(){
+  /*  @isTest static void getSessionStudentTest(){
         
         List<Course__c> courseList = [SELECT Name from Course__c];
         List<Course_Module__c> crsModList = [SELECT Name, Course__c from Course_Module__c where Course__c =: courseList[0].Id];
@@ -48,5 +48,5 @@ public class SessionActionControllerTest {
 		//cancelSession method        
         SessionActionController.cancelSession(sessionList[0].id);
         System.assertEquals(sessionList[0].Id, studentList[0].session__c);
-    }
+    }*/
 }

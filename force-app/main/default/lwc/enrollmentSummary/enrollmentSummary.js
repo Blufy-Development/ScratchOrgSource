@@ -1,5 +1,8 @@
 import { LightningElement, api, track } from 'lwc';
 import GSTRate from '@salesforce/label/c.GST_Rate';
+import LOCALE_CURRENCY from "@salesforce/i18n/currency";
+import getBlufyConfigDetailsApex from "@salesforce/apex/NewEnrollmentFormCntrl.getBlufyConfigDetails";
+
 export default class EnrollmentSummary extends LightningElement {
     @api studetnDetailsArr;
     @api enrolTotalAmt;
@@ -7,8 +10,30 @@ export default class EnrollmentSummary extends LightningElement {
     studentIndex;
     @track showEditClassForm = false;
     currentClassDetail;
+
+    GSTApplicableByBlufyConfig = false;
+    GSTRateByBlufyConfig = 0.0;
+
+    label = {
+        LOCALE_CURRENCY
+    }
+
     connectedCallback() {
         console.log('studetnDetailsArr', this.studetnDetailsArr);
+        getBlufyConfigDetailsApex()
+            .then((response) => {
+                console.log('response-->',response)
+                if(response != null){
+                    this.GSTApplicableByBlufyConfig = response.educato__GST_VAT_Applicable__c;
+                    if(response.educato__GST_VAT_Rate__c != null)
+                    this.GSTRateByBlufyConfig = response.educato__GST_VAT_Rate__c;
+                    console.log('gstblufyconfigApplicable-->'+this.GSTApplicableByBlufyConfig)
+                    console.log('gstblufyconfigRate-->'+this.GSTRateByBlufyConfig)
+                }
+            })
+            .catch((error) => {
+                console.log("error while getting records", error);
+            });
     }
     editClass(event) {
         let { classindex, studentindex } = event.currentTarget.dataset;
@@ -49,7 +74,7 @@ export default class EnrollmentSummary extends LightningElement {
             let listTuitionFee = classDetail.tuitionFeeList;
             for (let i = 0; i < listTuitionFee.length; i++) {
                 total += listTuitionFee[i].parentProratedAmount;
-                if (listTuitionFee[i].gstApplicable)
+                if (this.GSTApplicableByBlufyConfig && this.GSTRateByBlufyConfig > 0)
                     gstApplicableAmount += listTuitionFee[i].parentProratedAmount;
             }
         }
@@ -58,7 +83,7 @@ export default class EnrollmentSummary extends LightningElement {
             let listSecondaryFee = classDetail.secondaryFeeList;
             for (let i = 0; i < listSecondaryFee.length; i++) {
                 total += listSecondaryFee[i].feeAmount;
-                if (listSecondaryFee[i].isGSTApplicable)
+                if (this.GSTApplicableByBlufyConfig && this.GSTRateByBlufyConfig > 0)
                     gstApplicableAmount += listSecondaryFee[i].feeAmount;
             }
         }
@@ -67,13 +92,11 @@ export default class EnrollmentSummary extends LightningElement {
             let listDepositFee = classDetail.depositfeelist;
             for (let i = 0; i < listDepositFee.length; i++) {
                 total += listDepositFee[i].parentAmount;
-                if (listDepositFee[i].gstApplicable)
-                    gstApplicableAmount += listDepositFee[i].parentAmount;
             }
         }
         console.log('73');
 
-        let gstAmount = gstApplicableAmount * parseInt(GSTRate) / 100;
+        let gstAmount = gstApplicableAmount * this.GSTRateByBlufyConfig / 100;
         console.log('76');
         classDetail.gstAmount = gstAmount;
         classDetail.totalAmount = total;

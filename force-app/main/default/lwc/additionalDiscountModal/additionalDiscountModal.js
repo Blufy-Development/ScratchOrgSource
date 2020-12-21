@@ -1,31 +1,33 @@
 import { LightningElement, api, wire } from 'lwc';
-import fetchDiscount from '@salesforce/apex/NewEnrollmentFormCntrl.fetchAllDiscount';
-import defaultCurrency from '@salesforce/label/c.Default_Currency';
+import fetchDiscount from '@salesforce/apex/NewEnrollmentFormCntrl.fetchOtherDiscount';
+import LOCALE_CURRENCY from "@salesforce/i18n/currency";
 export default class AdditionalDiscountModal extends LightningElement {
-    @api preSelectedDiscount;    
+    @api preSelectedDiscount;
     @api courseId = '';
     discountData;
     label = {
-        defaultCurrency
+        LOCALE_CURRENCY
     }
     // globalDiscount;
     // courseDiscount;
     selectedDiscountData = [];
-    @wire(fetchDiscount, { courseId: '$courseId' })
+    @wire(fetchDiscount, {})
     wiredDiscount({ error, data }) {
         if (data) {
             console.log('data', data);
-            this.discountData = JSON.parse(JSON.stringify(data));
-            if (this.preSelectedDiscount) {
-                this.discountData.forEach(index => {
-                    let discountObj = this.preSelectedDiscount.find(ele => ele.disId == index.disId);
-                    if (discountObj) {
-                        index.isSelected = true;
-                        index.userId = discountObj.userId;
-                        index.amount = discountObj.amount;
-                    }
-                });
-                console.log('this.discountData', this.discountData);
+            if (data.length > 0) {
+                this.discountData = JSON.parse(JSON.stringify(data));
+                if (this.preSelectedDiscount) {
+                    this.discountData.forEach(index => {
+                        let discountObj = this.preSelectedDiscount.find(ele => ele.disId == index.disId);
+                        if (discountObj) {
+                            index.isSelected = true;
+                            index.userId = discountObj.userId;
+                            index.amount = discountObj.amount;
+                        }
+                    });
+                    console.log('this.discountData', this.discountData);
+                }
             }
             // this.globalDiscount = [];
             //this.courseDiscount = [];

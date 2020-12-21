@@ -17,14 +17,9 @@
                 <label>Transaction</label>
             </value>
             <value>
-                <fullName>Credit</fullName>
+                <fullName>Credit_Note</fullName>
                 <default>false</default>
-                <label>Credit</label>
-            </value>
-            <value>
-                <fullName>Refund</fullName>
-                <default>false</default>
-                <label>Refund</label>
+                <label>Credit Note</label>
             </value>
         </valueSetDefinition>
     </valueSet>

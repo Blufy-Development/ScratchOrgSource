@@ -1,123 +1,125 @@
 <template>
-    <div class="slds-grid slds-gutters bg slds-grid_align-center bg-hero"
-        style="background:rgb(176, 196, 223) url(https://blufy19-dev-ed--c.visualforce.com/resource/1606207772000/bghero) left top repeat-x; background-attachment:fixed;">
-        <div class="slds-large-size_12-of-12 " style="background-color: #fff; border:1px solid #c6c8ca; ">
-            <h2 class="slds-text-heading_small slds-m-bottom_small title">
-                <img src={enrolmentUrl} style="height:23px;" alt="Enrollment" />
-                &nbsp;&nbsp;Withdraw/Cancel</h2>
-            <div class="slds-p-bottom_medium slds-p-horizontal_large">
-                <div class="slds-grid slds-wrap slds-gutters">
-                    <!--start: If Resource by or other fields are balnk then we show error message-->
-                    <template if:true={isShowError}>
-                        <div class="slds-col slds-medium-size_2-of-2 slds-p-top_small">
-                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
-                                role="alert">
-                                <h2>{errorMessage}</h2>
+    <div style="margin: -10px;">
+        <div class="slds-grid slds-gutters bg slds-grid_align-center bg-hero"
+            style="background:rgb(176, 196, 223) url(https://blufy19-dev-ed--c.visualforce.com/resource/1606207772000/bghero) left top repeat-x; background-attachment:fixed;">
+            <div class="slds-large-size_12-of-12 " style="background-color: #fff; ">
+                <!--border:1px solid #c6c8ca; -->
+                <h2 class="slds-text-heading_small slds-m-bottom_small title">
+                    <img src={enrolmentUrl} style="height:23px;" alt="Enrollment" />
+                    &nbsp;&nbsp;Withdraw/Cancel</h2>
+                <div class="slds-p-bottom_medium slds-p-horizontal_large" style="overflow-y: scroll;height: 440px;">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!--start: If Resource by or other fields are balnk then we show error message-->
+                        <template if:true={isShowError}>
+                            <div class="slds-col slds-medium-size_2-of-2 slds-p-top_small">
+                                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+                                    role="alert">
+                                    <h2>{errorMessage}</h2>
+                                </div>
+                            </div>
+                        </template>
+                        <!--end: If Resource by or other fields are balnk then we show error message-->
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <h2 class="slds-section_title slds-text-heading_small ">
+                                <strong>{enrolmentDetails.enrolParentName} - Enrollment Details</strong></h2>
+                        </div>
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <div class="slds-float_right">
+                                Cancellation Date:
+                                <strong>
+                                    <lightning-formatted-date-time value={enrolmentDetails.enrolCanDate}
+                                        time-zone="UTC">
+                                    </lightning-formatted-date-time>
+                                </strong>
                             </div>
                         </div>
-                    </template>
-                    <!--end: If Resource by or other fields are balnk then we show error message-->
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <h2 class="slds-section_title slds-text-heading_small ">
-                            <strong>{enrolmentDetails.enrolParentName} - Enrollment Details</strong></h2>
                     </div>
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <div class="slds-float_right">
-                            Cancellation Date:
-                            <strong>
-                                <lightning-formatted-date-time value={enrolmentDetails.enrolCanDate} time-zone="UTC">
-                                </lightning-formatted-date-time>
-                            </strong>
+                    <div class="bg-lite border slds-p-around_x-small  slds-m-vertical_small">
+                        <div class="slds-grid slds-wrap slds-gutters slds-hide">
+                            <div class="slds-col slds-medium-size_1-of-1">
+                                <h2 class="slds-section_title slds-text-heading_small ">
+                                    <strong>{enrolmentDetails.enrolParentName}</strong></h2>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="bg-lite border slds-p-around_x-small  slds-m-vertical_small">
-                    <div class="slds-grid slds-wrap slds-gutters slds-hide">
-                        <div class="slds-col slds-medium-size_1-of-1">
-                            <h2 class="slds-section_title slds-text-heading_small ">
-                                <strong>{enrolmentDetails.enrolParentName}</strong></h2>
-                        </div>
-                    </div>
 
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-medium-size_1-of-2">
-                            <lightning-input class="myinput" label="Class Name:" value={enrolmentDetails.enrolClassName}
-                                readonly="true"></lightning-input>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-medium-size_1-of-2">
+                                <lightning-input class="myinput" label="Class Name:"
+                                    value={enrolmentDetails.enrolClassName} readonly="true"></lightning-input>
+                            </div>
+                            <div class="slds-col slds-medium-size_1-of-2">
+                                <lightning-input class="myinput" label="Deposit:"
+                                    value={enrolmentDetails.depositedAmount} readonly="true"></lightning-input>
+                            </div>
                         </div>
-                        <div class="slds-col slds-medium-size_1-of-2">
-                            <lightning-input class="myinput" label="Deposit:" value={enrolmentDetails.depositedAmount}
-                                readonly="true"></lightning-input>
-                        </div>
-                    </div>
 
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-medium-size_1-of-2">
-                            <lightning-input class="myinput" label="Enrollment ID:" value={enrolmentDetails.enrolName}
-                                readonly="true"></lightning-input>
-                        </div>
-                        <div class="slds-col slds-medium-size_1-of-2">
-                            <lightning-input class="myinput" label="Credit Note:"
-                                value={enrolmentDetails.creditnoteAmount} readonly="true"></lightning-input>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-medium-size_1-of-2">
+                                <lightning-input class="myinput" label="Enrollment ID:"
+                                    value={enrolmentDetails.enrolName} readonly="true"></lightning-input>
+                            </div>
+                            <div class="slds-col slds-medium-size_1-of-2">
+                                <lightning-input class="myinput" label="Credit Note:"
+                                    value={enrolmentDetails.creditnoteAmount} readonly="true"></lightning-input>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <!-- <lightning-input class="myinput" label="Requeste By:" type="text" value="Pricilla Lodge"
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <!-- <lightning-input class="myinput" label="Requeste By:" type="text" value="Pricilla Lodge"
                         ></lightning-input> -->
-                        <c-auto-complete-component iconname="standard:account" objectname="Account"
-                            type="PrimaryCorpContact" label="Requested By" searchfield="Name"
-                            onselectedrec={handleOnSelect} extendedwhereclause="" onvaluechange={addNewName}>
-                        </c-auto-complete-component>
+                            <c-auto-complete-component iconname="standard:account" objectname="Account"
+                                type="PrimaryCorpContact" label="Requested By" searchfield="Name"
+                                onselectedrec={handleOnSelect} extendedwhereclause="" onvaluechange={addNewName}>
+                            </c-auto-complete-component>
+                        </div>
                     </div>
-                </div>
-                <div class="slds-grid slds-wrap slds-gutters">
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <lightning-input class="EnrollmentEndDate" name="EnrollmentEndDate" label="Enrollment End Date"
-                            type="date" value={enrolCanDate} required="true"
-                            onchange={handlechangeEnrolmentfield}></lightning-input>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <lightning-input class="EnrollmentEndDate" name="EnrollmentEndDate"
+                                label="Enrollment End Date" type="date" value={enrolCanDate} required="true"
+                                onchange={handlechangeEnrolmentfield}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <lightning-combobox class="CancellationReason" name="CancellationReason"
+                                label="Cancellation Reason" required="true" value={cancelReasonSalectedValue}
+                                placeholder="--Select Cancellation Reason--" options={cancelReasonList}
+                                onchange={handlechangeEnrolmentfield}>
+                            </lightning-combobox>
+                        </div>
                     </div>
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <lightning-combobox class="CancellationReason" name="CancellationReason"
-                            label="Cancellation Reason" required="true" value={cancelReasonSalectedValue}
-                            placeholder="--Select Cancellation Reason--" options={cancelReasonList}
-                            onchange={handlechangeEnrolmentfield}>
-                        </lightning-combobox>
-                    </div>
-                </div>
 
-                <div class="slds-grid slds-wrap slds-gutters">
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <lightning-input class="noticePeriod" name="noticePeriod" label="Notice Period"
-                            value={noticePeriod} required="true" onchange={handlechangeEnrolmentfield}>
-                        </lightning-input>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <lightning-input class="noticePeriod" name="noticePeriod" label="Notice Period"
+                                value={noticePeriod} required="true" onchange={handlechangeEnrolmentfield}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
+                            <lightning-input class="lastSessiondate" name="lastSessiondate" label="Last Session Date"
+                                type="date" value={lastSessiondate} required="true"
+                                onchange={handlechangeEnrolmentfield}>
+                            </lightning-input>
+                        </div>
                     </div>
-                    <div class="slds-col slds-medium-size_1-of-2 slds-p-top_small">
-                        <lightning-input class="lastSessiondate" name="lastSessiondate" label="Last Session Date"
-                            type="date" value={lastSessiondate} required="true" onchange={handlechangeEnrolmentfield}>
-                        </lightning-input>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-medium-size_1-of-1 slds-p-top_small">
+                            <lightning-textarea name="commment" label="Comments" value={commment}
+                                onchange={handlechangeEnrolmentfield}></lightning-textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="slds-grid slds-wrap slds-gutters">
-                    <div class="slds-col slds-medium-size_1-of-1 slds-p-top_small">
-                        <lightning-textarea name="commment" label="Comments" value={commment}
-                            onchange={handlechangeEnrolmentfield}></lightning-textarea>
-                    </div>
-                </div>
-                <hr />
 
-                <div class="slds-grid slds-gutters ">
-                    <div class="slds-size_1-of-1 slds-text-align_center">
-                        <lightning-button label="Cancel" icon-name="utility:close" variant="destructive"
-                            class="icon-large text-white" onclick={handleCancelRequest}></lightning-button>
-
-                        <lightning-button label="Submit" icon-name="utility:check" variant="brand"
-                            class="icon-large text-white slds-m-left_small" onclick={submitCancelEnrolment}>
-                        </lightning-button>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
+        <footer class="slds-modal__footer">
+            <lightning-button label="Cancel" icon-name="utility:close" variant="destructive"
+                class="icon-large text-white" onclick={handleCancelRequest}></lightning-button>
+
+            <lightning-button label="Submit" icon-name="utility:check" variant="brand"
+                class="icon-large text-white slds-m-left_small" onclick={submitCancelEnrolment}>
+            </lightning-button>
+        </footer>
+    </div>
 </template>

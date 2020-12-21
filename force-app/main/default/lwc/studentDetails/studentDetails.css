@@ -1,0 +1,47 @@
+body {
+  /* Set "my-sec-counter" to 0 */
+  counter-reset: my-sec-counter;
+}
+.thead-dark th,
+.bglight {
+  color: #000;
+  background-color: #eff7ff;
+  border-color: #454d55;
+}
+.table td,
+.table th {
+  padding: 0.45rem 0.2rem;
+  border-top: 1px solid #dee2e6;
+}
+.table {
+  width: 100%;
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+}
+table tr table tr:first-child td {
+  border-top: 0px;
+}
+.table.tablepay thead tr:first-child td,
+.table.tablepay thead tr:last-child td,
+.table.tablepay thead td:first-child {
+  border-bottom: 0px;
+}
+.table.tablepay thead td {
+  padding: 0.25rem;
+}
+.table.tablepay thead tr:first-child td {
+  background-color: #eff7ff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table.tablepay1 thead tr:first-child td {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tBody tr {
+  counter-increment: my-sec-counter;
+}
+
+.tBody tr td:first-child::before {
+  content: counter(my-sec-counter);  
+}

@@ -1,29 +1,5 @@
 public with sharing class CancelEnrolmentController {
     
-    //get enrolment details according to Enrolment id
-    private static List<Enrollment__c> getEnrollmentByIdForCancellation(String enrolId){
-        if(String.isNotBlank(enrolId)){
-            try {
-                    List<Enrollment__c> listEnrollment = [SELECT Id, Name,Status__c,Enrollment_End_Date__c,Reason_for_Cancellation__c,
-                                                        Cancellation_Date__c,Cancellation_Comments__c,Class__c,Parent__c,Enrollment_date__c,
-                                                        Class__r.Name,Class__r.Type__c,Class__r.Frequency__c,Parent__r.name,
-                                                        (SELECT educato__Account__c, educato__Billable__c, educato__Class_Type__c,
-                                                            educato__Course_Type__c, educato__Duration__c, educato__Enrollment__c, 
-                                                            educato__Notes__c, educato__Session_Date__c, educato__Session__c, 
-                                                            educato__Status__c, Name, Id 
-                                                            FROM educato__Student_Sessions__r
-                                                            order by educato__Session_Date__c desc)
-                                                        FROM Enrollment__c 
-                                                        WHERE Id =: enrolId 
-                                                        LIMIT 1];
-                return listEnrollment;
-            }catch (System.QueryException e) {
-                System.debug(e.getMessage());
-            }        
-        }
-        return null;
-    }
-
     // get enrolment details and Cancle Reason picklist values
     @AuraEnabled(cacheable=true)
     public static cancelEnrolmentClass getEnrolmentDetail(String recordId){
@@ -32,7 +8,7 @@ public with sharing class CancelEnrolmentController {
             List<Account> listParentAccount = new List<Account>();
             
             /* *************** Query for getting Enrollment  ***************** */
-            List<Enrollment__c> listEnrollment = getEnrollmentByIdForCancellation(recordId);
+            List<Enrollment__c> listEnrollment = EnrollmentService.getEnrollmentByIdForCancellation(recordId);
             if(listEnrollment != NULL && listEnrollment.size() > 0){
                 Enrollment__c enrollment = listEnrollment[0];
                 wrpCls.enrolId = enrollment.Id;
@@ -44,21 +20,17 @@ public with sharing class CancelEnrolmentController {
                 wrpCls.enrolCancelResn = enrollment.Reason_for_Cancellation__c;
                 wrpCls.enrolCancelComm = enrollment.Cancellation_Comments__c;
                 wrpCls.enrolCanDate = system.today();
-                if(enrollment.educato__Student_Sessions__r != null && enrollment.educato__Student_Sessions__r.size() >0 ){
-                    wrpCls.enrolEndDate = enrollment.educato__Student_Sessions__r[0].educato__Session_Date__c; 
-                }else{
-                    wrpCls.enrolEndDate = system.today().addDays(Integer.valueOf(Label.EnrollCancelNoticeTime)); 
-                }
+                wrpCls.enrolEndDate = getEnrolmentLastSessionDate(enrollment.id,system.today()); 
                 wrpCls.enrolParent = enrollment.Parent__c;
                 wrpCls.enrolParentName = enrollment.Parent__r.name;
                 wrpcls.noticePeriod = enrollment.Enrollment_date__c.daysBetween(system.today());
                 wrpcls.enrolStartDate =enrollment.Enrollment_date__c;
                 //****Deposited amount is the amount present on invoice line item got from the query of deposit fee type.****
                 if(string.isNotBlank(enrollment.Parent__c)){
-                    wrpCls.depositedAmount = '$'+ getDepositAmount(enrollment.Parent__c);   
-                    wrpCls.creditnoteAmount = '$'+ getTotalCreditNoteAmount(enrollment.Parent__c);          
+                    wrpCls.depositedAmount = '$'+ DepositService.getDepositAmountByParentId(enrollment.Parent__c);
+                    wrpCls.creditnoteAmount = '$'+ CreditNoteService.getTotalCreditNoteAmountByParentId(enrollment.Parent__c);          
                 }
-              
+                
                 Schema.DescribeFieldResult canReasonField = Enrollment__c.Reason_for_Cancellation__c.getDescribe();
                 List<Schema.PicklistEntry> picList= canReasonField.getPicklistvalues();
                 for(Schema.PicklistEntry plist : picList){
@@ -74,36 +46,68 @@ public with sharing class CancelEnrolmentController {
         }
     }
     
+    @AuraEnabled 
+    public static Date getEnrolmentLastSessionDate(String enrolmentid,Date enrolCanDate){
+        date lastSessionDate = system.today();//.addDays(Integer.valueOf(Label.EnrollCancelNoticeTime));
+        if(string.isNotBlank(enrolmentid) && enrolCanDate != null){
+            List<Student_Session__c> listOfStudentSession = StudentSessionService.getByEnrolIdAndEnrolCancelDate(enrolmentid, enrolCanDate);
+            if(listOfStudentSession != null && listOfStudentSession.size() > 0){
+                lastSessionDate=  listOfStudentSession[0].Session_Date__c;
+            }   
+        }        
+        return lastSessionDate;
+    }
+    
     // updated enrolment and insert Service request records
     @AuraEnabled 
     public static cancelEnrolmentClass cancelEnrolmentProcess(String enrolmentid,Date enrolCanDate,String cancelReason,String requestedId,
-                                                Date lastSessiondate,String commment){
-        try{
-            
-            //******************** Cancel Enrollment *************  
-            Enrollment__c enrolObj = new Enrollment__c();
-            enrolObj.Id = enrolmentid;
-            enrolObj.Cancellation_Date__c = enrolCanDate;
-            enrolObj.Enrollment_End_Date__c = lastSessiondate;
-            enrolObj.Cancellation_Comments__c = commment;
-            enrolObj.Reason_for_Cancellation__c = cancelReason;
-            update enrolObj;
-
-            educato__Service_Request__c objServiceRequest = new educato__Service_Request__c(
-                //educato__Service_Request_Type__c = 
-                educato__Status__c ='New',
-                educato__Requested_Date__c = system.today(),
-                educato__Enrollment__c = enrolmentid,
-                educato__Account__c = requestedId,
-                educato__Comments__c = commment
-            );
-            insert objServiceRequest;
-            return new cancelEnrolmentClass(200,'Enrolment updated Sucessfully!..');
-        }
-        catch(Exception e){
-            return new cancelEnrolmentClass(400,e.getMessage());
-        }
-    }
+                                                              Date lastSessiondate,String commment){
+                                                                  try{
+                                                                      
+                                                                        //******************** Cancel Enrollment *************  
+                                                                        Enrollment__c enrolObj = new Enrollment__c();
+                                                                        enrolObj.Id = enrolmentid;
+                                                                        enrolObj.Cancellation_Date__c = system.today();
+                                                                        enrolObj.Enrollment_End_Date__c = enrolCanDate;
+                                                                        enrolObj.Last_Session_Date__c = lastSessiondate;
+                                                                        enrolObj.Cancellation_Comments__c = commment;
+                                                                        enrolObj.Reason_for_Cancellation__c = cancelReason;
+                                                                        EnrollmentService.updateByList(new List<Enrollment__c>{enrolObj});
+                                                                        
+                                                                        Service_Request__c objServiceRequest = new Service_Request__c(
+                                                                            Service_Request_Type__c = 'Cancel Enrollment',
+                                                                            Status__c ='New',
+                                                                            Requested_Date__c = system.today(),
+                                                                            Enrollment__c = enrolmentid,
+                                                                            Account__c = requestedId,
+                                                                            Comments__c = commment
+                                                                        );
+                                                                        ServiceRequestService.insertServiceRequestRecords(new List<Service_Request__c>{objServiceRequest});
+                                                                        // last Session date is equals to Student_Session__c date than
+                                                                        List<Student_Session__c> listOfDeleteStudentSession = new List<Student_Session__c>();
+                                                                        List<Student_Session__c> listOfUpdatedStudentSession = new  List<Student_Session__c>();
+                                                                        for(Student_Session__c objStudentSession: StudentSessionService.getStudentSessionList(enrolmentid, lastSessiondate)){
+                                                                                Student_Session__c stuTemp = new Student_Session__c(Id=objStudentSession.Id);
+                                                                            	if(objStudentSession.Session_Date__c == lastSessiondate){
+                                                                                    stuTemp.Last_Session__c = true;
+                                                                                    listOfUpdatedStudentSession.add(stuTemp);
+                                                                                }else{
+                                                                                    listOfDeleteStudentSession.add(stuTemp);
+                                                                                }
+                                                                        }
+                                                                        system.debug('listOfUpdatedStudentSession'+listOfUpdatedStudentSession);
+                                                                        system.debug('listOfDeleteStudentSession'+listOfDeleteStudentSession);
+                                                                        if(listOfUpdatedStudentSession != null && listOfUpdatedStudentSession.size() > 0){
+                                                                                StudentSessionService.updateStudentSessionRecords(listOfUpdatedStudentSession);
+                                                                        }
+                                                                        if(listOfDeleteStudentSession != null && listOfDeleteStudentSession.size() > 0){
+                                                                                StudentSessionService.deleteStudentSessionRecords(listOfDeleteStudentSession);
+                                                                        }
+                                                                        return new cancelEnrolmentClass(200,'Enrollment cancellation request submitted!..');
+                                                                    }catch(Exception e){
+                                                                        return new cancelEnrolmentClass(400,e.getMessage());
+                                                                    }
+                                                              }
     
     public class cancelEnrolmentClass{
         @AuraEnabled public Integer errorcode {get;set;}
@@ -150,38 +154,4 @@ public with sharing class CancelEnrolmentController {
             depositedAmount = '$0';
         }
     }
-
-    // get total Credit Note Amount
-    private static decimal getTotalCreditNoteAmount(string parentId){
-        decimal totalCreditNoteAmount =0;
-        List<AggregateResult> AggregateResultList = [select Id,Sum(educato__Amount__c)amt 
-                                                        from educato__Credit_Note__c 
-                                                        where educato__Account__c =: parentId
-                                                        group by Id]; 
-        if(AggregateResultList != null && AggregateResultList.size() > 0){ 
-            if(AggregateResultList != null && AggregateResultList.size() > 0){ 
-                for(AggregateResult objCreditNote : AggregateResultList){
-                    totalCreditNoteAmount=(decimal)objCreditNote.get('amt'); 
-                }
-            } 
-        }
-        return totalCreditNoteAmount;
-    }
-
-    // get total Deposit Amount
-    private static decimal getDepositAmount(string parentId){
-        decimal totalDepositAmount =0;
-        List<AggregateResult> AggregateResultList = [select educato__Account__c ,Sum(educato__Amount__c)amt 
-                                                        from educato__Deposit__c 
-                                                        where educato__Account__c =: parentId
-                                                        group by educato__Account__c ]; 
-        if(AggregateResultList != null && AggregateResultList.size() > 0){ 
-            for(AggregateResult objdeposit : AggregateResultList){
-                totalDepositAmount=(decimal)objdeposit.get('amt'); 
-            }
-        }
-        return totalDepositAmount;
-    }
-    
-    
 }

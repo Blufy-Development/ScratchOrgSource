@@ -263,7 +263,7 @@
             <apex:repeat value="{!invoice.Invoice_Line_Items__r}" var="invLineItm">
                 <tr class="border_bottom">
                     <td><div class="item-Name"><b>
-                        {!invLineItm.Fee__r.Name}</b><br/>
+                        {!invLineItm.Label__c}</b><br/>
                         <span class="lightgray">{!invLineItm.Enrollment__r.Student__r.Name}
                         <!--<apex:outputPanel>
                             (<apex:outputText value="{0, date,MMM','  yyyy}">

@@ -68,6 +68,25 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>ID_Type__c</picklist>
+        <values>
+            <fullName>FIN %23</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Passport</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSN</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Industry</picklist>
         <values>
             <fullName>Agriculture</fullName>
@@ -1049,6 +1068,17 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>Payment_Method__c</picklist>
+        <values>
+            <fullName>ACH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Card</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Rating</picklist>
         <values>
             <fullName>Cold</fullName>
@@ -1136,25 +1166,6 @@
         </values>
         <values>
             <fullName>Technology Partner</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
-        <picklist>Type__c</picklist>
-        <values>
-            <fullName>FIN %23</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Other</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Passport</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>SSN</fullName>
             <default>false</default>
         </values>
     </picklistValues>

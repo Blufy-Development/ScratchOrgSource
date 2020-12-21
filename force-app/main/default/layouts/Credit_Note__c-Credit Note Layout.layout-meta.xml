@@ -56,19 +56,10 @@
         <layoutColumns>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>Total_Payment__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
                 <field>Balance_Amount__c</field>
             </layoutItems>
         </layoutColumns>
-        <layoutColumns>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Total_Refund__c</field>
-            </layoutItems>
-        </layoutColumns>
+        <layoutColumns/>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>
     <layoutSections>
@@ -210,13 +201,6 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Invoice__c</fields>
-        <fields>Amount__c</fields>
-        <fields>Status__c</fields>
-        <relatedList>Payment__c.Credit_Note__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
         <fields>Account__c</fields>
         <fields>Amount__c</fields>
         <fields>Deposit_Amount__c</fields>
@@ -225,6 +209,10 @@
         <fields>Balance_Refund_Amount__c</fields>
         <fields>Status__c</fields>
         <relatedList>Refund__c.Credit_Note__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Payment__c.Credit_Note__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

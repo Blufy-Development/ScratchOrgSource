@@ -29,7 +29,11 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Holder_Type__c</field>
+                <field>Account_Type__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Stripe_Bank_Account_Token__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -48,10 +52,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Is_Verified__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Stripe_Customer_Key__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>

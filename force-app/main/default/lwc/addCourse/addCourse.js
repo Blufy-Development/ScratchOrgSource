@@ -1,15 +1,18 @@
 import { LightningElement, api, track } from 'lwc';
 import getClassDetails from '@salesforce/apex/NewEnrollmentFormCntrl.fetchClassDetails';
 import getFessDetail from '@salesforce/apex/NewEnrollmentFormCntrl.fetchFessDetail';
+import getClassSessionDetail from '@salesforce/apex/NewEnrollmentFormCntrl.getClassSessionData';
 import getProratedAmount from '@salesforce/apex/NewEnrollmentFormCntrl.calculateProratedAmount';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import defaultCurrency from '@salesforce/label/c.Default_Currency';
+import LOCALE_CURRENCY from "@salesforce/i18n/currency";
+
 export default class AddCourse extends LightningElement {
     @api index;
     @api mode = 'new';
     @api previousData;
+    @api classSessionId;
     @track classData = [];
-    @track feesData = [];
+    @track feesData;
     @track primaryFeesData = [];
     @track secondayFeesData = [];
     @track anotherFeesData = [];
@@ -20,32 +23,48 @@ export default class AddCourse extends LightningElement {
     @track title = 'Select Course and Class';
     @track locationName = '';
     @track courseName = '';
-    @track enrollmentSrtDt = new Date().toISOString();
+    @track enrollmentSrtDt;
     @track comment = '';
     showAnotherFees = false;
     showSecondayFees = false;
     showDepositFees = false;
     showSpinner = false;
     courseId = '';
+    selectedCourseId = '';
+    selectedCourseName = '';
     totalCheckedCount = 0;
     selectedClassSessionId = '';
     showClassData = false;
+    isClassNotNull = false;
     currentPage = 1;
     iconName = 'utility:jump_to_right';
     showBackButton = false;
     feesId = '';
     isChanged = false;
     label = {
-        defaultCurrency
+        LOCALE_CURRENCY
     }
+    selectedClassId;
 
     connectedCallback() {
+        this.getToday();
         if (this.mode == 'edit') {
-            this.courseId = this.previousData.classDetails[0].classDetail.courseId;
+            this.selectedCourseId = this.courseId = this.previousData.classDetails[0].classDetail.courseId;
+            this.selectedCourseName = this.previousData.classDetails[0].classDetail.courseName;
             console.log(this.previousData);
             this.fetchClassDetailsFromApex();
-
+        } else if (this.classSessionId) {
+            console.log('class session Id add course-->', this.classSessionId);
+            this.fetchClassSessionDetailsFromApex();
         }
+    }
+
+    getToday() {
+        let today = new Date();
+        let dd = String(today.getDate()).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        let yyyy = today.getFullYear();
+        this.enrollmentSrtDt = yyyy + '-' + mm + '-' + dd;
     }
 
     fetchClassDetailsFromApex() {
@@ -57,68 +76,130 @@ export default class AddCourse extends LightningElement {
             this.showSpinner = false;
             this.showClassData = true;
             this.classData = JSON.parse(JSON.stringify(res));
-            this.locationName = this.classData.classWrapperList[0].location;
-            this.courseName = this.classData.classWrapperList[0].course;
-            console.log('classWrapperList', this.classData);
-            // let classIndex;
-            if (this.mode == 'edit' && this.previousData) {
-                console.log('inside');
-                let clasSessionObj;
-                this.previousData.classDetails.forEach((classEle, index) => {
-                    clasSessionObj = this.classData.classWrapperList.find(disEle => disEle.clsId == classEle.classDetail.classId);
-                    console.log('clasSessionObj', console.log(clasSessionObj));
-                    if (clasSessionObj) {
-                        this.index = index;
-                        this.comment = classEle.comments;
-                        this.enrollmentSrtDt = classEle.enrollmentStartDate;
-                        clasSessionObj.dayOfWeekClsList.forEach(dayObj => {
-                            if (classEle.classDetail.dayOfWeek == dayObj.nameOfDay) {
-                                console.log(dayObj.nameOfDay);
-                                dayObj.classSessionWrapperList.forEach(clsObj => {
-                                    if (clsObj.id == classEle.classDetail.classSessionId) {
-                                        clsObj.selected = true;
-                                        this.selectedClassSessionId = classEle.classDetail.classSessionId;
-                                        this.selectedClassSessionData = {
-                                            classId: classEle.classDetail.classId,
-                                            locationId: classEle.classDetail.locationId,
-                                            teacherId: classEle.classDetail.teacherId,
-                                            teacherName: classEle.classDetail.teacherName,
-                                            className: classEle.classDetail.className,
-                                            courseName: classEle.classDetail.courseName,
-                                            dayOfWeek: classEle.classDetail.dayOfWeek,
-                                            startTime: classEle.classDetail.startTime,
-                                            endTime: classEle.classDetail.endTime,
-                                            clsFrequency: classEle.classDetail.clsFrequency,
-                                            clsType: classEle.classDetail.clsType,
-                                            courseId: this.courseId
-                                        };
-                                    }
+            if (this.classData.classWrapperList.length > 0) {
+                this.isClassNotNull = true;
+                this.locationName = this.classData.classWrapperList[0].location;
+                this.courseName = this.classData.classWrapperList[0].course;
+                console.log('classWrapperList', this.classData);
+                //If mode is edit
+                if (this.mode == 'edit' && this.previousData) {
+                    let classIndex;
+                    console.log('inside');
+                    let clasSessionObj;
+                    this.previousData.classDetails.forEach((classEle, index) => {
+                        clasSessionObj = this.classData.classWrapperList.find(disEle => disEle.clsId == classEle.classDetail.classId);
+                        classIndex = this.classData.classWrapperList.findIndex(disEle => disEle.clsId == classEle.classDetail.classId);
+                        console.log('classIndex', classIndex);
+                        console.log('clasSessionObj', console.log(clasSessionObj));
+                        if (clasSessionObj) {
+                            this.index = index;
+                            this.comment = classEle.comments;
+                            this.enrollmentSrtDt = classEle.enrollmentStartDate;
+                            clasSessionObj.dayOfWeekClsList.forEach(dayObj => {
+                                if (classEle.classDetail.dayOfWeek == dayObj.nameOfDay) {
+                                    console.log(dayObj.nameOfDay);
+                                    dayObj.classSessionWrapperList.forEach(clsObj => {
+                                        if (clsObj.id == classEle.classDetail.classSessionId) {
+                                            clsObj.selected = true;
+                                            this.selectedClassSessionId = classEle.classDetail.classSessionId;
+                                            this.selectedClassSessionData = {
+                                                classId: classEle.classDetail.classId,
+                                                locationId: classEle.classDetail.locationId,
+                                                teacherId: classEle.classDetail.teacherId,
+                                                teacherName: classEle.classDetail.teacherName,
+                                                className: classEle.classDetail.className,
+                                                courseName: classEle.classDetail.courseName,
+                                                dayOfWeek: classEle.classDetail.dayOfWeek,
+                                                startTime: classEle.classDetail.startTime,
+                                                endTime: classEle.classDetail.endTime,
+                                                clsFrequency: classEle.classDetail.clsFrequency,
+                                                mode: classEle.classDetail.mode,
+                                                clsType: classEle.classDetail.clsType,
+                                                courseId: this.courseId
+                                            };
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    console.log('clasSessionObj', clasSessionObj);
+                    //     if (ele.clsId == this.previousData.classDetails[0].classDetail.classId) {
+                    //         console.log(index);
+                    //         // classIndex = index;
+                    //         let classObj = ele;
+                    //         if (classObj) {
+                    //             console.log(classObj.dayOfWeekClsList);
+                    //             classObj.dayOfWeekClsList.forEach(dayObj => {
+                    //                 if (this.previousData.classDetails[0].classDetail.dayOfWeek == dayObj.nameOfDay) {
+                    //                     console.log(dayObj);
+                    //                     dayObj.classSessionWrapperList.forEach(clsObj => {
+                    //                         if (clsObj.id == this.previousData.classDetails[0].classDetail.classSessionId) {
+                    //                             console.log(clsObj);
+                    //                             clsObj.selected = true;
+                    //                         }
+                    //                     })
+                    //                 }
+                    //             })
+                    //         }
+                    //     }
+                    // }
+                    setTimeout(() => {
+                        // this.toggleSection(this.template.querySelectorAll('.plus-util')[classIndex]);
+                        console.log('plus-util->', this.template.querySelectorAll('.plus-util')[classIndex].className);
+                        let cardEle = this.template.querySelectorAll('.plus-util')[classIndex];
+                        cardEle.classList.add('slds-hide');
+                        cardEle.nextSibling.classList.remove('slds-hide');
+                        cardEle.parentNode.parentNode.nextSibling.classList.remove('slds-hide');
+                        cardEle.parentNode.parentNode.nextSibling.classList.add('slds-show');
+
+                    }, 1000);
+
+                } else if (this.classSessionId) {
+                    console.log('this.classData.classWrapperList', this.classData.classWrapperList);
+                    let classIndex;
+                    this.classData.classWrapperList.forEach((ele, index) => {
+                        console.log('classWrapperList');
+                        if (ele.clsId == this.selectedClassId) {
+                            classIndex = index;
+                            if (ele.dayOfWeekClsList) {
+                                ele.dayOfWeekClsList.forEach(dayOfObj => {
+                                    dayOfObj.classSessionWrapperList.forEach(clsObj => {
+                                        if (clsObj.id == this.classSessionId) {
+                                            clsObj.selected = true;
+                                            this.selectedClassSessionId = this.classSessionId;
+                                            this.selectedClassSessionData = {
+                                                classId: ele.clsId,
+                                                locationId: ele.locationId,
+                                                teacherId: clsObj.teacherId,
+                                                teacherName: clsObj.teacherName,
+                                                className: ele.clsName,
+                                                courseName: ele.course,
+                                                dayOfWeek: clsObj.dayOfWeek,
+                                                startTime: clsObj.startTime,
+                                                endTime: clsObj.endTime,
+                                                clsFrequency: ele.clsFrequency,
+                                                mode: ele.mode,
+                                                clsType: ele.clsType,
+                                                courseId: this.courseId
+                                            };
+                                        }
+                                    });
                                 });
                             }
-                        });
-                    }
-                });
-                console.log('clasSessionObj', clasSessionObj);
-                //     if (ele.clsId == this.previousData.classDetails[0].classDetail.classId) {
-                //         console.log(index);
-                //         // classIndex = index;
-                //         let classObj = ele;
-                //         if (classObj) {
-                //             console.log(classObj.dayOfWeekClsList);
-                //             classObj.dayOfWeekClsList.forEach(dayObj => {
-                //                 if (this.previousData.classDetails[0].classDetail.dayOfWeek == dayObj.nameOfDay) {
-                //                     console.log(dayObj);
-                //                     dayObj.classSessionWrapperList.forEach(clsObj => {
-                //                         if (clsObj.id == this.previousData.classDetails[0].classDetail.classSessionId) {
-                //                             console.log(clsObj);
-                //                             clsObj.selected = true;
-                //                         }
-                //                     })
-                //                 }
-                //             })
-                //         }
-                //     }
-                // }
+                        }
+                    });
+                    setTimeout(() => {
+                        // this.toggleSection(this.template.querySelectorAll('.plus-util')[classIndex]);
+                        console.log('plus-util->', this.template.querySelectorAll('.plus-util')[classIndex].className);
+                        let cardEle = this.template.querySelectorAll('.plus-util')[classIndex];
+                        cardEle.classList.add('slds-hide');
+                        cardEle.nextSibling.classList.remove('slds-hide');
+                        cardEle.parentNode.parentNode.nextSibling.classList.remove('slds-hide');
+                        cardEle.parentNode.parentNode.nextSibling.classList.add('slds-show');
+
+                    }, 1000);
+                }
             }
         }).catch(error => {
             this.showSpinner = false;
@@ -132,57 +213,59 @@ export default class AddCourse extends LightningElement {
         this.showSecondayFees = false;
         this.showDepositFees = false;
         this.showSpinner = true;
-        this.feesData = [];
         this.primaryFeesData = [];
         this.depositFeesData = [];
         getFessDetail({
             classSessionId: this.selectedClassSessionId
         }).then(result => {
             console.log('resuilt', result);
-            this.feesData = JSON.parse(JSON.stringify(result));
-            if (this.feesData.length > 0) {
-                this.feesData.forEach(ele => {
-                    //for edit functionality when a user reopen modal 
-                    if (this.mode == 'edit' && this.isChanged == false) {
-                        console.log('not changed');
-                        this.previousData.classDetails.forEach((classEle) => {
-                            classEle.classDetail.tuitionFeeList.forEach(tutEle => {
-                                if (tutEle.parentFeeId == ele.parentFeeId) {
-                                    ele.selected = true;
-                                    this.anotherFeesData = ele;
-                                    if (classEle.classDetail.secondaryFeeList) {
-                                        classEle.classDetail.secondaryFeeList.forEach(secondayEle => {
-                                            let secFeesObj = ele.childFeeWrapper.find(res => res.feeId == secondayEle.feeId);
-                                            console.log('secFeesObj,', secFeesObj);
-                                            if (secFeesObj) {
-                                                secFeesObj.selected = true;
-                                                this.secondayFeesData.push(secFeesObj);
-                                                this.showSecondayFees = true;
-                                                this.showAnotherFees = true;
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                            if (classEle.classDetail.depositfeelist) {
-                                classEle.classDetail.depositfeelist.forEach(depoEle => {
-                                    if (depoEle.parentFeeId == ele.parentFeeId) {
+            if (result) {
+                this.feesData = [];
+                this.feesData = JSON.parse(JSON.stringify(result));
+                if (this.feesData.length > 0) {
+                    this.feesData.forEach(ele => {
+                        //for edit functionality when a user reopen modal 
+                        if (this.mode == 'edit' && this.isChanged == false) {
+                            console.log('not changed');
+                            this.previousData.classDetails.forEach((classEle) => {
+                                classEle.classDetail.tuitionFeeList.forEach(tutEle => {
+                                    if (tutEle.parentFeeId == ele.parentFeeId) {
                                         ele.selected = true;
+                                        this.anotherFeesData = ele;
+                                        if (classEle.classDetail.secondaryFeeList) {
+                                            classEle.classDetail.secondaryFeeList.forEach(secondayEle => {
+                                                let secFeesObj = ele.childFeeWrapper.find(res => res.feeId == secondayEle.feeId);
+                                                console.log('secFeesObj,', secFeesObj);
+                                                if (secFeesObj) {
+                                                    secFeesObj.selected = true;
+                                                    this.secondayFeesData.push(secFeesObj);
+                                                    this.showSecondayFees = true;
+                                                    this.showAnotherFees = true;
+                                                }
+                                            });
+                                        }
                                     }
                                 });
-                            }
-                        });
-                    }
-                    //end
-                    if (ele.parentFeeType == 'Tuition Fee') {
-                        this.primaryFeesData.push(ele);
-                    } else if (ele.parentFeeType == 'Deposit') {
-                        this.depositFeesData.push(ele);
-                    }
-                })
-            }
-            if (this.depositFeesData.length > 0) {
-                this.showDepositFees = true;
+                                if (classEle.classDetail.depositfeelist) {
+                                    classEle.classDetail.depositfeelist.forEach(depoEle => {
+                                        if (depoEle.parentFeeId == ele.parentFeeId) {
+                                            ele.selected = true;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        //end
+                        if (ele.parentFeeType == 'Tuition Fee') {
+                            this.primaryFeesData.push(ele);
+                        } else if (ele.parentFeeType == 'Deposit') {
+                            this.depositFeesData.push(ele);
+                        }
+                    })
+                }
+                if (this.depositFeesData.length > 0) {
+                    this.showDepositFees = true;
+                }
             }
             this.showSpinner = false;
         }).catch(error => {
@@ -206,6 +289,23 @@ export default class AddCourse extends LightningElement {
         }).catch(err => {
             console.log('Error while getting prorated ', err);
         })
+    }
+
+    fetchClassSessionDetailsFromApex = () => {
+        getClassSessionDetail({
+            clsSessionId: this.classSessionId,
+        }).then(res => {
+            console.log('res--->', res);
+            if (res.length > 0) {
+                this.selectedCourseId = this.courseId = res[0].educato__Class__r.educato__Course__c;
+                console.log('this.selectedCourseId', this.selectedCourseId);
+                this.selectedCourseName = res[0].educato__Class__r.educato__Course__r.Name;
+                this.selectedClassId = res[0].educato__Class__c;
+                this.fetchClassDetailsFromApex();
+            }
+        }).catch(err => {
+            console.log('Error while getting class Session detail ', err);
+        });
     }
 
     closemodal() {
@@ -321,7 +421,8 @@ export default class AddCourse extends LightningElement {
             if (this.selectedClassSessionId != event.currentTarget.dataset.id) {
                 if (this.mode == 'edit') {
                     this.isChanged = true;
-                    this.enrollmentSrtDt = new Date().toISOString();;
+                    //this.enrollmentSrtDt = new Date().toISOString();
+                    this.getToday();
                     this.comment = '';
                 }
                 this.selectedClassSessionId = event.currentTarget.dataset.id;
@@ -338,6 +439,7 @@ export default class AddCourse extends LightningElement {
                 endTime: event.currentTarget.dataset.endtime,
                 clsFrequency: event.currentTarget.dataset.clsfrequency,
                 clsType: event.currentTarget.dataset.clstype,
+                mode: event.currentTarget.dataset.mode,
                 courseId: this.courseId
             };
         } else {

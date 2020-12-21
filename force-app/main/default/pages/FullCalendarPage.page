@@ -1,5 +1,5 @@
 <apex:page standardStylesheets="false" controller="FullCalendarController" showHeader="false" applyHtmlTag="true" applyBodyTag="false">
-    <head>
+    <head>        
         <apex:slds />  
         <div id="spinner" style="display: none">
             <div class="slds-spinner_container" style="position:fixed">
@@ -132,7 +132,7 @@
                                             <li class="room-list slds-hide">
                                                 <div class="slds-col  slds-p-right_x-small"> 
                                                     <div class="slds-form-element">
-                                                        <label class="slds-form-element__label" >Room Types</label>
+                                                        <label class="slds-form-element__label" >Sessions Types</label>
                                                         <div class="slds-form-element__control">
                                                             <div class="slds-select_container">
                                                                 <apex:selectList size="1" onchange="handleRoomTypeChange(this);" value="{!selectedRoomType}"  styleClass="slds-select select-room-type fix-width">
@@ -287,5 +287,5 @@
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </div>
         </apex:form>
-    </body>
+    </body>    
 </apex:page>

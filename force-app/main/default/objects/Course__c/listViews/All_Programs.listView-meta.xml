@@ -3,7 +3,6 @@
     <fullName>All_Programs</fullName>
     <columns>NAME</columns>
     <columns>RECORDTYPE</columns>
-    <columns>Awarded_By__c</columns>
     <columns>Status__c</columns>
     <filterScope>Mine</filterScope>
     <filters>

@@ -117,7 +117,7 @@ public class UtilityClass {
         enr.Parent__c     = cstmrId;
         enr.Stage__c      = stage;
         enr.Status__c     = status;
-        enr.Enrollment_Date__c = System.today();
+        enr.Enrollment_Date__c = Date.today();
         return enr;
     }
     
@@ -132,7 +132,8 @@ public class UtilityClass {
         return invoice;
     }
     
-    public static Invoice_Line_Item__c fillInvLineItem(String invId, String enrId, String subLnItmId, String feeId, String disId, String type, Decimal amount, Boolean isApplyGst){
+    public static Invoice_Line_Item__c fillInvLineItem(String invId, String enrId, String subLnItmId, String feeId, String disId, String type, Decimal amount, Boolean isApplyGst, Decimal gstRate){
+       	DateTime dt = Datetime.now();
         Invoice_Line_Item__c invLnItm = new Invoice_Line_Item__c();
         //invLnItm.Invoice__c   = invId;
         invLnItm.put('Invoice__c',invId);
@@ -145,11 +146,13 @@ public class UtilityClass {
         //invLnItm.Type__c      = type;
         invLnItm.put('Type__c',type);
         invLnItm.put('Amount__c',roundOffAmount(amount));
-        if(isApplyGst){
-            Decimal gstTaxPer = 0;
+        invLnItm.put('Period__c',dt.format('MMM')+' '+dt.year());
+        system.debug('amount---><'+amount);
+        if(isApplyGst && gstRate > 0){
+            //Decimal gstTaxPer = 0;
             try{
-                gstTaxPer     = Decimal.valueOf(Label.GST_Rate);
-                invLnItm.put('GST_Amount__c',roundOffAmount(amount*(gstTaxPer/100)));
+                //gstTaxPer     = Decimal.valueOf(Label.GST_Rate);
+                invLnItm.put('GST_Amount__c',roundOffAmount(amount*(gstRate/100)));
                 if(type == ConstantClass.discountType){
                     invLnItm.put('GST_Amount__c',-(invLnItm.GST_Amount__c));
                 }

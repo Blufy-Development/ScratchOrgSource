@@ -11,7 +11,7 @@ public class InvoiceService {
                                Location__r.PersonEmail,Location__r.PersonMobilePhone,Location__r.Billingstreet,
                                Location__r.BillingCity,Location__r.BillingState,Location__r.BillingPostalcode,Location__r.BillingCountry,
                                Location__r.Phone, Location__r.Website,Total_Paid_Amount__c,Outstanding_Amount__c,
-                               (Select Id,Fee__r.Name,Amount__c,GST_Amount__c,Type__c,Enrollment__c,
+                               (Select Id,Fee__r.Name,Amount__c,GST_Amount__c,Type__c,Enrollment__c,Label__c,
                                 Enrollment__r.Student__r.Name from Invoice_Line_Items__r 
                                 WHERE Type__c !=: ConstantClass.discountType ORDER BY CreatedDate Asc), 
                                (Select Id,Name,Status__c,createdDate,Amount__c From Payments__r)

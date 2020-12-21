@@ -1,10 +1,14 @@
 <template>
-    <div class="slds-text-align_right slds-p-horizontal_large slds-p-top_small">
+    <div class="slds-text-align_right slds-p-horizontal_medium  slds-p-bottom_medium">
         <strong class="btn-addstu">
             <lightning-button label="Add Discount" icon-name="utility:new" variant="base" onclick={toggleDiscountModal}>
             </lightning-button>
         </strong>
     </div>
+    <h2 class="slds-text-heading_small title slds-p-top_medium">
+        <!-- <img src={$Resource.discount} style="height:23px;"
+alt="pay" /> -->
+        &nbsp;&nbsp;Payment Summary</h2>
     <div class="slds-p-bottom_small slds-p-horizontal_large slds-grid slds-grid_vertical-align-end"
         style="min-height:145px;">
         <div class="slds-col slds-size_1-of-1">
@@ -22,7 +26,7 @@
                                     <strong style="color:red;">
                                         <!--{globalDis.amount}-->
                                         <lightning-formatted-number value={discountItem.amount} format-style="currency"
-                                             currency-code={label.defaultCurrency}></lightning-formatted-number>
+                                             currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                                         <!-- <lightning:formatted-number value={discountItem.amount}>
                                         </lightning:formatted-number> -->
                                     </strong></div>
@@ -39,8 +43,8 @@
                                 <!-- <lightning:formattedNumber value={gstAmount} 
                             currencyCode={$Label.c.Default_Currency}
                             currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
-                            <lightning-formatted-number value={gstAmount} format-style="currency"
-                             currency-code={label.defaultCurrency}></lightning-formatted-number>
+                            <lightning-formatted-number value={feeGSTAmount} format-style="currency"
+                             currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
                             </strong>
                         </div>
                     </div>
@@ -59,7 +63,7 @@
                             currencyCode={$Label.c.Default_Currency}
                             currencyDisplayAs="symbol" ></lightning:formattedNumber> -->
                                     <lightning-formatted-number value={grandTotal} format-style="currency"
-                                        currency-code={label.defaultCurrency}></lightning-formatted-number>
+                                        currency-code={label.LOCALE_CURRENCY}></lightning-formatted-number>
 
                                 </strong>
                             </p>
