@@ -17,9 +17,14 @@
                 <label>Active</label>
             </value>
             <value>
-                <fullName>InActive</fullName>
+                <fullName>Inactive</fullName>
                 <default>false</default>
-                <label>InActive</label>
+                <label>Inactive</label>
+            </value>
+            <value>
+                <fullName>Suspended</fullName>
+                <default>false</default>
+                <label>Suspended</label>
             </value>
         </valueSetDefinition>
     </valueSet>

@@ -156,7 +156,7 @@
     <label>Payment Account</label>
     <nameField>
         <displayFormat>PA-{0000000}</displayFormat>
-        <label>Id</label>
+        <label>ID</label>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Payment Accounts</pluralLabel>

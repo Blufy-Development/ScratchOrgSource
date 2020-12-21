@@ -5,8 +5,8 @@ export default class StripeACHVerification extends LightningElement {
     get options() {
         return [
             { label: 'Individual', value: 'Individual' },
-            { label: 'one', value: 'one' },
-            { label: 'two', value: 'two' },
+            { label: 'Company', value: 'Company' },
+            //{ label: 'two', value: 'two' },
         ];
     }
 
@@ -56,19 +56,20 @@ export default class StripeACHVerification extends LightningElement {
         console.log('called sendDetails');
         let bankDetails =[];    
         if( this.validatefields() == true){
-            let holderType =  this.template.querySelector("[data-my-id=holderType]").value;
+            let accountType =  this.template.querySelector("[data-my-id=accountType]").value;
             let holderName =  this.template.querySelector("[data-my-id=holderName]").value;
             let routingNo =  this.template.querySelector("[data-my-id=routingNumber]").value;
             let accNumber =  this.template.querySelector("[data-my-id=AccountNumber]").value;
             let confirmAccNumber =  this.template.querySelector("[data-my-id=ConfirmAccNumber]").value;
-          
-            if(holderType!='' && holderName!='' &&  routingNo!='' &&  accNumber!='' &&  confirmAccNumber!=''){
+            
+            if(accountType!='' && holderName!='' &&  routingNo!='' &&  accNumber!='' &&  confirmAccNumber!=''){
                bankDetails.push({
-                   HolderType : holderType, 
+                   HolderType : accountType, 
                    HolderName : holderName,
                    RoutingNo : routingNo,
                    AccountNumber :accNumber,
-                   ConfirmAccountNumber : confirmAccNumber
+                   ConfirmAccountNumber : confirmAccNumber,
+                   AccountType : 'ACH'
                });
             }
             console.log('bankDetails',bankDetails);

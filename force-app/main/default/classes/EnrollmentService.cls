@@ -1,7 +1,7 @@
 /*
-	Name		 : EnrollmentService	
-	Description	 : This Service Class is used for DML operations.
-	CH1			 : Updated on 20th Nov 2020 by Mohit, this method allows to get aggregate result of enrolments rollup by Class Session Id.
+Name		 : EnrollmentService	
+Description	 : This Service Class is used for DML operations.
+CH1			 : Updated on 20th Nov 2020 by Mohit, this method allows to get aggregate result of enrolments rollup by Class Session Id.
 */
 public class EnrollmentService {
     
@@ -42,27 +42,6 @@ public class EnrollmentService {
         return null;
     }
     
-    public static List<Enrollment__c> getByIdForEnrolCancellation(String enrolId){
-        if(String.isNotBlank(enrolId)){
-            try {
-                List<Enrollment__c> listEnrollment = [SELECT Id, Name,Status__c,Enrollment_End_Date__c,Reason_for_Cancellation__c,Cancellation_Date__c, 
-                                                      Cancellation_Comments__c,Class__c,Parent__c,Class__r.Name,Class__r.Type__c,
-                                                      Class__r.Frequency__c,
-                                                      (SELECT Id,Amount__c FROM Invoice_Line_Items__r WHERE Type__c =: ConstantClass.depositFeeType),
-                                                      (SELECT Id,Next_Bill_Date__c,Subscription__c,Fee__c,Fee__r.Unit_Price__c,
-                                                       Subscription_Start_Date__c,Status__c
-                                                       FROM Subscription_Line_Items__r WHERE Status__c =: ConstantClass.activeStatus)    
-                                                      FROM Enrollment__c 
-                                                      WHERE Id =: enrolId 
-                                                      WITH SECURITY_ENFORCED LIMIT 1];
-                return listEnrollment;
-            }catch (System.QueryException e) {
-                System.debug(e.getMessage());
-            }        
-        }
-        return null;
-    }
-    
     public static List<Enrollment__c> getEnrollmentRelatedObjectsById(Set<String> setEnrolmentId){
         if(!setEnrolmentId.isEmpty()){
             try {
@@ -85,13 +64,16 @@ public class EnrollmentService {
         if(String.isNotBlank(enrolId)){
             try {
                 List<Enrollment__c> listEnrollment = [SELECT Id, Name,Status__c,Enrollment_End_Date__c,Reason_for_Cancellation__c,
-                                                      Cancellation_Date__c,Cancellation_Comments__c,Class__c,Parent__c,
-                                                      Class__r.Name,Class__r.Type__c,Class__r.Frequency__c,
-                                                      (SELECT Id,Amount__c FROM Invoice_Line_Items__r 
-                                                       WHERE Type__c =: ConstantClass.depositFeeType),
-                                                      (SELECT Id,Next_Bill_Date__c,Subscription__c,Fee__c,Fee__r.Unit_Price__c,
-                                                       Subscription_Start_Date__c,Status__c FROM Subscription_Line_Items__r 
-                                                       WHERE Status__c =: ConstantClass.activeStatus)    
+                                                      Cancellation_Date__c,Cancellation_Comments__c,Class__c,Parent__c,Enrollment_date__c,
+                                                      Class__r.Name,Class__r.Type__c,Class__r.Frequency__c,Parent__r.name,
+                                                      (SELECT educato__Account__c, educato__Billable__c, educato__Class_Type__c,
+                                                       educato__Course_Type__c, educato__Duration__c, educato__Enrollment__c, 
+                                                       educato__Notes__c, educato__Session_Date__c, educato__Session__c, 
+                                                       educato__Status__c, Name, Id 
+                                                       FROM educato__Student_Sessions__r
+                                                       Where educato__Enrollment__c =: enrolId
+                                                       And educato__Session_Date__c <= TODAY
+                                                       order by educato__Session_Date__c desc)
                                                       FROM Enrollment__c 
                                                       WHERE Id =: enrolId 
                                                       WITH SECURITY_ENFORCED LIMIT 1];
@@ -103,24 +85,26 @@ public class EnrollmentService {
         return null;
     }
     
+    //Updation of Enrollment Records
     public static List<Enrollment__c> updateByList(List<Enrollment__c> enrollList){
         if(enrollList.size() > 0){
             try{
                 SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.UPDATABLE,enrollList,true);
                 if(securityDecision.getRemovedFields().keySet().size() > 0){
-                    System.debug('Enrollemet Removed Fields-->'+securityDecision.getRemovedFields());
+                    System.debug('Enrollement Removed Fields-->'+securityDecision.getRemovedFields());
                 }
                 else{
                     update securityDecision.getRecords();
                     return securityDecision.getRecords();
                 }
             }catch(Exception e) {
-                System.debug('Error While saving enrollemet records'+e.getMessage());   
+                System.debug('Error While saving enrollement records-->'+e.getMessage());   
             }
         }
         return null;
     }
     
+    //Insertion of Enrollment Records
     public static List<Enrollment__c> insertEnrollmentRecords(List<Enrollment__c> enrollList){
         if(enrollList.size() > 0){
             try{

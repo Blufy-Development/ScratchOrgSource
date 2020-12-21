@@ -12,14 +12,15 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Percent</fullName>
-                <default>false</default>
-                <label>Percent</label>
-            </value>
-            <value>
                 <fullName>Amount</fullName>
                 <default>false</default>
                 <label>Amount</label>
+            </value>
+            <value>
+                <fullName>Percent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Percent</label>
             </value>
         </valueSetDefinition>
     </valueSet>

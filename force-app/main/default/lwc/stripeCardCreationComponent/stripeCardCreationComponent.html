@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="Card Details">
+        <div class="slds-grid slds-p-left_small">
+            <div class="slds-col slds-size_6-of-12">
+                <lightning-input name='cardNumber' label="Credit or Debit Card" placeholder='Card Number' max-length="16" data-id="cardNumber"></lightning-input>
+            </div>
+            <div class="slds-col slds-size_6-of-12 slds-p-left_medium">
+                <div class="slds-grid">    
+                    <div class="slds-col slds-size_2-of-8">
+                        <lightning-input type="number" name='cardExpMonth' placeholder="MM" label="Month" max-length="2" data-id="cardExpMonth"></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_2-of-8">
+                        <lightning-input type='number' name='cardExpYear' placeholder='YY' label="Year" max-length="2" data-id="cardExpYear"></lightning-input>        
+                    </div>
+                    <div class="slds-col slds-size_2-of-8">
+                        <lightning-input type='number' name='cardCVC' placeholder='CVC' label="CVC" max-length="3" data-id="cardCVC"></lightning-input>        
+                    </div>
+                    <div class="slds-col slds-size_2-of-8 slds-p-top_large slds-p-left_small">
+                        <lightning-button variant="brand" label="Submit" onclick={handleSubmit}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </lightning-card>
+</template>

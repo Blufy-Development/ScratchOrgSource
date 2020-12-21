@@ -73,6 +73,27 @@ public class SessionService {
         return null;
     }
     
+    //deletion of Session Records   
+    public static List<Session__c> deleteSessionRecords(List<Session__c> listSession){
+        if(listSession.size() > 0){
+            try{        
+                SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.READABLE, listSession,true);
+                if(securityDecision.getRemovedFields().keySet().size() > 0){
+                    System.debug('Session Removed Fields-->'+securityDecision.getRemovedFields());
+                }
+                else{
+                    delete securityDecision.getRecords();
+                    return securityDecision.getRecords();
+                }
+            }
+            
+            catch(Exception e){
+                System.debug('Session Error Message-->'+e.getMessage());
+            }
+        }
+        return null;
+    }
+    
     //get of Session Records
     public static List<Session__c> getById(set<Id> sessionId){
         try{
@@ -196,10 +217,10 @@ public class SessionService {
     public static List<Session__c> getSessionsByClassSessionId(Set<String> setClassSessionId){  
         try{
             if(setClassSessionId.size() > 0){
-                List<Session__c> listSession = [SELECT Id,Name,Session_Date__c,Class__c,Class_Session__c FROM Session__c
-                                                           WHERE Status__c =: ConstantClass.scheduledStatus 
-                                                           AND Class_Session__c IN : setClassSessionId
-                                                           WITH SECURITY_ENFORCED];
+                List<Session__c> listSession = [SELECT Id,Name,Session_Date__c,Class__c,Class_Session__c,Room__c,Teacher__c FROM Session__c
+                                                WHERE Status__c =: ConstantClass.scheduledStatus 
+                                                AND Class_Session__c IN : setClassSessionId
+                                                WITH SECURITY_ENFORCED];
                 return listSession;   
             }            
         }
@@ -207,6 +228,35 @@ public class SessionService {
             System.debug(e.getMessage());
         }
         return null;    
+    }
+    
+    public static List<Session__c> getSessionsFromTodayByClassSessionId(Set<String> setClassSessionId){  
+        try{
+            if(setClassSessionId.size() > 0){
+                List<Session__c> listSession = [SELECT Id,Name,Session_Date__c,Class__c,Class_Session__c,Room__c,Teacher__c FROM Session__c
+                                                WHERE Status__c       =: ConstantClass.scheduledStatus 
+                                                AND   Session_Date__c >= TODAY
+                                                AND   Class_Session__c IN : setClassSessionId
+                                                WITH SECURITY_ENFORCED];
+                return listSession;   
+            }            
+        }
+        catch (System.QueryException e){
+            System.debug(e.getMessage());
+        }
+        return null;    
+    }
+    
+    //Execute Srting query
+    public static List<Session__c> getByStringQuery(String query){
+        if(String.isNotBlank(query)){
+            try{
+                return Database.query(query+' WITH SECURITY_ENFORCED');
+            }catch(Exception e){
+                System.debug('Error while excute dynamic query in class services '+e.getMessage());
+            }
+        }
+        return null;
     }
     
 }

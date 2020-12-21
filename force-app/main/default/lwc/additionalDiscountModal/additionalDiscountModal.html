@@ -49,7 +49,7 @@
                                                         <template if:false={disItem.isOverride}>
                                                             <lightning-formatted-number value={disItem.amount}
                                                                 format-style="currency"
-                                                                currency-code={label.defaultCurrency}>
+                                                                currency-code={label.LOCALE_CURRENCY}>
                                                             </lightning-formatted-number>
                                                         </template>
                                                     </div>
@@ -72,6 +72,9 @@
                                     </template>
                                 </tbody>
                             </table>
+                        </template>
+                        <template if:false={discountData}>
+                            <p style="color:red">No Discount available</p>
                         </template>
                         <!-- <template if:true={courseDiscount}>
                             <div class="slds-col slds-media" style="padding-top: 10px;padding-bottom: 10px;">

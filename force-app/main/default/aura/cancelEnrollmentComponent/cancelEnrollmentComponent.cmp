@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >  
+               <aura:attribute name="enrolmentId" type="string" />
+               <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+   <c:cancelEnrollment enrolmentid="{!v.enrolmentId}" onupdateEnrollment="{!c.handleupdateEnrollment}"/>  
+ </aura:component>

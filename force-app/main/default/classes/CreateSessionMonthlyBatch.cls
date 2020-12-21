@@ -15,7 +15,8 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
         String query = 'SELECT Id,Name,Start_Date__c,Advance_Scheduling_Period__c,Location__c, Scheduled_Till__c, ';
         query += ' Start_Time__c,Days_of_Week__c,Sessions__c,Exclude_Public_Holidays__c,Frequency__c, ';
         query += ' (SELECT Id,Duration_in_Minutes__c,Day_of_Week__c,Start_Time__c,Teacher__c,Room__c FROM Class_Sessions__r ORDER BY Start_Time__c), ';
-        query += ' (SELECT Id,Enrollment_End_Date__c,Student__c,Type__c,Class_Session__c FROM Enrollments__r) ';
+        query += ' (SELECT Id,Enrollment_End_Date__c,Student__c,Type__c,Class_Session__c FROM Enrollments__r), ';
+        query += ' (SELECT Id,Sequence__c FROM Sessions__r ORDER BY Sequence__c DESC LIMIT 1) ';
         query += ' FROM Class__c WHERE Status__c =\'Open\' AND Frequency__c = \'Monthly\'';
         query += ' WITH SECURITY_ENFORCED';
         return Database.getQueryLocator(query);
@@ -25,18 +26,18 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
         try{
             List<Session__c> listSessionToInsert = new List<Session__c>();
             List<Student_Session__c> listStudentSession = new List<Student_Session__c>();
-			List<Class__c> listClassToUpdate = new List<Class__c>();
+            List<Class__c> listClassToUpdate = new List<Class__c>();
             
             Set<String> setTeacherId   = new Set<String>();
             Set<String> setRoomId  = new Set<String>();
-
+            
             List<Holiday__c> listOfHolidays = new List<Holiday__c>(); 
             Map<String,List<Teacher_Working_Hours__c>> mapTeacherIdToTechrWrkHour = new Map<String,List<Teacher_Working_Hours__c>>();
             Map<String,List<Teacher_Leave__c>> mapTeacherIdToTeacherLeave = new Map<String,List<Teacher_Leave__c>>();
             Map<String,List<Session__c>> mapTeacherIdToTeacherSessions = new Map<String,List<Session__c>>();
             Map<String,List<Session__c>> mapRoomIdToRoomSessions = new Map<String,List<Session__c>>();
-
-
+            
+            
             for(Class__c classRec : clsList){
                 //*********************Retrieving Class Session related to class which specify the number of sessions per day of a Class*******************
                 if(classRec.Class_Sessions__r.size() > 0){
@@ -49,7 +50,7 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
                     }
                 }
             }
-
+            
             //************************Retrieving Teacher Leaves,Teacher Working Hour & Holiday of specified teacher of class*******************************
             if(setTeacherId.size() > 0){
                 mapTeacherIdToTeacherLeave = UtilityClass.getTeacherLeaves(setTeacherId);
@@ -60,11 +61,11 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
             
             if(setRoomId.size() > 0)
                 mapRoomIdToRoomSessions = UtilityClass.getRoomRelatedSessions(setRoomId);
-
+            
             for(Class__c cls : clsList){
                 Date sDate = cls.Scheduled_Till__c.addDays(1);
                 DateTime strtDateTm = DateTime.newInstance(sDate.year(),sDate.month(),sDate.day(),00,00,00);
-               
+                
                 Integer numberOfDays = Date.daysInMonth(sDate.year(), sDate.month());
                 Date eDate = Date.newInstance(sDate.year(), sDate.month(), numberOfDays);                
                 DateTime endDateTm = DateTime.newInstance(eDate.year(),eDate.month(),eDate.day(),00,00,00);
@@ -72,15 +73,22 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
                 Integer seq = 0;
                 List<Session__c> listSession = UtilityClass.createSessions(cls,strtDateTm,endDateTm,seq,null,
                                                                            cls.Class_Sessions__r,
-                                                                            null);
+                                                                           null);
+                if(listSession.size() > 0){
+                    //*********Get Updated Sessions Based on Holiday,Teacher Leaves,Teacher Working Hour*****************
+                    listSession = UtilityClass.getUpdatedSessions(seq,cls.Exclude_Public_Holidays__c,
+                                                                  listSession,mapTeacherIdToTeacherLeave, mapTeacherIdToTechrWrkHour,
+                                                                  listOfHolidays,mapTeacherIdToTeacherSessions,
+                                                                  mapRoomIdToRoomSessions);
+                }
                 //mapClassIdToSessions.put(cls.Id,listSession);
                 listSessionToInsert.addAll(listSession); 
                 
                 Class__c clsTemp = new Class__c(Id=cls.Id);
-                cls.put('Scheduled_Till__c',eDate);
+                clsTemp.put('Scheduled_Till__c',eDate);
                 listClassToUpdate.add(clsTemp);
             } 
-
+            
             if(listSessionToInsert.size() > 0){
                 listSessionToInsert = SessionService.insertSessionRecords(listSessionToInsert);
                 
@@ -106,11 +114,11 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
                         }
                     }
                 }
-				System.debug('listClassToUpdate->'+listClassToUpdate);
+                System.debug('listClassToUpdate->'+listClassToUpdate);
                 if(listStudentSession.size() > 0)
                     StudentSessionService.insertStudentSessionRecords(listStudentSession);
                 
-                ClassService.updateClassRecords(clsList);
+                ClassService.updateClassRecords(listClassToUpdate);
             }
         } catch(Exception e){
             System.debug('Line Number-->'+e.getLineNumber());

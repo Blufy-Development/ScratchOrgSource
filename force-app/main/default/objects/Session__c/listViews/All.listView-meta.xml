@@ -8,6 +8,12 @@
     <columns>Start_Time__c</columns>
     <columns>End_Time__c</columns>
     <columns>Session_Date__c</columns>
+    <columns>Room__c</columns>
     <filterScope>Everything</filterScope>
+    <filters>
+        <field>Class__c</field>
+        <operation>equals</operation>
+        <value>Diploma - HM - Dec Intake</value>
+    </filters>
     <label>All</label>
 </ListView>

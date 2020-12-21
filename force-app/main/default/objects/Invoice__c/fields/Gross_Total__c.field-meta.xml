@@ -3,7 +3,7 @@
     <fullName>Gross_Total__c</fullName>
     <description>gross total by fee, deposit and discount amount</description>
     <externalId>false</externalId>
-    <formula>( Fee_Amount__c  +  Deposit_Amount__c ) -  Discount_Amount__c</formula>
+    <formula>( Fee_Amount__c   -  Discount_Amount__c) +  Deposit_Amount__c</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Gross Total</label>
     <precision>18</precision>

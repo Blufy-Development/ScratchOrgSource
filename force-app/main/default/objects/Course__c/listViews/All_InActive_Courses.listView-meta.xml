@@ -8,5 +8,5 @@
         <operation>equals</operation>
         <value>Inactive</value>
     </filters>
-    <label>All InActive Courses</label>
+    <label>All Inactive Courses</label>
 </ListView>

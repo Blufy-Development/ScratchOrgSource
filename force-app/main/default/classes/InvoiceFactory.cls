@@ -10,7 +10,7 @@ As per blufy model , a subscription can have multiple subscription line item so,
 Invoice handler.
 */
     public List<iBlufyInvoiceEngine> listOfInvoiceHandler;
-    public Set<String> setOFClassIds;
+    public Set<String> setOFClassSessionIds;
     public Invoice__c objInv;
     public Subscription__c objSub;
     private Date executionDate;
@@ -19,11 +19,13 @@ Invoice handler.
         this.objSub = sub;
         this.executionDate = executionDate;
         listOfInvoiceHandler = new List<iBlufyInvoiceEngine>();
-        setOFClassIds = new Set<String>();
+        setOFClassSessionIds = new Set<String>();
         setInvoice(sub);    
         
         for(Subscription_Line_Item__c objLineItem : sub.Subscription_Line_Items__r){
-            setOFClassIds.add(objLineItem.Enrollment__r.class__c);
+            if(objLineItem.Enrollment__r.Class_Session__c != null){
+             	setOFClassSessionIds.add(objLineItem.Enrollment__r.Class_Session__c);   
+            }           
             listOfInvoiceHandler.add(getHandler(sub.Payment_Frequency__c,objLineItem));
         } 
     }
@@ -47,7 +49,7 @@ Invoice handler.
      * return sessions related to class and time limit
     *  timeLimit e.g. Next_Month, THIS_Month
     */
-    public static Map<String,List<Session__c>> getClassSessions(Set<String> classIds, String timeLimit){
+    public static Map<String,List<Session__c>> getClassSessions(Set<String> classIds){
         Map<String,List<Session__c>> classSessionsMap = new Map<String,List<Session__c>>();
         if(classIds.size() > 0){
             String ids = '';
@@ -55,13 +57,13 @@ Invoice handler.
                 ids += '\''+string.escapeSingleQuotes(cId)+ '\',';
             }
             ids = ids.removeEnd(',');            
-            String query = 'SELECT Id, Session_Date__c, Class__c FROM Session__c WHERE Session_Date__c ='+timeLimit +' AND Class__c IN('+ids+')  WITH SECURITY_ENFORCED';
+            String query = 'SELECT Id, Session_Date__c, Class__c, Class_Session__c FROM Session__c WHERE Session_Date__c = THIS_MONTH AND Class_Session__c IN('+ids+')  WITH SECURITY_ENFORCED';
             for(SObject sObj : InvoiceService.getExecutedQueryRecords(query)){
                 Session__c objSession = (Session__c)sObj;
-                List<Session__c> sessionsList = classSessionsMap.containsKey(objSession.Class__c) ? classSessionsMap.get(objSession.Class__c) : 
+                List<Session__c> sessionsList = classSessionsMap.containsKey(objSession.Class_Session__c) ? classSessionsMap.get(objSession.Class_Session__c) : 
                 new List<Session__c>();
                 sessionsList.add(objSession);
-                classSessionsMap.put(objSession.Class__c,sessionsList);            
+                classSessionsMap.put(objSession.Class_Session__c,sessionsList);            
             }
             return classSessionsMap;
         }
@@ -87,14 +89,21 @@ Invoice handler.
     
     //Util common methods
     public void setInvoice(Subscription__c sub){
+        Blufy_Config__mdt blufyConfig = NewEnrollmentFormCntrl.getBlufyConfigDetails();  
         this.objInv = UtilityClass.fillInvoice(sub.Customer__c, sub.Location__c,sub.Id,'Recurring','Due');
         this.objInv.Invoice_Date__c = executionDate;//System.today();
-        this.objInv.Due_Date__c = executionDate;//System.today();
+        //this.objInv.Due_Date__c = executionDate;//System.today();
+        if(blufyConfig.Invoice_Due_Days__c > 0){
+             this.objInv.Due_Date__c = System.today().addDays(Integer.valueOf(blufyConfig.Invoice_Due_Days__c));
+        }else{
+            this.objInv.Due_Date__c = executionDate;
+        }
     }
     
     public static Invoice_Line_Item__c createInvLineItem(Subscription_Line_Item__c objLineItem,String type,Decimal amount,String invId){
-       Invoice_Line_Item__c objInvoiceItem = UtilityClass.fillInvLineItem(invId, objLineItem.Enrollment__c, objLineItem.id, 
-                                                                          objLineItem.Fee__c, null,type, amount, objLineItem.Fee__r.GST_Applicable__c);
+        Blufy_Config__mdt blufyConfig = NewEnrollmentFormCntrl.getBlufyConfigDetails();                              
+        Invoice_Line_Item__c objInvoiceItem = UtilityClass.fillInvLineItem(invId, objLineItem.Enrollment__c, objLineItem.id, 
+                                                                          objLineItem.Fee__c, null,type, amount, blufyConfig.GST_VAT_Applicable__c, blufyConfig.GST_VAT_Rate__c);
         return objInvoiceItem;
     }
     

@@ -1,9 +1,11 @@
 import { LightningElement, track, api, wire } from 'lwc';
+import getBlufyConfigDetailsApex from "@salesforce/apex/NewEnrollmentFormCntrl.getBlufyConfigDetails";
 import getGender from '@salesforce/apex/NewEnrollmentFormCntrl.getPicklistValues';
 import getSlcdAccDetailFromApex from '@salesforce/apex/NewEnrollmentFormCntrl.getchSlcdAccDetails';
 import GSTRate from '@salesforce/label/c.GST_Rate';
-export default class StudentDetailsCmp extends LightningElement {
 
+export default class StudentDetailsCmp extends LightningElement {
+    @api classSessionId;
     @track genderList = [];
     objectApiName = 'Account';
     fieldName = 'educato__Gender__c';
@@ -19,6 +21,10 @@ export default class StudentDetailsCmp extends LightningElement {
     rowIndex = -1;
     @track showAddClassModal = false;
     @track studentindex;
+
+    GSTApplicableByBlufyConfig = false;
+    GSTRateByBlufyConfig = 0.0;
+
     @wire(getGender, {
         "ObjectApi_name": '$objectApiName',
         "Field_name": '$fieldName'
@@ -34,6 +40,25 @@ export default class StudentDetailsCmp extends LightningElement {
         }
     }
 
+    connectedCallback(){
+        console.log('student classSessionId-->'+this.classSessionId);
+        console.log('student sessionId-->'+this.sessionId);
+        getBlufyConfigDetailsApex()
+            .then((response) => {
+                console.log('response-->',response)
+                if(response != null){
+                    this.GSTApplicableByBlufyConfig = response.educato__GST_VAT_Applicable__c;
+                    if(response.educato__GST_VAT_Rate__c != null)
+                    this.GSTRateByBlufyConfig = response.educato__GST_VAT_Rate__c;
+                    console.log('gstblufyconfigApplicable-->'+this.GSTApplicableByBlufyConfig)
+                    console.log('gstblufyconfigRate-->'+this.GSTRateByBlufyConfig)
+                }
+            })
+            .catch((error) => {
+                console.log("error while getting records", error);
+            });
+    }
+    
     handleOnSelectStudent(event) {
         let slectedRecord = event.detail;
         console.log('selected rec-->', slectedRecord)
@@ -121,6 +146,7 @@ export default class StudentDetailsCmp extends LightningElement {
 
     handleSaveEvent(event) {
         let courseDetails = event.detail;
+        console.log('courseDetails111-->',courseDetails)
         let studentDetail = JSON.parse(JSON.stringify(this.studentDetail));
         let classDetail = courseDetails.relatedCourseDetails.classDetail;
         classDetail.classFee = classDetail.tuitionFeeList[0].parentAmount;
@@ -131,7 +157,7 @@ export default class StudentDetailsCmp extends LightningElement {
             let listTuitionFee = classDetail.tuitionFeeList;
             for (let i = 0; i < listTuitionFee.length; i++) {
                 total += listTuitionFee[i].parentProratedAmount;
-                if (listTuitionFee[i].gstApplicable)
+                if (this.GSTApplicableByBlufyConfig && this.GSTRateByBlufyConfig > 0)
                     gstApplicableAmount += listTuitionFee[i].parentProratedAmount;
             }
         }
@@ -140,7 +166,7 @@ export default class StudentDetailsCmp extends LightningElement {
             let listSecondaryFee = classDetail.secondaryFeeList;
             for (let i = 0; i < listSecondaryFee.length; i++) {
                 total += listSecondaryFee[i].feeAmount;
-                if (listSecondaryFee[i].isGSTApplicable)
+                if (this.GSTApplicableByBlufyConfig && this.GSTRateByBlufyConfig > 0)
                     gstApplicableAmount += listSecondaryFee[i].feeAmount;
             }
         }
@@ -149,13 +175,11 @@ export default class StudentDetailsCmp extends LightningElement {
             let listDepositFee = classDetail.depositfeelist;
             for (let i = 0; i < listDepositFee.length; i++) {
                 total += listDepositFee[i].parentAmount;
-                if (listDepositFee[i].gstApplicable)
-                    gstApplicableAmount += listDepositFee[i].parentAmount;
             }
         }
 
         console.log('gstApplicable', gstApplicableAmount);
-        let gstAmount = gstApplicableAmount * parseInt(GSTRate) / 100;
+        let gstAmount = gstApplicableAmount * this.GSTRateByBlufyConfig / 100;
         console.log('gstAmount-->', gstAmount)
         classDetail.gstAmount = gstAmount;
         classDetail.totalAmount = total;

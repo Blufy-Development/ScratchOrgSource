@@ -67,6 +67,10 @@
                 <behavior>Edit</behavior>
                 <field>Class_Session__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Last_Session_Date__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -204,8 +208,10 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>Invoice__c</fields>
+        <fields>CREATED_DATE</fields>
         <fields>Type__c</fields>
         <fields>Fee__c</fields>
+        <fields>Amount__c</fields>
         <relatedList>Invoice_Line_Item__c.Enrollment__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -218,7 +224,8 @@
         <relatedList>Assessment__c.Enrollment__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <fields>Session__c</fields>
+        <fields>NAME</fields>
+        <fields>Account__c</fields>
         <fields>Session_Date__c</fields>
         <fields>Status__c</fields>
         <relatedList>Student_Session__c.Enrollment__c</relatedList>

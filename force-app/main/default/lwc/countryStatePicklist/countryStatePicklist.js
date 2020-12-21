@@ -10,8 +10,8 @@ export default class DependentPickListInLWC extends LightningElement {
     @track dependentValues = [];
     @track isEmpty = false;
     @track error;
-    @api selectedCountry = '';
-    @api selectedState = '';
+    @api selectedCountry;
+    @api selectedState;
     controlValues;
     totalDependentValues = [];
 
@@ -56,18 +56,17 @@ export default class DependentPickListInLWC extends LightningElement {
     }
 
     connectedCallback(){
-        if(this.selectedCountry === '') {
-            alert('ggg')
+        if(!this.selectedCountry) {
             this.isEmpty = true;
             this.dependentValues = [{label:'--None--', value:''}];
             this.selectedCountry = null;
             this.selectedState = null;
-            return;
         }
     }
     handleCountryChange(event) {
         // Selected Country Value
         this.selectedCountry = event.target.value;
+        this.selectedState = '';
         this.isEmpty = false;
         let dependValues = [];
         if(this.selectedCountry) {
@@ -77,6 +76,7 @@ export default class DependentPickListInLWC extends LightningElement {
                 dependValues = [{label:'--None--', value:''}];
                 this.selectedCountry = null;
                 this.selectedState = null;
+                this.sendDetails();
                 return;
             }
 
@@ -90,10 +90,16 @@ export default class DependentPickListInLWC extends LightningElement {
                 }
             })
             this.dependentValues = dependValues;
+            this.sendDetails();
         }
     }
 
     handleStateChange(event) {
         this.selectedState = event.target.value;
+        this.sendDetails();
+    }
+
+    sendDetails() {
+        this.dispatchEvent(new CustomEvent('sendcountrystate', { detail: { selectedCountry : this.selectedCountry,selectedState : this.selectedState } }));
     }
 }

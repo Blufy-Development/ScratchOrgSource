@@ -45,9 +45,10 @@ public class ConstantClass {
     public static String newEnrollmentInvType	 = 'New Enrollment';
     public static String dueStatus            	 = 'Due';
     public static String paidStatus          	 = 'Paid';
+    public static String successStatus          	 = 'Success';
     
     public static String enrolledStatus     	 = 'Active';
-    public static String cancelledStatus         = 'Cancelled';
+    public static String cancelledStatus         = 'Canceled';
     public static String ongoingClsType      	 = 'Ongoing';
     public static String monthClsType       	 = 'Month';
     public static String issuedStatus       	 = 'Issued';
@@ -108,4 +109,7 @@ public class ConstantClass {
     public static String childFmlyRelationPicklist = 'Child';
     public static String siblingFmlyRelationPicklist = 'Sibling';
     public static String spouseFmlyRelationPicklist = 'Spouse';
+    
+    public static String ACHHolderType = 'ACH';
+    public static String offlineHolderType = 'Offline';
 }

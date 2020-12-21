@@ -23,7 +23,7 @@ public class AccountService {
                     listAccount = [SELECT Id, Name, PersonEmail FROM Account WHERE Id=:accId WITH SECURITY_ENFORCED LIMIT 1];
                 }
                 else{
-                    listAccount = [SELECT Id,Name,FirstName,LastName,PersonEmail,Phone,PersonMailingStreet,PersonMailingStateCode,PersonMailingCity,
+                    listAccount = [SELECT Id,Name,FirstName,LastName,PersonEmail,PersonMobilePhone,PersonMailingStreet,PersonMailingStateCode,PersonMailingCity,
                                    PersonMailingCountryCode,PersonMailingPostalCode,Relationship_with_contact__c,Gender__c,
                                    PersonBirthDate,Relationship_With_Student__c
                                    FROM Account WHERE Id=:accId WITH SECURITY_ENFORCED LIMIT 1];

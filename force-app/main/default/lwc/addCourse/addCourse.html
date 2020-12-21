@@ -28,9 +28,10 @@
                                 <!-- <c:AutoCompleteCmp label="" objectApiName="Course__c" selectedOption="{crsId}"
                                     inputValue="{crsName}" showLabel="false"
                                     extendedWhereClause=" AND Status__c = 'Active'" /> -->
-                                <c-auto-complete-component iconname="standard:account" objectname="Course__c"
-                                    label="Course Name" searchfield="Name" onselectedrec={handleCourseSelect}>
-                                </c-auto-complete-component>
+                                <c-auto-complete iconname="standard:account" objectname="Course__c"
+                                    label="Course Name" searchfield="Name" onselectedrec={handleCourseSelect}
+                                    value={selectedCourseId} name={selectedCourseName}>
+                                </c-auto-complete>
                             </div>
                             <!-- <aura:if isTrue="{slcdCrsObject.classWrapperList.length == 0}"> -->
                             <!-- <div class="slds-size_1-of-1 slds-section_title slds-text-heading_small slds-p-top_large slds-p-horizontal_large slds-p-bottom_small"
@@ -41,119 +42,53 @@
                         </div>
                         <!-- <aura:if isTrue="{showPlansec}"> -->
                         <template if:true={showClassData}>
-                            <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-end">
-                                <div class="slds-col slds-large-size_6-of-12 slds-p-vertical_small">
-                                    <p
-                                        class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
-                                        <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
-                                        <lightning-icon icon-name="utility:notebook" size="x-small">
-                                        </lightning-icon>
-                                        &nbsp;&nbsp;Selected
-                                        Course:
-                                    </p>
-                                    <p class="slds-text-heading_small"><strong>{courseName}</strong></p>
+                            <template if:true={isClassNotNull}>
+                                <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-end">
+                                    <div class="slds-col slds-large-size_6-of-12 slds-p-vertical_small">
+                                        <p
+                                            class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
+                                            <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
+                                            <lightning-icon icon-name="utility:notebook" size="x-small">
+                                            </lightning-icon>
+                                            &nbsp;&nbsp;Selected
+                                            Course:
+                                        </p>
+                                        <p class="slds-text-heading_small"><strong>{courseName}</strong></p>
+                                    </div>
+                                    <!-- <div
+                                        class="slds-col slds-large-size_6-of-12  slds-p-vertical_small slds-text-align_right">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Location:&nbsp;
+                                            <strong>{locationName}</strong>
+                                        </p>
+                                    </div> -->
                                 </div>
-                                <div
-                                    class="slds-col slds-large-size_6-of-12  slds-p-vertical_small slds-text-align_right">
-                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">
-                                        Location:&nbsp;
-                                        <strong>{locationName}</strong></p>
-
-                                </div>
-                            </div>
-                            <ul class="list-num">
-                                <template for:each={classData.classWrapperList} for:item="clsItem" for:index="rowIndex">
-                                    <li key={clsItem.clsId}>
-                                        <div
-                                            class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_vertical-align-center">
-                                            <div class="slds-col  slds-medium-size_11-of-12">
-                                                <div class="slds-grid slds-gutters slds-grid_align-spread">
-                                                    <div class="slds-col slds-size_1-of-3">
-                                                        <div
-                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                            <div class="slds-media__figure">
-                                                                <span class="slds-avatar slds-avatar_x-small">
-                                                                    <lightning-icon icon-name="utility:description"
-                                                                        size="small">
-                                                                    </lightning-icon>
-                                                                </span>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <p class="slds-text-body_small">Class Name:</p>
-                                                                <p class="slds-text-heading_x-small">
-                                                                    <strong>{clsItem.clsName}</strong></p>
+                                <ul class="list-num">
+                                    <template for:each={classData.classWrapperList} for:item="clsItem"
+                                        for:index="rowIndex">
+                                        <li key={clsItem.clsId}>
+                                            <div
+                                                class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_vertical-align-center">
+                                                <div class="slds-col  slds-medium-size_11-of-12">
+                                                    <div class="slds-grid slds-gutters slds-grid_align-spread">
+                                                        <div class="slds-col slds-size_1-of-3">
+                                                            <div
+                                                                class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                <div class="slds-media__figure">
+                                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                                        <lightning-icon icon-name="utility:description"
+                                                                            size="small">
+                                                                        </lightning-icon>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="slds-media__body">
+                                                                    <p class="slds-text-body_small">Class Name:</p>
+                                                                    <p class="slds-text-heading_x-small">
+                                                                        <strong>{clsItem.clsName}</strong></p>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div class="slds-col slds-size_1-of-3">
-                                                        <div
-                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                            <div class="slds-media__figure">
-                                                                <span class="slds-avatar slds-avatar_x-small">
-                                                                    <lightning-icon icon-name="utility:date_input"
-                                                                        size="small">
-                                                                    </lightning-icon>
-                                                                </span>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <p class="slds-text-body_small">Start Date:</p>
-                                                                <p class="slds-text-heading_x-small">
-                                                                    <strong>
-                                                                        <template if:true={clsItem.isFixed}>
-                                                                            {clsItem.clsSrtDate}
-                                                                        </template>
-                                                                        <template if:false={clsItem.isFixed}>
-                                                                            {clsItem.clsFrequency}
-                                                                        </template>
-
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="slds-col slds-size_1-of-3">
-                                                        <div
-                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                            <div class="slds-media__figure">
-                                                                <span class="slds-avatar slds-avatar_x-small">
-                                                                    <lightning-icon icon-name="utility:checkin"
-                                                                        size="small">
-                                                                    </lightning-icon>
-                                                                </span>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <p class="slds-text-body_small">Location:</p>
-                                                                <p class="slds-text-heading_x-small">
-                                                                    <strong>
-                                                                        {clsItem.location}
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="slds-grid slds-gutters slds-grid_align-spread">
-                                                    <div class="slds-col slds-size_1-of-3">
-                                                        <div
-                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                            <div class="slds-media__figure">
-                                                                <span class="slds-avatar slds-avatar_x-small">
-                                                                    <lightning-icon icon-name="utility:user"
-                                                                        size="small">
-                                                                    </lightning-icon>
-                                                                </span>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <p class="slds-text-body_small">Total Enrollments:</p>
-                                                                <p class="slds-text-heading_x-small">
-                                                                    <strong>{clsItem.totalEnrollment}</strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <template if:true={clsItem.isFixed}>
                                                         <div class="slds-col slds-size_1-of-3">
                                                             <div
                                                                 class="slds-media slds-media_center  slds-p-vertical_xx-small">
@@ -165,201 +100,312 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="slds-media__body">
-                                                                    <p class="slds-text-body_small">End Date:</p>
+                                                                    <p class="slds-text-body_small">Start Date:</p>
                                                                     <p class="slds-text-heading_x-small">
-                                                                        <strong>{clsItem.clsEndDate}</strong>
+                                                                        <strong>
+                                                                            <template if:true={clsItem.isFixed}>
+                                                                                {clsItem.clsSrtDate}
+                                                                            </template>
+                                                                            <template if:false={clsItem.isFixed}>
+                                                                                {clsItem.clsFrequency}
+                                                                            </template>
+
+                                                                        </strong>
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </template>
-                                                    <div class="slds-col slds-size_1-of-3">
+
+                                                        <div class="slds-col slds-size_1-of-3">
+                                                            <div
+                                                                class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                <div class="slds-media__figure">
+                                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                                        <lightning-icon icon-name="utility:checkin"
+                                                                            size="small">
+                                                                        </lightning-icon>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="slds-media__body">
+                                                                    <p class="slds-text-body_small">Location:</p>
+                                                                    <p class="slds-text-heading_x-small">
+                                                                        <strong>
+                                                                            {clsItem.location}
+                                                                        </strong>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-grid slds-gutters slds-grid_align-spread">
+                                                        <div class="slds-col slds-size_1-of-3">
+                                                            <div
+                                                                class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                <div class="slds-media__figure">
+                                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                                        <lightning-icon icon-name="utility:user"
+                                                                            size="small">
+                                                                        </lightning-icon>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="slds-media__body">
+                                                                    <p class="slds-text-body_small">Total Enrollments:
+                                                                    </p>
+                                                                    <p class="slds-text-heading_x-small">
+                                                                        <strong>{clsItem.totalEnrollment}</strong>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <template if:true={clsItem.isFixed}>
+                                                            <div class="slds-col slds-size_1-of-3">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon
+                                                                                icon-name="utility:date_input"
+                                                                                size="small">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">End Date:</p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>{clsItem.clsEndDate}</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                        <div class="slds-col slds-size_1-of-3">
+                                                            <div
+                                                                class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                                <div class="slds-media__figure">
+                                                                    <span class="slds-avatar slds-avatar_x-small">
+                                                                        <lightning-icon icon-name="utility:date_input"
+                                                                            size="small">
+                                                                        </lightning-icon>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="slds-media__body">
+                                                                    <p class="slds-text-body_small">Days of Week:</p>
+                                                                    <p class="slds-text-heading_x-small">
+                                                                        <strong>
+                                                                            {clsItem.clsDays}
+                                                                        </strong>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col icon-blue slds-text-align_right">
+                                                    <lightning-icon class="slds-show plus-util articleTwo"
+                                                        data-index={rowIndex} name="plus" onclick={toggleSection}
+                                                        icon-name="utility:add" size="x-small">
+                                                    </lightning-icon>
+                                                    <lightning-icon class="slds-hide minus-util articleTwo"
+                                                        data-index={rowIndex} name="minus" icon-name="utility:dash"
+                                                        size="x-small" onclick={toggleSection}></lightning-icon>
+                                                </div>
+                                            </div>
+                                            <div class="bg-lite  collapse-class-session slds-hide">
+                                                <!--slds-hide-->
+                                                <template for:each={clsItem.dayOfWeekClsList} for:item="dayOfWeekItem">
+                                                    <div key={dayOfWeekItem.nameOfDay}>
                                                         <div
-                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
-                                                            <div class="slds-media__figure">
-                                                                <span class="slds-avatar slds-avatar_x-small">
-                                                                    <lightning-icon icon-name="utility:date_input"
+                                                            class="slds-grid slds-gutters slds-p-around_x-small slds-wrap bg-white slds-grid_align-spread slds-border_bottom-black slds-m-horizontal_none slds-border_top-black">
+                                                            <div class="slds-col slds-media"><span
+                                                                    class="slds-avatar slds-avatar_x-small slds-m-right_x-small">
+                                                                    <lightning-icon icon-name="utility:date_time"
                                                                         size="small">
                                                                     </lightning-icon>
-                                                                </span>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <p class="slds-text-body_small">Days of Week:</p>
-                                                                <p class="slds-text-heading_x-small">
-                                                                    <strong>
-                                                                        {clsItem.clsDays}
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
+                                                                </span> {dayOfWeekItem.nameOfDay}</div>
+                                                            <div class="slds-col"><span
+                                                                    class=" slds-text-body_small slds-text-color_weak">Total
+                                                                    Enrollments:&nbsp;</span>
+                                                                <strong>{dayOfWeekItem.csTotEnrollment}</strong></div>
+
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="slds-col icon-blue slds-text-align_right">
-                                                <lightning-icon class="slds-show plus-util articleTwo"
-                                                    data-index={rowIndex} name="plus" onclick={toggleSection}
-                                                    icon-name="utility:add" size="x-small">
-                                                </lightning-icon>
-                                                <lightning-icon class="slds-hide minus-util articleTwo"
-                                                    data-index={rowIndex} name="minus" icon-name="utility:dash"
-                                                    size="x-small" onclick={toggleSection}></lightning-icon>
-                                            </div>
-                                        </div>
-                                        <div class="bg-lite  collapse-class-session slds-hide">
-                                            <!--slds-hide-->
-                                            <template for:each={clsItem.dayOfWeekClsList} for:item="dayOfWeekItem">
-                                                <div key={dayOfWeekItem.nameOfDay}>
-                                                    <div
-                                                        class="slds-grid slds-gutters slds-p-around_x-small slds-wrap bg-white slds-grid_align-spread slds-border_bottom-black slds-m-horizontal_none slds-border_top-black">
-                                                        <div class="slds-col slds-media"><span
-                                                                class="slds-avatar slds-avatar_x-small slds-m-right_x-small">
-                                                                <lightning-icon icon-name="utility:date_time"
-                                                                    size="small">
-                                                                </lightning-icon>
-                                                            </span> {dayOfWeekItem.nameOfDay}</div>
-                                                        <div class="slds-col"><span
-                                                                class=" slds-text-body_small slds-text-color_weak">Total
-                                                                Enrollments:&nbsp;</span>
-                                                            <strong>{dayOfWeekItem.csTotEnrollment}</strong></div>
+                                                        <p class="slds-m-top_x-small"></p>
+                                                        <template for:each={dayOfWeekItem.classSessionWrapperList}
+                                                            for:item="classSessionItem">
+                                                            <div key={classSessionItem.Id}
+                                                                class="slds-grid slds-gutters slds-m-horizontal_none slds-grid_align-spread slds-grid_vertical-align-center">
+
+                                                                <div class="slds-col slds-size_3-of-12">
+                                                                    <div
+                                                                        class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                        <div class="slds-media__figure">
+                                                                            <span
+                                                                                class="slds-avatar slds-avatar_x-small">
+                                                                                <lightning-icon
+                                                                                    icon-name="utility:resource_territory"
+                                                                                    size="small">
+                                                                                </lightning-icon>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="slds-media__body">
+                                                                            <p class="slds-text-body_small">Teacher:</p>
+                                                                            <p class="slds-text-heading_x-small">
+                                                                                <strong>{classSessionItem.teacherName}</strong>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="slds-col ">
+                                                                    <div
+                                                                        class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                        <div class="slds-media__figure">
+                                                                            <span
+                                                                                class="slds-avatar slds-avatar_x-small">
+                                                                                <lightning-icon icon-name="utility:user"
+                                                                                    size="small">
+                                                                                </lightning-icon>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="slds-media__body">
+                                                                            <p class="slds-text-body_small">Enrollments:
+                                                                            </p>
+                                                                            <p class="slds-text-heading_x-small">
+                                                                                <strong>{classSessionItem.enrollments}</strong>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="slds-col">
+                                                                    <div
+                                                                        class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                        <div class="slds-media__figure">
+                                                                            <span
+                                                                                class="slds-avatar slds-avatar_x-small">
+                                                                                <lightning-icon
+                                                                                    icon-name="utility:side_list">
+                                                                                </lightning-icon>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="slds-media__body">
+                                                                            <p class="slds-text-body_small">Seats Left:
+                                                                            </p>
+                                                                            <p class="slds-text-heading_x-small">
+                                                                                <strong>{classSessionItem.seatsLeft}</strong>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="slds-col slds-size_2-of-12">
+                                                                    <div
+                                                                        class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                        <div class="slds-media__figure">
+                                                                            <span
+                                                                                class="slds-avatar slds-avatar_x-small">
+                                                                                <lightning-icon
+                                                                                    icon-name="utility:adduser">
+                                                                                </lightning-icon>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="slds-media__body">
+                                                                            <p class="slds-text-body_small">Type:</p>
+                                                                            <p class="slds-text-heading_x-small">
+                                                                                <strong>{classSessionItem.type}
+                                                                                </strong>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="slds-col">
+                                                                    <div
+                                                                        class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                        <div class="slds-media__figure">
+                                                                            <span
+                                                                                class="slds-avatar slds-avatar_x-small">
+                                                                                <lightning-icon
+                                                                                    icon-name="utility:date_time">
+                                                                                </lightning-icon>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="slds-media__body">
+                                                                            <p class="slds-text-body_small">Session
+                                                                                Time:
+                                                                            </p>
+                                                                            <p class="slds-text-heading_x-small">
+                                                                                <strong>
+                                                                                    <lightning-formatted-date-time
+                                                                                        value={classSessionItem.startTime}
+                                                                                        hour="2-digit" minute="2-digit"
+                                                                                        time-zone="UTC">
+                                                                                    </lightning-formatted-date-time>
+                                                                                    &nbsp;to&nbsp;
+                                                                                    <lightning-formatted-date-time
+                                                                                        value={classSessionItem.endTime}
+                                                                                        hour="2-digit" minute="2-digit"
+                                                                                        time-zone="UTC">
+                                                                                    </lightning-formatted-date-time>
+                                                                                </strong>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="slds-col slds-text-align_right">
+                                                                    <template if:true={classSessionItem.selected}>
+                                                                        <lightning-input type="checkbox" checked
+                                                                            class="class-session-chkbx slds-m-top_small"
+                                                                            variant="label-hidden"
+                                                                            data-id={classSessionItem.id}
+                                                                            data-clsid={clsItem.clsId}
+                                                                            data-locationid={clsItem.locationId}
+                                                                            data-teacherid={classSessionItem.teacherId}
+                                                                            data-teachername={classSessionItem.teacherName}
+                                                                            data-course={clsItem.course}
+                                                                            data-class={clsItem.clsName}
+                                                                            data-day={classSessionItem.dayOfWeek}
+                                                                            data-srttime={classSessionItem.startTime}
+                                                                            data-endtime={classSessionItem.endTime}
+                                                                            data-clsfrequency={clsItem.clsFrequency}
+                                                                            data-clstype={clsItem.clsType}
+                                                                            data-mode={clsItem.mode}
+                                                                            onchange={hanldeSessionChkxBox}>
+                                                                        </lightning-input>
+                                                                    </template>
+                                                                    <template if:false={classSessionItem.selected}>
+                                                                        <lightning-input type="checkbox"
+                                                                            class="class-session-chkbx slds-m-top_small"
+                                                                            variant="label-hidden"
+                                                                            data-id={classSessionItem.id}
+                                                                            data-clsid={clsItem.clsId}
+                                                                            data-locationid={clsItem.locationId}
+                                                                            data-teacherid={classSessionItem.teacherId}
+                                                                            data-teachername={classSessionItem.teacherName}
+                                                                            data-course={clsItem.course}
+                                                                            data-class={clsItem.clsName}
+                                                                            data-day={classSessionItem.dayOfWeek}
+                                                                            data-srttime={classSessionItem.startTime}
+                                                                            data-endtime={classSessionItem.endTime}
+                                                                            data-clsfrequency={clsItem.clsFrequency}
+                                                                            data-clstype={clsItem.clsType}
+                                                                            data-mode={clsItem.mode}
+                                                                            onchange={hanldeSessionChkxBox}>
+                                                                        </lightning-input>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </template>
 
                                                     </div>
-                                                    <p class="slds-m-top_x-small"></p>
-                                                    <template for:each={dayOfWeekItem.classSessionWrapperList}
-                                                        for:item="classSessionItem">
-                                                        <div key={classSessionItem.Id}
-                                                            class="slds-grid slds-gutters slds-m-horizontal_none slds-grid_align-spread slds-grid_vertical-align-center">
-
-                                                            <div class="slds-col slds-size_3-of-12">
-                                                                <div
-                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
-                                                                    <div class="slds-media__figure">
-                                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                                            <lightning-icon
-                                                                                icon-name="utility:resource_territory"
-                                                                                size="small">
-                                                                            </lightning-icon>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="slds-media__body">
-                                                                        <p class="slds-text-body_small">Teacher:</p>
-                                                                        <p class="slds-text-heading_x-small">
-                                                                            <strong>{classSessionItem.teacherName}</strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="slds-col ">
-                                                                <div
-                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
-                                                                    <div class="slds-media__figure">
-                                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                                            <lightning-icon icon-name="utility:user"
-                                                                                size="small">
-                                                                            </lightning-icon>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="slds-media__body">
-                                                                        <p class="slds-text-body_small">Enrollments:</p>
-                                                                        <p class="slds-text-heading_x-small">
-                                                                            <strong>{classSessionItem.enrollments}</strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="slds-col">
-                                                                <div
-                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
-                                                                    <div class="slds-media__figure">
-                                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                                            <lightning-icon
-                                                                                icon-name="utility:side_list">
-                                                                            </lightning-icon>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="slds-media__body">
-                                                                        <p class="slds-text-body_small">Seats Left:</p>
-                                                                        <p class="slds-text-heading_x-small">
-                                                                            <strong>{classSessionItem.seatsLeft}</strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="slds-col slds-size_2-of-12">
-                                                                <div
-                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
-                                                                    <div class="slds-media__figure">
-                                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                                            <lightning-icon icon-name="utility:adduser">
-                                                                            </lightning-icon>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="slds-media__body">
-                                                                        <p class="slds-text-body_small">Type:</p>
-                                                                        <p class="slds-text-heading_x-small">
-                                                                            <strong>{classSessionItem.type}
-                                                                            </strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="slds-col">
-                                                                <div
-                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
-                                                                    <div class="slds-media__figure">
-                                                                        <span class="slds-avatar slds-avatar_x-small">
-                                                                            <lightning-icon
-                                                                                icon-name="utility:date_time">
-                                                                            </lightning-icon>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="slds-media__body">
-                                                                        <p class="slds-text-body_small">Session Time:
-                                                                        </p>
-                                                                        <p class="slds-text-heading_x-small">
-                                                                            <strong>
-                                                                                <lightning-formatted-date-time
-                                                                                    value={classSessionItem.startTime}
-                                                                                    hour="2-digit" minute="2-digit"
-                                                                                    time-zone="UTC">
-                                                                                </lightning-formatted-date-time>
-                                                                                &nbsp;to&nbsp;
-                                                                                <lightning-formatted-date-time
-                                                                                    value={classSessionItem.endTime}
-                                                                                    hour="2-digit" minute="2-digit"
-                                                                                    time-zone="UTC">
-                                                                                </lightning-formatted-date-time>
-                                                                            </strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="slds-col slds-text-align_right">
-
-                                                                <lightning-input type="checkbox"
-                                                                    class="class-session-chkbx slds-m-top_small"
-                                                                    variant="label-hidden" data-id={classSessionItem.id}
-                                                                    data-clsid={clsItem.clsId}
-                                                                    data-locationid={clsItem.locationId}
-                                                                    data-teacherid={classSessionItem.teacherId}
-                                                                    data-teachername={classSessionItem.teacherName}
-                                                                    data-course={clsItem.course}
-                                                                    data-class={clsItem.clsName}
-                                                                    data-day={classSessionItem.dayOfWeek}
-                                                                    data-srttime={classSessionItem.startTime}
-                                                                    data-endtime={classSessionItem.endTime}
-                                                                    onchange={hanldeSessionChkxBox}>
-                                                                </lightning-input>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </li>
-                                </template>
-                            </ul>
+                                                </template>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={isClassNotNull}>
+                                <div class="slds-size_1-of-1 slds-section_title slds-text-heading_small slds-p-top_large slds-p-horizontal_large slds-p-bottom_small"
+                                    style="display:block;color:#C23934">
+                                    No class found related to the mentioned course.Please contact your Administrator.
+                                </div>
+                            </template>
                         </template>
                         <!-- </aura:if> -->
                     </div>
@@ -433,7 +479,6 @@
 
 
                     </div> -->
-
                     <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
                         <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
                             <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
@@ -450,7 +495,8 @@
                                     <div
                                         class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
                                         <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
-                                            <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:
+                                            <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                                Fee:
                                             </p>
                                             <p class="slds-text-heading_x-small"><strong>{feesItem.parentFeeName}
                                                 </strong></p>
@@ -471,7 +517,7 @@
                                                             <lightning-formatted-number
                                                                 value={feesItem.parentTutionFeeUnitPrice}
                                                                 format-style="currency"
-                                                                currency-code={label.defaultCurrency}>
+                                                                currency-code={label.LOCALE_CURRENCY}>
                                                             </lightning-formatted-number>
                                                         </strong>
                                                     </p>
@@ -494,7 +540,7 @@
                                                         <strong>
                                                             <lightning-formatted-number value={feesItem.parentAmount}
                                                                 format-style="currency"
-                                                                currency-code={label.defaultCurrency}>
+                                                                currency-code={label.LOCALE_CURRENCY}>
                                                             </lightning-formatted-number>
                                                         </strong>
                                                     </p>
@@ -504,12 +550,20 @@
                                         </div>
                                         <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
                                             <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
-
                                             </p>
-                                            <lightning-input type="radio" class="primary-fees slds-m-top_medium"
-                                                variant="label-hidden" name="fees" data-id={feesItem.parentFeeId}
-                                                onchange={handleFeesSelectChkbx}>
-                                            </lightning-input>
+                                            <template if:true={feesItem.selected}>
+                                                <lightning-input type="radio" class="primary-fees slds-m-top_medium"
+                                                    variant="label-hidden" checked name="fees"
+                                                    data-id={feesItem.parentFeeId} onchange={handleFeesSelectChkbx}>
+                                                </lightning-input>
+                                            </template>
+                                            <template if:false={feesItem.selected}>
+                                                <lightning-input type="radio" class="primary-fees slds-m-top_medium"
+                                                    variant="label-hidden" name="fees" data-id={feesItem.parentFeeId}
+                                                    onchange={handleFeesSelectChkbx}>
+                                                </lightning-input>
+                                            </template>
+
                                         </div>
                                     </div>
                                 </li>
@@ -1006,7 +1060,7 @@
                                                             <strong>
                                                                 <lightning-formatted-number value={secondItem.feeAmount}
                                                                     format-style="currency"
-                                                                    currency-code={label.defaultCurrency}>
+                                                                    currency-code={label.LOCALE_CURRENCY}>
                                                                 </lightning-formatted-number>
                                                             </strong></p>
                                                     </div>
@@ -1025,10 +1079,19 @@
                                                     </lightning-input>
                                                 </template>
                                                 <template if:false={secondItem.required}>
-                                                    <lightning-input type="checkbox"
-                                                        class="secondary-fees slds-m-top_medium" variant="label-hidden"
-                                                        label="" data-id={secondItem.feeId}>
-                                                    </lightning-input>
+                                                    <template if:true={secondItem.selected}>
+                                                        <lightning-input type="checkbox"
+                                                            class="secondary-fees slds-m-top_medium"
+                                                            variant="label-hidden" label="" data-id={secondItem.feeId}
+                                                            checked></lightning-input>
+                                                    </template>
+                                                    <template if:false={secondItem.selected}>
+                                                        <lightning-input type="checkbox"
+                                                            class="secondary-fees slds-m-top_medium"
+                                                            variant="label-hidden" label="" data-id={secondItem.feeId}>
+                                                        </lightning-input>
+                                                    </template>
+
                                                 </template>
                                             </div>
                                         </div>
@@ -1076,7 +1139,7 @@
                                                         <strong>
                                                             <lightning-formatted-number value={depositItem.parentAmount}
                                                                 format-style="currency"
-                                                                currency-code={label.defaultCurrency}>
+                                                                currency-code={label.LOCALE_CURRENCY}>
                                                             </lightning-formatted-number>
                                                         </strong></p>
                                                 </div>
@@ -1093,9 +1156,19 @@
                                                 </lightning-input>
                                             </template>
                                             <template if:false={depositItem.required}>
-                                                <lightning-input type="checkbox" class="deposit-fees slds-m-top_medium"
-                                                    variant="label-hidden" label="" data-id={depositItem.parentFeeId}>
-                                                </lightning-input>
+                                                <template if:true={depositItem.selected}>
+                                                    <lightning-input type="checkbox"
+                                                        class="deposit-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={depositItem.parentFeeId} checked>
+                                                    </lightning-input>
+                                                </template>
+                                                <template if:false={depositItem.selected}>
+                                                    <lightning-input type="checkbox"
+                                                        class="deposit-fees slds-m-top_medium" variant="label-hidden"
+                                                        label="" data-id={depositItem.parentFeeId}>
+                                                    </lightning-input>
+                                                </template>
+
                                             </template>
 
                                         </div>
@@ -1104,7 +1177,12 @@
                             </template>
                         </ul>
                     </template>
-
+                    <!-- <template if:false={feesData}>
+                        <div class="slds-size_1-of-1 slds-section_title slds-text-heading_small slds-p-top_large slds-p-horizontal_large slds-p-bottom_small"
+                            style="display:block;color:#C23934">
+                            No Fees found related to the mentioned class.Please contact your Administrator.
+                        </div>
+                    </template> -->
                 </div>
                 <!-- ======================== Third Page ================================ -->
                 <div class="courseSections courseSection3 slds-hide">
@@ -1205,7 +1283,7 @@
                                                                 <lightning-formatted-number
                                                                     value={primaryItem.parentTutionFeeUnitPrice}
                                                                     format-style="currency"
-                                                                    currency-code={label.defaultCurrency}>
+                                                                    currency-code={label.LOCALE_CURRENCY}>
                                                                 </lightning-formatted-number>
                                                             </strong>
                                                         </p>
@@ -1229,7 +1307,7 @@
                                                                 <lightning-formatted-number
                                                                     value={primaryItem.parentAmount}
                                                                     format-style="currency"
-                                                                    currency-code={label.defaultCurrency}>
+                                                                    currency-code={label.LOCALE_CURRENCY}>
                                                                 </lightning-formatted-number>
                                                             </strong>
                                                         </p>
@@ -1284,7 +1362,7 @@
                                                             <strong>
                                                                 <lightning-formatted-number value={secondItem.feeAmount}
                                                                     format-style="currency"
-                                                                    currency-code={label.defaultCurrency}>
+                                                                    currency-code={label.LOCALE_CURRENCY}>
                                                                 </lightning-formatted-number>
                                                             </strong>
                                                         </p>
@@ -1339,7 +1417,7 @@
                                                                 <lightning-formatted-number
                                                                     value={depositItem.parentAmount}
                                                                     format-style="currency"
-                                                                    currency-code={label.defaultCurrency}>
+                                                                    currency-code={label.LOCALE_CURRENCY}>
                                                                 </lightning-formatted-number>
                                                             </strong>
                                                         </p>
@@ -1383,7 +1461,8 @@
                                 </div>
                                 <div class="slds-media__body">
                                     <p class="slds-text-body_small">Notes:</p>
-                                    <lightning-textarea name="notes" label="" variant="label-hidden" class="notes-cls">
+                                    <lightning-textarea name="notes" value={comment} label="" variant="label-hidden"
+                                        class="notes-cls">
                                     </lightning-textarea>
                                 </div>
                             </div>
@@ -1393,6 +1472,9 @@
             </div>
             <footer class="slds-modal__footer slds-p-vertical_medium ">
                 <div class="footerSection" data-name="courseSection1">
+                    <lightning-button label="Cancel" variant="destructive" title="cancel" icon-name="utility:close"
+                        onclick={closemodal} name="cancel" class="slds-m-right_medium " icon-position="left">
+                    </lightning-button>
                     <template if:true={showBackButton}>
                         <lightning-button label="Back" variant="neutral" title="Base action"
                             icon-name="utility:jump_to_left" onclick={changeScreen} name="back"
