@@ -1,0 +1,12 @@
+.slds-listbox__item.hasSelected{
+    background-color: rgb(221, 219, 218);
+}
+
+/* .slds-dropdown{
+    overflow-y: hidden;
+} */
+
+.slds-listbox{
+    position: relative;
+    top: -4px;
+}

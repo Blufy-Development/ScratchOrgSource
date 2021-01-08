@@ -182,13 +182,6 @@
                 <div class="slds-grid slds-gutters">
                     <!--<div class="slds-col slds-size_6-of-12 slds-p-bottom_xx-small slds-p-right_large" style="border-right:1px dashed rgb(221, 219, 218);">-->
                     <div class="slds-col slds-size_6-of-12 slds-p-bottom_small slds-p-right_large">
-                        <lightning-combobox name="progress" label="Payment Type" value={paymentType}
-                            placeholder="Select Progress" options={paymentOptions} onchange={handlePaymentChange}>
-                        </lightning-combobox>
-                        <template if:true={showAchPayment}>
-                            <c-stripe-a-c-h-verification></c-stripe-a-c-h-verification>
-                        </template>
-                        <template if:false={showAchPayment}>
                             <!--<p class="slds-p-top_x-large"><strong></strong></p>-->
                             <div class="slds-grid slds-gutters slds-p-top_medium">
                                 <div class="slds-col slds-size_1-of-2  slds-p-bottom_xx-small">
@@ -261,13 +254,8 @@
                         <div class="slds-text-align_right slds-p-vertical_small">
                             <lightning-button label="Pay Now &amp; Confirm"  icon-name="action:update" variant="success" class="icon-large text-white "/>
                         </div>-->
-
-
-                        </template>
                     </div>
-
                 </div>
-
                 <div class="slds-grid slds-gutters slds-p-top_large /*slds-grid_align-spread*/">
                     <div class="slds-size_1-of-1 slds-text-align_center slds-p-top_large">
                         <lightning-button label="Save as Draft" onclick={saveEnrolments} icon-name="action:update"

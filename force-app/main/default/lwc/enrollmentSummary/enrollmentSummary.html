@@ -406,7 +406,7 @@
         </div>
     </div>
     <template if:true={showEditClassForm}>
-        <c-add-course mode="edit" previous-data={currentClassDetail} onsavemodal={handleSaveEvent}
+        <c-add-course mode="edit" previous-data={currentClassDetail} onsavemodal={handleSaveEvent}  is-enrichment={isEnrichment}
             onclosemodal={handleClasseModal} index={currentIndex}></c-add-course>
     </template>
 </template>

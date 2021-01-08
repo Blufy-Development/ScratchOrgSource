@@ -20,7 +20,7 @@
         <isOptional>false</isOptional>
     </lookupFilter>
     <referenceTo>Account</referenceTo>
-    <relationshipLabel>Enrollments (Parent)</relationshipLabel>
+    <relationshipLabel>Enrollments</relationshipLabel>
     <relationshipName>Enrollments1</relationshipName>
     <required>false</required>
     <trackHistory>false</trackHistory>

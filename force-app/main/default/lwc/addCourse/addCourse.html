@@ -207,7 +207,8 @@
                                                     </lightning-icon>
                                                     <lightning-icon class="slds-hide minus-util articleTwo"
                                                         data-index={rowIndex} name="minus" icon-name="utility:dash"
-                                                        size="x-small" onclick={toggleSection}></lightning-icon>
+                                                        size="x-small" onclick={toggleSection}>
+                                                    </lightning-icon>
                                                 </div>
                                             </div>
                                             <div class="bg-lite  collapse-class-session slds-hide">
@@ -225,8 +226,8 @@
                                                             <div class="slds-col"><span
                                                                     class=" slds-text-body_small slds-text-color_weak">Total
                                                                     Enrollments:&nbsp;</span>
-                                                                <strong>{dayOfWeekItem.csTotEnrollment}</strong></div>
-
+                                                                <strong>{dayOfWeekItem.csTotEnrollment}</strong>
+                                                            </div>
                                                         </div>
                                                         <p class="slds-m-top_x-small"></p>
                                                         <template for:each={dayOfWeekItem.classSessionWrapperList}
@@ -1450,6 +1451,28 @@
                                 </div>
                             </div>
                         </div>
+                        <template if:true={isEnrichment}>                        
+                            <div class="slds-col slds-large-size_6-of-12 slds-p-vertical_small">
+                                <div class="slds-media slds-media_center">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-avatar slds-avatar_x-small">
+                                            <lightning-icon icon-name="utility:copy"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-body_small"><span style="color:red">*</span> 
+                                            Subject</p>
+                                        <p class="slds-text-heading_x-small "><strong>                                                
+                                                <lightning-combobox name="educato__Subject__c"  required="true"
+                                                variant="label-hidden" class="req-fld subject"
+                                                value={subject} auto
+                                                placeholder="-Select-" options={subjectoptions} onchange={getSubjectValue}>
+                                            </lightning-combobox>
+                                            </strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="slds-grid slds-wrap slds-gutters slds-grid_align-spread">
                         <div class="slds-col slds-large-size_12-of-12 ">

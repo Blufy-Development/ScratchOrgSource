@@ -1,5 +1,6 @@
 <apex:page standardStylesheets="false" controller="FullCalendarController" showHeader="false" applyHtmlTag="true" applyBodyTag="false">
     <head>        
+        <title>Blufy: Calendar</title>
         <apex:slds />  
         <div id="spinner" style="display: none">
             <div class="slds-spinner_container" style="position:fixed">
@@ -18,7 +19,7 @@
                             nameSpace="{!nameSpace}">
         </c:full_calendar_js>           
         <div class="session-action slds-hide">
-            <c:session_action_component customMetaDataConfig="{!calendarConfigMetadataObject}" nameSpace="{!nameSpace}"></c:session_action_component>
+            <c:session_action_component customMetaDataConfig="{!calendarConfigMetadataObject}" blufyMetaDataConfig="{!blufyConfigMetaDataObject}" nameSpace="{!nameSpace}"></c:session_action_component>
         </div>      
     </head>     
     <body class="slds-scope" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

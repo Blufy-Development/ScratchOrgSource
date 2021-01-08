@@ -23,7 +23,8 @@ public class TeacherLeaveCmpApexControllerTest {
         
         Class_Session__c clsSess = BlufyTestUtil.createClassSessionRec(cls.Id,Time.newInstance(10,30,00,00),'120');
         insert clsSess;
-        
+        clsSess.Day_of_Week__c = 'Fri';
+        update clsSess;
         
         cls.Status__c = ConstantClass.clsOpenStatus;
         cls.Days_of_Week__c = 'Fri;Mon;Tue;Wed;Sat;Thu;Sun';
@@ -32,7 +33,9 @@ public class TeacherLeaveCmpApexControllerTest {
         cls.Advance_Scheduling_Unit__c = ConstantClass.schedulingPicklistMonth;
         cls.Advance_Scheduling_Period__c = '2';
         update cls;
-
+		
+        
+        
         Room__c roomObj = BlufyTestUtil.createRoom(location.Id, 'Name', 'Group', 50);
         insert roomObj;
         

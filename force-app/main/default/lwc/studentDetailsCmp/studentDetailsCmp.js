@@ -2,7 +2,6 @@ import { LightningElement, track, api, wire } from 'lwc';
 import getBlufyConfigDetailsApex from "@salesforce/apex/NewEnrollmentFormCntrl.getBlufyConfigDetails";
 import getGender from '@salesforce/apex/NewEnrollmentFormCntrl.getPicklistValues';
 import getSlcdAccDetailFromApex from '@salesforce/apex/NewEnrollmentFormCntrl.getchSlcdAccDetails';
-import GSTRate from '@salesforce/label/c.GST_Rate';
 
 export default class StudentDetailsCmp extends LightningElement {
     @api classSessionId;

@@ -53,6 +53,7 @@ public class ConstantClass {
     public static String monthClsType       	 = 'Month';
     public static String issuedStatus       	 = 'Issued';
     public static String pendingStatus			 = 'Pending';
+    public static String appliedStatus           = 'Applied';
     
     public static String notAttendedStatus  	 = 'Not Attended';
     public static String feeType            	 = 'Fee';

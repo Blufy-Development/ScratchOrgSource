@@ -76,6 +76,7 @@ public with sharing class CancelEnrolmentController {
                                                                         
                                                                         Service_Request__c objServiceRequest = new Service_Request__c(
                                                                             Service_Request_Type__c = 'Cancel Enrollment',
+                                                                            Subject__c='Cancel Enrollment',
                                                                             Status__c ='New',
                                                                             Requested_Date__c = system.today(),
                                                                             Enrollment__c = enrolmentid,

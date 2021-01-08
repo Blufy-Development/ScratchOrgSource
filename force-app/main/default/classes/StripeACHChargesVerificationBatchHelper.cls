@@ -14,7 +14,7 @@ public class StripeACHChargesVerificationBatchHelper {
                     status = (String) ((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('status');
                     lstNewPaymentLogs.add(new Payment_Log__c(Charge_Id__c = (String) ((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('id'),
                                                                         Invoice__c = obj.Invoice__c, 
-                                                                        Status__c = status.compareTo('succeeded')==0 || status.compareTo('pending')==0 ? 'Success':'Failure', 
+                                                                        API_Status__c = status.compareTo('succeeded')==0 || status.compareTo('pending')==0 ? 'Success':'Failure', 
                                                                         Message__c = status.compareTo('succeeded')==0 ? 'Payment Successful.' : status.compareTo('pending')==0 ? 'Payment is Pending.' : (String) ((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('failure_message') ,
                                                                         //Code__c = status.compareTo('succeeded')==0 || status.compareTo('pending')==0 ? '200': (String) ((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('failure_code'),
                                                                         //Code__c will be containing the details only incase of failed
@@ -27,7 +27,7 @@ public class StripeACHChargesVerificationBatchHelper {
                 else{
                     lstNewPaymentLogs.add(new Payment_Log__c(
                                                                 Invoice__c = obj.Id, 
-                                                                Status__c= 'Failure', 
+                                                                API_Status__c= 'Failure', 
                                                                 Message__c = (String)((Map<String,Object>)JSON.deserializeUntyped(JSON.serialize(((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('error')))).get('message'), 
                                                                 Code__c = String.valueOf(resp.getStatusCode()), 
                                                                 Type__c= (String)((Map<String,Object>)JSON.deserializeUntyped(JSON.serialize(((Map<String,Object>)JSON.deserializeUntyped(resp.getBody())).get('error')))).get('type')

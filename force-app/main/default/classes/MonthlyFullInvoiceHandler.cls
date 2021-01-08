@@ -5,18 +5,22 @@ public class MonthlyFullInvoiceHandler extends iBlufyInvoiceEngine {
         this.objLineItem = objLineItem;
     }
     
-    public override List<Invoice_Line_Item__c> createInvoiceLineItems(Invoice__c objInv,LineItemCalculateWrapper objWrap){
+    public override List<Invoice_Line_Item__c> createInvoiceLineItems(Invoice__c objInv,LineItemCalculateWrapper objWrap,String year, String month){
         List<Invoice_Line_Item__c> listOfLineItems = new List<Invoice_Line_Item__c>();
         Integer noOfSession = 0;
         List<Session__c> sessions = objWrap.mapOfClassSession.containsKey(objLineItem.Enrollment__r.Class_Session__c) ?  
         objWrap.mapOfClassSession.get(objLineItem.Enrollment__r.Class_Session__c) : new List<Session__c>();
         Decimal amount = 0;
         date dateObj = date.today();
+        if(Integer.valueOf(month) != dateObj.month() && String.isNotBlank(year) && String.isNotBlank(month)){
+             dateObj = date.newinstance(Integer.valueOf(year), Integer.valueOf(month), 1);
+        }
         system.debug('dateObj'+dateObj);
         system.debug('objLineItem.Fee__r.Fixed_Billing__c  '+objLineItem.Fee__r.Fixed_Billing__c);
+        system.debug('objLineItem.Fee__r.Prorate__c  '+ objLineItem.Fee__r.Prorate__c);
         system.debug('objLineItemId-'+objLineItem.Id);
         system.debug('sessions-size '+sessions.size());
-        if(objLineItem.Fee__r.Fixed_Billing__c != false){
+        if(objLineItem.Fee__r.Fixed_Billing__c != false && objLineItem.Fee__r.Prorate__c == false){
             amount = objLineItem.Fee__r.amount__c;
         }else {
             if(objLineItem.Enrollment__r.Start_Date__c != null && objLineItem.Enrollment__r.Last_Session_Date__c != null
@@ -40,6 +44,7 @@ public class MonthlyFullInvoiceHandler extends iBlufyInvoiceEngine {
                 }
             }else{
                 for(Session__c session : sessions){
+                    system.debug('session month ' + session.session_Date__c.month());
                     if(session.session_Date__c.month() == dateObj.month()){
                         noOfSession+=1;
                     }
@@ -84,7 +89,7 @@ public class MonthlyFullInvoiceHandler extends iBlufyInvoiceEngine {
         }*/
         //Decimal amount = noOfSession * objLineItem.Fee__r.Unit_Price__c;
         system.debug('objLineItem'+objLineItem.Fee__r.GST_Applicable__c);
-        Invoice_Line_Item__c objInvoiceItem = InvoiceFactory.createInvLineItem(objLineItem,'Fee',amount,objInv.id);  //new Invoice_Line_Item__c();
+        Invoice_Line_Item__c objInvoiceItem = InvoiceFactory.createInvLineItem(objLineItem,'Fee',amount,objInv.id,year,month);  //new Invoice_Line_Item__c();
         listOfLineItems.add(objInvoiceItem);
         
         // set next bill date

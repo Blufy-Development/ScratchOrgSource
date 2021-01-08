@@ -90,4 +90,19 @@ public class ClassSessionService {
         }
         return null;
     }
+    
+    //Added on 21-12-20 get records by Id
+    public static List<Class_Session__c> getById(Set<String> clsSessionIds){
+        if(clsSessionIds.size() > 0){
+            try{
+                return [SELECT Id, Class__r.Course__c
+                        FROM Class_Session__c 
+                        WHERE Id IN: clsSessionIds
+                        WITH SECURITY_ENFORCED];             
+            }catch(System.QueryException e) {
+                System.debug(e.getMessage());
+            }             
+        }
+        return null;
+    }
 }

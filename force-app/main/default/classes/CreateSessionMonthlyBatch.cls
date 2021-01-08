@@ -12,7 +12,7 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
     global Database.QueryLocator start(Database.BatchableContext bc){
         //**************Retrieving Class with Open Status, Monthly Frequency,Advance Scheduling Unit is Month(s)  & Next Schedule Date is 
         //Today along with related Sessions,Class Session,Enrollment Records***************************
-        String query = 'SELECT Id,Name,Start_Date__c,Advance_Scheduling_Period__c,Location__c, Scheduled_Till__c, ';
+        String query = 'SELECT Id,Name,Start_Date__c,End_Date__c,Advance_Scheduling_Period__c,Location__c, Scheduled_Till__c, ';
         query += ' Start_Time__c,Days_of_Week__c,Sessions__c,Exclude_Public_Holidays__c,Frequency__c, ';
         query += ' (SELECT Id,Duration_in_Minutes__c,Day_of_Week__c,Start_Time__c,Teacher__c,Room__c FROM Class_Sessions__r ORDER BY Start_Time__c), ';
         query += ' (SELECT Id,Enrollment_End_Date__c,Student__c,Type__c,Class_Session__c FROM Enrollments__r), ';
@@ -67,7 +67,11 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
                 DateTime strtDateTm = DateTime.newInstance(sDate.year(),sDate.month(),sDate.day(),00,00,00);
                 
                 Integer numberOfDays = Date.daysInMonth(sDate.year(), sDate.month());
-                Date eDate = Date.newInstance(sDate.year(), sDate.month(), numberOfDays);                
+                Date eDate = Date.newInstance(sDate.year(), sDate.month(), numberOfDays);    
+                if(cls.End_Date__c != NULL && cls.End_Date__c < eDate){
+                    eDate = cls.End_Date__c;
+                }
+                
                 DateTime endDateTm = DateTime.newInstance(eDate.year(),eDate.month(),eDate.day(),00,00,00);
                 
                 Integer seq = 0;
@@ -108,8 +112,13 @@ global with sharing class CreateSessionMonthlyBatch implements Database.Batchabl
                         //******************Creating Student Session Records for each Enrollment based on session records*********** 
                         if(mapClassIdToSessions.get(cls.Id+';'+enrol.Class_Session__c) != null){
                             for(Session__c sess : mapClassIdToSessions.get(cls.Id+';'+enrol.Class_Session__c)){
-                                Student_Session__c stuSess = UtilityClass.createStudentSessions(enrol, sess);
-                                listStudentSession.add(stuSess);
+                                if(enrol.Enrollment_End_Date__c != NULL && enrol.Enrollment_End_Date__c >= sess.Session_Date__c){
+                                    Student_Session__c stuSess = UtilityClass.createStudentSessions(enrol, sess);
+                                    listStudentSession.add(stuSess);
+                                }else if(enrol.Enrollment_End_Date__c == NULL){
+                                    Student_Session__c stuSess = UtilityClass.createStudentSessions(enrol, sess);
+                                    listStudentSession.add(stuSess);
+                                }
                             }
                         }
                     }

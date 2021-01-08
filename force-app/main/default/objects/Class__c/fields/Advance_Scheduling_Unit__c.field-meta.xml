@@ -43,5 +43,9 @@
             <controllingFieldValue>Monthly</controllingFieldValue>
             <valueName>Month(s)</valueName>
         </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Term</controllingFieldValue>
+            <valueName>Term(s)</valueName>
+        </valueSettings>
     </valueSet>
 </CustomField>

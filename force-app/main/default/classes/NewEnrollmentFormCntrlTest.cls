@@ -25,7 +25,7 @@ public class NewEnrollmentFormCntrlTest {
         Class_Session__c clsSess = BlufyTestUtil.createClassSessionRec(classObj.Id,Time.newInstance(10,30,00,00),'120');
         insert clsSess;
         
-        Term__c termObj = BlufyTestUtil.createTermRec('Term 1', '2020', 'Open',Date.today().addDays(1),Date.today().addMonths(6),12,1 );
+        Term__c termObj = BlufyTestUtil.createTermRec('Term 1',String.valueOf(Date.today().year()), 'Open',Date.today().addDays(1),Date.today().addMonths(6),12,1 );
         insert termObj;
         
         Class_Term__c classTermObj = BlufyTestUtil.createClassTerms('Term 1',classObj.id,14,Date.today().addDays(1),Date.today().addMonths(6),1, ConstantClass.ScheduledStatus ,termObj.id);
@@ -146,7 +146,7 @@ public class NewEnrollmentFormCntrlTest {
         clsSess.Start_Time__c = Time.newInstance(10, 00, 00, 00);
         insert clsSess;
         
-        Term__c termObj = BlufyTestUtil.createTermRec('Term 1', '2020', 'Open',Date.today().addDays(1),Date.today().addMonths(6),12,1 );
+        Term__c termObj = BlufyTestUtil.createTermRec('Term 1',String.valueOf(Date.today().year()), 'Open',Date.today().addDays(1),Date.today().addMonths(6),12,1 );
         insert termObj;
         
         Class_Term__c classTermObj = BlufyTestUtil.createClassTerms('Term 1',classObj.id,14,Date.today().addDays(1),Date.today().addMonths(6),1, ConstantClass.ScheduledStatus ,termObj.id);
@@ -274,12 +274,12 @@ public class NewEnrollmentFormCntrlTest {
             
             NewEnrollmentFormCntrl.StudentDetails stuDetailsList = new NewEnrollmentFormCntrl.StudentDetails();
         stuDetailsList.studentDetail = new List<NewEnrollmentFormCntrl.StudentDetailsWrapper>{stuDetail};
-            NewEnrollmentFormCntrl.ACHDetailsWrapper achDetails = new NewEnrollmentFormCntrl.ACHDetailsWrapper();
+       /*     NewEnrollmentFormCntrl.ACHDetailsWrapper achDetails = new NewEnrollmentFormCntrl.ACHDetailsWrapper();
         achDetails.HolderType = 'test';
         achDetails.HolderName = 'Testimg';
         achDetails.RoutingNo = 'tyy890';
         achDetails.AccountNumber = 'ACHt677';
-        List<NewEnrollmentFormCntrl.ACHDetailsWrapper> listACH = new List<NewEnrollmentFormCntrl.ACHDetailsWrapper>{achDetails};
+        List<NewEnrollmentFormCntrl.ACHDetailsWrapper> listACH = new List<NewEnrollmentFormCntrl.ACHDetailsWrapper>{achDetails};*/
         Test.startTest();
         NewEnrollmentFormCntrl.getchSlcdAccDetails(customerObj.Id, true);
         NewEnrollmentFormCntrl.calculateProratedAmount(clsSess.Id, parentWapper, system.today());
@@ -287,8 +287,8 @@ public class NewEnrollmentFormCntrlTest {
         custWrp.studentDetails = studentObj;
         custWrp.stuRecNo = 1;
         List<NewEnrollmentFormCntrl.CustomerWrapper> listTest = new List<NewEnrollmentFormCntrl.CustomerWrapper>{custWrp};   
-            NewEnrollmentFormCntrl.doSaveEnrollmentApex(JSON.serialize(stuDetailsList), JSON.serialize(customerObjUpdate),JSON.serialize(customerObjUpdate), 'Confirm', 800,'', '', '', true,'','');
-        NewEnrollmentFormCntrl.doSaveEnrollmentApex(JSON.serialize(stuDetailsList), JSON.serialize(customerObjUpdate1),JSON.serialize(customerObjUpdate1), 'Save As Draft', 800,'', '', '', true,'','');
+        NewEnrollmentFormCntrl.doSaveEnrollmentApex(JSON.serialize(stuDetailsList), JSON.serialize(customerObjUpdate),JSON.serialize(customerObjUpdate), 'Confirm', 800,'5590', 'Test', 'Cash','');
+        NewEnrollmentFormCntrl.doSaveEnrollmentApex(JSON.serialize(stuDetailsList), JSON.serialize(customerObjUpdate1),JSON.serialize(customerObjUpdate1), 'Save As Draft', 800,'678', 'testing', 'Cash','');
         Test.stopTest();
         List<Enrollment__c> enrList = [SELECT Id,(SELECT Id FROM Student_Sessions__r) FROM Enrollment__c LIMIT 1];
         if(enrList.size() > 0){

@@ -29,4 +29,24 @@ public class CreditNoteService {
         }
         return null;       
     }    
+    
+    //Insertion of CreditNote Records
+    public static List<Credit_Note__c> updateCreditNoteRecords(List<Credit_Note__c> listCreditNote){
+        try{
+            if(listCreditNote.size() > 0){
+                SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.UPDATABLE, listCreditNote,true);
+                if(securityDecision.getRemovedFields().keySet().size() > 0){
+                    System.debug('Credit Note Removed Fields-->'+securityDecision.getRemovedFields());
+                }
+                else{
+                    update securityDecision.getRecords();
+                    return securityDecision.getRecords();
+                }
+            }
+        }
+        catch(Exception e){
+            System.debug('Credit Note Error Message-->'+e.getMessage());
+        }
+        return null;
+    }
 }

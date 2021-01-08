@@ -17,7 +17,7 @@
                 <label>Transaction</label>
             </value>
             <value>
-                <fullName>Credit_Note</fullName>
+                <fullName>Credit Note</fullName>
                 <default>false</default>
                 <label>Credit Note</label>
             </value>

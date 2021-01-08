@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="Card Details">
+        <div class="slds-grid slds-p-left_small">
+            <div class="slds-col slds-size_6-of-12">
+                <lightning-input name='cardNumber' class='req' label="Credit or Debit Card" placeholder='Card Number' max-length="16" data-id="cardNumber" required></lightning-input>
+            </div>
+            <div class="slds-col slds-size_6-of-12 slds-p-left_medium">
+                <div class="slds-grid">    
+                    <div class="slds-col slds-size_2-of-6">
+                        <lightning-input type="number" class='req' name='cardExpMonth' placeholder="MM" label="Month" max-length="2" data-id="cardExpMonth" required></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_2-of-6">
+                        <lightning-input type='number' class='req' name='cardExpYear' placeholder='YY' label="Year" max-length="2" data-id="cardExpYear" required></lightning-input>        
+                    </div>
+                    <div class="slds-col slds-size_2-of-6">
+                        <lightning-input type='password' class='req' name='cardCVC' placeholder='CVC' label="CVC" max-length="3" data-id="cardCVC" required></lightning-input>        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </lightning-card>
+</template>

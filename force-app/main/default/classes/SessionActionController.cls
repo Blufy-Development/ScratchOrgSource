@@ -12,7 +12,7 @@ global with sharing class SessionActionController {
     */
     @RemoteAction
     global static List<Session__c> fetchSessionsDetail(String sessionId){ 
-        if(FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Id','Name'}, false) && FieldPremissionCrudUtility.checkReadPermission('Class__c', new Set<String>{'Id','Name'}, false)){
+        //if(FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Id','Name'}, false) && FieldPremissionCrudUtility.checkReadPermission('Class__c', new Set<String>{'Id','Name'}, false)){
             // fieldsApiName = new Set<String>{'Id', 'Duration_in_Minutes__c', 'Duration_Unit__c', 'Session_date__c', 'Start_Time__c', 'Notes__c', 'Type__c','Lesson__c', 'Module__c'};
             //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
             //if(isSessionAccessible){
@@ -25,7 +25,7 @@ global with sharing class SessionActionController {
                 return sessionList;
             }
             //}        
-        }    
+        //}    
         return null;
     }      
     

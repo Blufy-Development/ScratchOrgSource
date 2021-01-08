@@ -15,7 +15,7 @@ public with sharing class EnrollmentTriggerHelper {
             String clsSessId            = (String)result.get('educato__Class_Session__c');
             Decimal totalEnrols         = (Decimal)result.get('totalEnrolments');  
             Class_Session__c clsSessObj = new Class_Session__c(Id = clsSessId);
-            clsSessObj.Enrollments__c = Integer.valueOf(totalEnrols);
+            clsSessObj.Enrollments__c   = totalEnrols != NULL && totalEnrols > 0 ? Integer.valueOf(totalEnrols) : 0;
             clsSessList.add(clsSessObj);
         }
         

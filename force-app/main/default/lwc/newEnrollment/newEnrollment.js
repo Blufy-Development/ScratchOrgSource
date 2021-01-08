@@ -36,10 +36,13 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
   gstAmount = 0;
   showCourseAndClassModal = false;
   showAddClassAndCourseModal = false;
-  paymentType = "ACH";
-  showAchPayment = true;
-  discountList = [{}];
-  achRelatedDetails = [{}];
+  //paymentType = "ACH";
+ // showAchPayment = true;
+ // showOfflinePayment = false;
+  //showCardPayment = false;
+ discountList = [{}];
+ // achRelatedDetails = [{}];
+  //cardDetail = [{}];
 
   @wire(CurrentPageReference)
   getStateParamters(currentPageReference) {
@@ -67,7 +70,8 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
   get paymentOptions() {
     return [
       { label: "ACH", value: "ACH" },
-      { label: "Offline", value: "offline" }
+      { label: "Offline", value: "Offline" },
+      { label: "Card", value: "Card" }
     ];
   }
 
@@ -234,6 +238,7 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
       this.secondaryContactDetail.FirstName = value;
     }
   }
+
   handleContactUserInput(event) {
     let { name, value } = event.currentTarget;
     this.contactDetail[name] = value;
@@ -311,6 +316,7 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
 
   saveEnrolments(event) {
     console.log("this.contactDetail", this.contactDetail);
+   // console.log("this.cardDetail", this.cardDetail);
     if (this.validateForm() == true) {
       this.toggleSpinner = true;
       this.contactDetail.PersonMailingStreet = this.addressLine1 + '\r\n' + this.addressLine2;
@@ -324,8 +330,6 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
         paymentRefNumber: this.paymentRefNumber,
         paymentComments: this.paymentComments,
         paymentMode: this.paymentMode,
-        showAchPayment: this.showAchPayment,
-        achRelatedInfo: JSON.stringify(this.achRelatedDetails),
         discountList: JSON.stringify(this.discountList)
       })
         .then((res) => {
@@ -355,6 +359,7 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
           this.showNotification("Error", error.message, "error");
 
           console.log("error while getting records", error);
+          console.log("error while getting records", error.body.message);
           console.log("save enrollment");
         });
     }
@@ -369,7 +374,11 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
       true
     );
 
-    if (this.showAchPayment) {
+    if (allValid) {
+      console.log("all valid");
+      return true;
+    }
+   /* if (this.showAchPayment) {
       let bankData = this.template
         .querySelector("c-stripe-a-c-h-verification")
         .sendDetails();
@@ -379,12 +388,23 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
         this.achRelatedDetails = bankData;
         return true;
       }
-    } else {
+    }else if (this.showCardPayment) {
+      let cardDetail = this.template
+        .querySelector("c-stripe-card-creation")
+        .sendDetails();
+      console.log("json card", cardDetail);
+      if (allValid && cardDetail.length > 0) {
+        console.log("all valid");
+        this.cardDetail = cardDetail;
+        return true;
+      }
+    }
+     else {
       if (allValid) {
         console.log("all valid");
         return true;
       }
-    }
+    }*/
 
     this.showNotification("Error", "Please fill the details", "error");
     return false;
@@ -402,14 +422,23 @@ export default class NewEnrollmentForm extends NavigationMixin(LightningElement)
     });
     this.dispatchEvent(evt);
   }
-  handlePaymentChange(event) {
+
+  /*handlePaymentChange(event) {
     this.paymentType = event.detail.value;
     if (this.paymentType == "ACH") {
       this.showAchPayment = true;
-    } else {
+      this.showOfflinePayment = false;
+      this.showCardPayment = false;
+    } else if(this.paymentType == "Offline") {
+      this.showOfflinePayment = true;
+      this.showCardPayment = false;
       this.showAchPayment = false;
+    }else if(this.paymentType == "Card"){
+      this.showCardPayment = true;
+      this.showAchPayment = false;
+      this.showOfflinePayment = false;
     }
-  }
+  }*/
 
   handleSaveDiscountModal(event) {
     console.log('discount event--->', event.detail);

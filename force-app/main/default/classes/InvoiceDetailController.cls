@@ -1,11 +1,11 @@
 Public with sharing class InvoiceDetailController{
     public Invoice__c invoice{get;set;}
-    public Payment__c payment{get;set;}
-    public String paymentNo{get;set;}
-    
+    public List<Payment__c> listPayment{get;set;}
+    public String logo{get;set;}
+	    
     public InvoiceDetailController(){
         invoice = new Invoice__c();
-        payment = new Payment__c();
+        listPayment = new List<Payment__c>();
         string invId = Apexpages.currentPage().getParameters().get('Id');
         
         List<Invoice__c> invList = InvoiceService.getInvoiceById(invId);  
@@ -20,6 +20,14 @@ Public with sharing class InvoiceDetailController{
                 }
             }
             invoice = invList[0];
+            if(invoice.Payments__r.size() > 0){
+                listPayment = invoice.Payments__r;
+            }
+            
+            List<Blufy_Config__mdt> listBlufyConfig = BlufyConfigService.getByDeveloperName('Default');
+            if(listBlufyConfig.size() > 0){
+                logo = listBlufyConfig[0].Logo__c;
+            }
         }       
     }
 }

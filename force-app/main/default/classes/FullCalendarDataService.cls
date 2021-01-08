@@ -1,12 +1,12 @@
 global with sharing class FullCalendarDataService {         
     static String status = ConstantClass.cancelledStatus;
     static String sessionType = ConstantClass.sessionType;
-    static Set<String> fieldsApiName ;
-    static boolean isSessionAccessible;  
-    static boolean isLocationWorkingHoursAccessible; 
-    static boolean isTeacherWorkingHoursAccessible;     
-    static boolean isHolidayAccessible;
-    static boolean isTeacherLeaveAccessible;
+    //  static Set<String> fieldsApiName ;
+    //  static boolean isSessionAccessible;  
+    // static boolean isLocationWorkingHoursAccessible; 
+    // static boolean isTeacherWorkingHoursAccessible;     
+    // static boolean isHolidayAccessible;
+    // static boolean isTeacherLeaveAccessible;
     
     private static String getSOQLQuery(){      
        return 'SELECT Id, Name, Sequence__c, Class__c, Session_Date__c, Start_Time__c, End_Time__c, Teacher__c, Teacher__r.Name, Status__c, '+ system.label.Event_Color_Field +', '+system.label.Event_Color_Text+', Type__c, Class__r.Name, Class_Session__c,Class_Session__r.Enrollments__c, Class_Session__r.Seats_Left__c, Class_Session__r.Capacity__c, Class_Session__r.Room__c, Class_Session__r.Room__r.Name  FROM Session__c WHERE  Status__c != \''+string.escapeSingleQuotes(status)+ '\'   AND ';
@@ -22,63 +22,64 @@ Developer   :
     global static SessionRecordModel fetchSessions(String selectedTeacher, String selectedLocation, String selectedClass, String selectedCourse, Boolean isPhSessionNeed){       
         //system.debug('selectedClass '+selectedClass);
         List<Session__c> sessionList = new List<Session__c>(); 
-        isSessionAccessible = false;
-        if(FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Name','location__c'}, false)){
-            fieldsApiName = new Set<String>{'Id','Name','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
-                isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-            if(isSessionAccessible){
-                String query = getSOQLQuery();                
-                if(String.isNotBlank(selectedLocation)){
-                    query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
-                }
-                if(selectedTeacher == 'All_Teachers'){            
-                    query += ' Session_Date__c = TODAY ';
-                }else{          
-                    query += '  Class_Session__r.teacher__c = \''+string.escapeSingleQuotes(selectedTeacher)+ '\' AND Session_Date__c = TODAY ';   
-                }      
-                system.debug('selectedClass '+selectedClass);
-                if(String.isNotBlank(selectedClass) && selectedClass != 'All_Class'){
-                    if(isPhSessionNeed == false){
-                        query += ' AND Class_Session__r.Class__c IN ('+ selectedClass+') ' ;
-                    }else if(isPhSessionNeed){
-                        query += 'AND ( Class_Session__r.Class__c IN ('+ selectedClass+') OR (Type__c = \''+string.escapeSingleQuotes(sessionType)+ '\') ) '  ;
-                    }                
-                }else if(!String.isNotBlank(selectedClass)){
-                     query += ' AND Class_Session__r.Class__c != null ' ;
-                }
-                
-                if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses' && String.isBlank(selectedClass)){
-                    sessionList = new List<Session__c>();
-                }else{
-                    system.debug('query '+query);
-                    sessionList = SessionService.getByStringQuery(query);//Database.query(query); 
-                }                  
-            }
-            else{
-                System.debug('Session Fields Not Accessible');
-            }
-        }     
-        if(!isSessionAccessible){
-            return new SessionRecordModel();
+        //isSessionAccessible = false;
+        //if(FieldPremissionCrudUtility.checkReadPermission('Account', new Set<String>{'Name','location__c'}, false)){
+        //fieldsApiName = new Set<String>{'Id','Name','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
+        //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+        //if(isSessionAccessible){
+        String query = getSOQLQuery();                
+        if(String.isNotBlank(selectedLocation)){
+            query += ' location__c = \''+string.escapeSingleQuotes(selectedLocation)+ '\' AND ';
         }
+        if(selectedTeacher == 'All_Teachers'){            
+            query += ' Session_Date__c = TODAY ';
+        }else{          
+            query += '  Class_Session__r.teacher__c = \''+string.escapeSingleQuotes(selectedTeacher)+ '\' AND Session_Date__c = TODAY ';   
+        }      
+        system.debug('selectedClass '+selectedClass);
+        if(String.isNotBlank(selectedClass) && selectedClass != 'All_Class'){
+            if(isPhSessionNeed == false){
+                query += ' AND Class_Session__r.Class__c IN ('+ selectedClass+') ' ;
+            }else if(isPhSessionNeed){
+                query += 'AND ( Class_Session__r.Class__c IN ('+ selectedClass+') OR (Type__c = \''+string.escapeSingleQuotes(sessionType)+ '\') ) '  ;
+            }                
+        }else if(!String.isNotBlank(selectedClass)){
+            query += ' AND Class_Session__r.Class__c != null ' ;
+        }
+        
+        if(String.isNotBlank(selectedCourse) && selectedCourse != 'All_Courses' && String.isBlank(selectedClass)){
+            sessionList = new List<Session__c>();
+        }else{
+            system.debug('query '+query);
+            sessionList = SessionService.getByStringQuery(query);//Database.query(query); 
+            system.debug('sessionList '+sessionList.size());
+        }                  
+        //}
+            /*else{
+                System.debug('Session Fields Not Accessible');
+            }*/
+        //}     
+        //if(!isSessionAccessible){
+           // return new SessionRecordModel();
+        //}
         return getSessionData(selectedTeacher, selectedLocation, sessionList);
     }
     
     /**
-Name        :   SessionRecordModel
-Date        :   20 Feb 2020
-Description :   Function is use for to get sessions records based on teacher Id and selected Date
-Developer   :   
-*/
+    Name        :   SessionRecordModel
+    Date        :   20 Feb 2020
+    Description :   Function is use for to get sessions records based on teacher Id and selected Date
+    Developer   :   
+    */
     @RemoteAction
     global static SessionRecordModel fetchSessionsByDate(String selectedTeacher, String selectedLocation, String selectedDate, String selectedClass, String selectedCourse, Boolean isPhSessionNeed){        
         //system.debug('selectedClass '+selectedClass);ctedLocation, String selectedDate, String selectedClass, String selectedCourse, Boolean isPhSessionNeed){        
         //system.debug('selectedClass '+selectedClass);ctedLocation, String selectedDate, String selectedClass, String selectedCourse, Boolean isPhSessionNeed){        
         //system.debug('selectedClass '+selectedClass);
         List<Session__c> sessionList = new List<Session__c>(); 
-        fieldsApiName = new Set<String>{'Id','Name','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
-            isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-        if(isSessionAccessible){
+        //fieldsApiName = new Set<String>{'Id','Name','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
+        //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+        //if(isSessionAccessible){
             String query = getSOQLQuery();
             if(String.isNotBlank(selectedDate)){     
                 date selectDate = date.valueOf(selectedDate);   
@@ -113,26 +114,26 @@ Developer   :
                 //sessionList = Database.query(query);
             }
             return getSessionData(selectedTeacher, selectedLocation, sessionList);
-        }
-        else{
+        //}
+        /*else{
             System.debug('Session Fields Not Accessible');
             return null;
-        }
+        }*/
     }
     
     /**
-Name        :   fetchSessionsByWeek
-Date        :   20 Feb 2020
-Description :   Function is use for to get sessions records based on teacher Id and date ranage
-Developer   :   
-*/
+    Name        :   fetchSessionsByWeek
+    Date        :   20 Feb 2020
+    Description :   Function is use for to get sessions records based on teacher Id and date ranage
+    Developer   :   
+    */
     @RemoteAction
     global static SessionRecordModel fetchSessionsByWeek(String selectedTeacher, String selectedLocation, String startDate, String endDate, String selectedClass, String selectedCourse, Boolean isPhSessionNeed){        
         //system.debug('selectedClass '+selectedClass);
         List<Session__c> sessionList = new List<Session__c>();    
-        fieldsApiName = new Set<String>{'Id','Name','location__c','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
-            isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-        if(isSessionAccessible){
+        //fieldsApiName = new Set<String>{'Id','Name','location__c','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c', 'Status__c','Event_Color__c','Event_Text_Color__c','Type__c'};
+            //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+        //if(isSessionAccessible){
             String query = getSOQLQuery();
             if(String.isNotBlank(startDate) && String.isNotBlank(endDate)){                
                 date startDt = date.valueOf(startDate);  
@@ -169,19 +170,19 @@ Developer   :
                 //sessionList = Database.query(query);
             }            
             return getSessionData(selectedTeacher, selectedLocation, sessionList);
-        }
-        else{
+        //}
+        /*else{
             System.debug('Session Fields Not Accessible');
             return null;
-        }
+        }*/
     }
     
     /**
-Name        :   getSessionData
-Date        :   21 Feb 2020
-Description :   Function is use for to get sessions records
-Developer   :   
-*/
+    Name        :   getSessionData
+    Date        :   21 Feb 2020
+    Description :   Function is use for to get sessions records
+    Developer   :   
+    */
     public static SessionRecordModel getSessionData(String selectedTeacher, String selectedLocation, List<Session__c> sessionList){
         SessionRecordModel sessionModelObj = new SessionRecordModel();                             
         if(sessionList.size() > 0){           
@@ -192,18 +193,18 @@ Developer   :
         return sessionModelObj;
     }
     
-    /**
-Name        :   getWorkingHours
-Date        :   22 Feb 2020
-Description :   Function is use for to get working hours of current location
-Developer   :   
-*/
+        /**
+    Name        :   getWorkingHours
+    Date        :   22 Feb 2020
+    Description :   Function is use for to get working hours of current location
+    Developer   :   
+    */
     @RemoteAction
     global static List<Location_Working_Hours__c> getWorkingHours(String locationId){
         List<Location_Working_Hours__c> workingHourList = new List<Location_Working_Hours__c>();
-        fieldsApiName = new Set<String>{'Id', 'Name', 'Day__c', 'Start_Time__c', 'End_Time__c', 'Active__c', 'Location__c'};
-            isLocationWorkingHoursAccessible = FieldPremissionCrudUtility.checkReadPermission('Location_Working_Hours__c', fieldsApiName, false);
-        if(isLocationWorkingHoursAccessible){
+        //fieldsApiName = new Set<String>{'Id', 'Name', 'Day__c', 'Start_Time__c', 'End_Time__c', 'Active__c', 'Location__c'};
+            //isLocationWorkingHoursAccessible = FieldPremissionCrudUtility.checkReadPermission('Location_Working_Hours__c', fieldsApiName, false);
+        //if(isLocationWorkingHoursAccessible){
             if(String.isNotBlank(locationId)){
                 for(Location_Working_Hours__c wokObj : LocationWorkingHoursService.getByLocationId(new Set<Id>{locationId})){
                     if(wokObj.Active__c == true){
@@ -211,16 +212,16 @@ Developer   :
                     }
                 }
             }
-        }
+        //}
         return workingHourList;
     }
-    
-    /**
-Name        :   getSessionResources
-Date        :   25 Feb 2020
-Description :   commment line after discussed with Dharam And NITIN 
-Developer   :   
-*/
+        
+        /**
+    Name        :   getSessionResources
+    Date        :   25 Feb 2020
+    Description :   commment line after discussed with Dharam And NITIN 
+    Developer   :   
+	*/
     // @RemoteAction
     // global static SessionRecordModel getSessionResources(String resourceId, String selectedLocation, String teacherId, String startDate, String resourceType ){
     //     String query = 'SELECT Id, Name,Resource__c, Resource__r.Name,Session__r.Name, Session__r.Start_Time__c, Session__r.Session_Date__c, Session__r.End_Time__c, Session__r.Event_Color__c, Session__r.Teacher__r.Name FROM Session_Resource__c WHERE ';
@@ -340,32 +341,32 @@ Developer   :
 
 
     /**
-Name        :   getTeacherWorkingHours
-Date        :   29 Feb 2020
-Description :   use for to get working hours of teacher based on location id
-Developer   :   
-*/
+    Name        :   getTeacherWorkingHours
+    Date        :   29 Feb 2020
+    Description :   use for to get working hours of teacher based on location id
+    Developer   :   
+    */
     @RemoteAction
     global static List<Teacher_Working_Hours__c> getTeacherWorkingHours(String locationId){
         List<Teacher_Working_Hours__c> teacherWorkingHourList = new List<Teacher_Working_Hours__c>();
-        fieldsApiName = new Set<String>{'id', 'start_time__c', 'end_time__c', 'location__c', 'teacher__c', 'Day__c'};
-            isTeacherWorkingHoursAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Working_Hours__c', fieldsApiName, false);                
-        if(isTeacherWorkingHoursAccessible){
+        //fieldsApiName = new Set<String>{'id', 'start_time__c', 'end_time__c', 'location__c', 'teacher__c', 'Day__c'};
+            //isTeacherWorkingHoursAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Working_Hours__c', fieldsApiName, false);                
+        //if(isTeacherWorkingHoursAccessible){
             if(String.isNotBlank(locationId)){
                 for(Teacher_Working_Hours__c teacherObj : TeacherWorkingHoursService.getByLocationId(new Set<Id>{locationId})){
                     teacherWorkingHourList.add(teacherObj);               
                 }
             }
-        }
+        //}
         return teacherWorkingHourList;
     }
     
     /**
-Name        :   setNewSessionTiming
-Date        :   05 Mar 2020
-Description :   
-Developer   :   
-*/
+    Name        :   setNewSessionTiming
+    Date        :   05 Mar 2020
+    Description :   
+    Developer   :   
+    */
     @RemoteAction
     global static void setNewSessionTiming(Id recId, String parentId, String newStartTime, String currentDate){
         //system.debug('recId  '+recId);
@@ -384,15 +385,15 @@ Developer   :
                     }
                 }
             }/*else if(sObjName == 'Session_Resource__c'){
-sessionResList = [SELECT id,Session__r.id,Resource__c FROM Session_Resource__c WHERE id =: recId LIMIT 1];  
-//system.debug('sessionResObj.Session__r.Id->'+sessionResList[0].Session__r.Id);
-if(sessionResList.size() > 0){
-sessionObj = new Session__c(Id = sessionResList[0].Session__r.Id);
-if(String.isNotBlank(parentId)){
-sessionResList[0].Resource__c = parentId;
-}   
-}               
-}*/
+	sessionResList = [SELECT id,Session__r.id,Resource__c FROM Session_Resource__c WHERE id =: recId LIMIT 1];  
+	//system.debug('sessionResObj.Session__r.Id->'+sessionResList[0].Session__r.Id);
+	if(sessionResList.size() > 0){
+		sessionObj = new Session__c(Id = sessionResList[0].Session__r.Id);
+		if(String.isNotBlank(parentId)){
+			sessionResList[0].Resource__c = parentId;
+		}   
+	}               
+	}*/
             String[] strTimeSplit = newStartTime.split(':');
             Time startTime = Time.newInstance( Integer.valueOf(strTimeSplit[0]) //hour
                                               ,Integer.valueOf(strTimeSplit[1]) //min
@@ -418,16 +419,16 @@ sessionResList[0].Resource__c = parentId;
         }
     }
     /**
-Name        :   setNewTimeForAllSession
-Date        :   05 Mar 2020
-Description :   use for set new time of all sessions
-Developer   :   
-*/
+    Name        :   setNewTimeForAllSession
+    Date        :   05 Mar 2020
+    Description :   use for set new time of all sessions
+    Developer   :   
+    */
     @RemoteAction
     global static void setNewTimeForAllSession(String sessionId, String newStartTime){
-        fieldsApiName = new Set<String>{'Id','Name','Session_Date__c', 'Start_Time__c','Teacher__c'};
-            isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-        if(isSessionAccessible){
+        //fieldsApiName = new Set<String>{'Id','Name','Session_Date__c', 'Start_Time__c','Teacher__c'};
+            //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+        //if(isSessionAccessible){
             if(String.isNotBlank(sessionId)){
                 List<Session__c> sessionList = SessionService.getById(new set<Id>{sessionId});
                 sessionList =  [SELECT Id, Start_Time__c FROM Session__c 
@@ -457,15 +458,15 @@ Developer   :
                     system.debug('Error--> '+ ex.getMessage() +' ---- '+ ex.getLineNumber());
                 }*/
             }
-        }
+        //}
     }
     
     /**
-Name        :   setNewDateTimeForCurrentAndUpComingSession
-Date        :   09 Mar 2020
-Description :   function is use for set new date and time for current selected session and upcoming session as well
-Developer   :   
-*/
+    Name        :   setNewDateTimeForCurrentAndUpComingSession
+    Date        :   09 Mar 2020
+    Description :   function is use for set new date and time for current selected session and upcoming session as well
+    Developer   :   
+    */
     @RemoteAction 
     global static void setNewDateTimeForCurrentAndUpComingSession(String sessionId, String newStartTime,  Integer dayDiffernce, Integer previousDay, String parentId){
         if(String.isNotBlank(sessionId)){
@@ -475,16 +476,16 @@ Developer   :
             //system.debug('newStartTime  '+newStartTime);
             //system.debug('dayDiffernce  '+dayDiffernce);
             //system.debug('previousDay  '+previousDay);
-            fieldsApiName = new Set<String>{'Id','Name','location__c','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c','Type__c'};
-                isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
-            isHolidayAccessible = FieldPremissionCrudUtility.checkReadPermission('Holiday__c',new Set<String>{'Id','Start_Time__c'
-                ,'Start_Date__c','End_Time__c','End_Date__c'}, false);
-            isTeacherLeaveAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c',new Set<String>{'Id','Teacher__c'
-                ,'Start_Date__c','End_Date__c','Status__c'}, false);
-            Boolean isBlufyConfigAccessible = FieldPremissionCrudUtility.checkReadPermission('Blufy_Config__mdt',  
-                                                                                            new Set<String>{'Id','Overlap_Holiday_For_Monthly_Session__c'},false);
+            //fieldsApiName = new Set<String>{'Id','Name','location__c','Sequence__c', 'Class__c', 'Session_Date__c', 'Start_Time__c','End_Time__c','Teacher__c','Type__c'};
+                //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, false);
+            //isHolidayAccessible = FieldPremissionCrudUtility.checkReadPermission('Holiday__c',new Set<String>{'Id','Start_Time__c'
+                //,'Start_Date__c','End_Time__c','End_Date__c'}, false);
+            //isTeacherLeaveAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c',new Set<String>{'Id','Teacher__c'
+                //,'Start_Date__c','End_Date__c','Status__c'}, false);
+            //Boolean isBlufyConfigAccessible = FieldPremissionCrudUtility.checkReadPermission('Blufy_Config__mdt',  
+                                                                                            //new Set<String>{'Id','Overlap_Holiday_For_Monthly_Session__c'},false);
 
-            if(isSessionAccessible && isHolidayAccessible && isTeacherLeaveAccessible && isBlufyConfigAccessible){
+            //if(isSessionAccessible && isHolidayAccessible && isTeacherLeaveAccessible && isBlufyConfigAccessible){
                 List<Blufy_Config__mdt> blufyList = [SELECT Id, Overlap_Holiday_For_Monthly_Session__c FROM Blufy_Config__mdt LIMIT 1];
                 List<Session__c> sessionList = SessionService.getById(new set<Id>{sessionId});
                 if(sessionList.size() > 0){
@@ -577,7 +578,7 @@ Developer   :
                         system.debug('Error--> '+ ex.getMessage() +' ---- '+ ex.getLineNumber());
                     }*/
                 }
-            }
+            //}
         }
     }
     
@@ -589,16 +590,16 @@ Developer   :
         Boolean isHoliday = false; 
         List<VacationModel> vacationList = new List<VacationModel>();
         if(String.isNotBlank(teacherId)){
-            if(FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c', new Set<String>{'Id', 'Teacher__c', 'Start_Date__c', 'End_Date__c', 'Status__c'}, false)){
+            //if(FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c', new Set<String>{'Id', 'Teacher__c', 'Start_Date__c', 'End_Date__c', 'Status__c'}, false)){
                 for(Teacher_Leave__c teacherObj :  TeacherLeaveService.getByTeacherId(new Set<String>{teacherId})){
                     VacationModel vacObj = new VacationModel();
                     vacObj.Start_Date = teacherObj.Start_Date__c;
                     vacObj.End_Date = teacherObj.End_Date__c;
                     vacationList.add(vacObj);           
                 }
-            }        
+           //}        
         }
-        if(FieldPremissionCrudUtility.checkReadPermission('Holiday__c', new Set<String>{'Id', 'Start_Time__c', 'Start_Date__c', 'End_Date__c', 'End_Time__c'}, false)){
+        //if(FieldPremissionCrudUtility.checkReadPermission('Holiday__c', new Set<String>{'Id', 'Start_Time__c', 'Start_Date__c', 'End_Date__c', 'End_Time__c'}, false)){
             for(Holiday__c holiObj :  HolidayService.getByYear(currentSessionDate)){
                 VacationModel vacObj = new VacationModel();
                 vacObj.Start_Date = holiObj.Start_Date__c;
@@ -607,11 +608,11 @@ Developer   :
                 //vacObj.End_Time = holiObj.End_Time__c;
                 vacationList.add(vacObj);    
             }
-        }
+        //}
         //fieldsApiName = new Set<String>{'location__c', 'Class__c', 'Session_Date__c', 'Start_Time__c', 'Status__c', 'Type__c','Teacher__c','Notes__c', 'Duration_Unit__c'};
-        fieldsApiName = new Set<String>{'location__c', 'Class__c', 'Session_Date__c', 'Start_Time__c', 'Status__c', 'Duration_in_Minutes__c', 'Type__c','Teacher__c','Notes__c'};
-            isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, true);
-        if(isSessionAccessible){
+        //fieldsApiName = new Set<String>{'location__c', 'Class__c', 'Session_Date__c', 'Start_Time__c', 'Status__c', 'Duration_in_Minutes__c', 'Type__c','Teacher__c','Notes__c'};
+            //isSessionAccessible = FieldPremissionCrudUtility.checkReadPermission('Session__c', fieldsApiName, true);
+        //if(isSessionAccessible){
             if(repeat == 'None'){
                 Session__c sessionObj = new Session__c();
                 string[] strTimeSplit = newStartTime.split(':');
@@ -697,7 +698,7 @@ Developer   :
                     system.debug('ex Error -> '+ ex.getMessage() +' - '+ ex.getLineNumber());
                 }*/
             }
-        }
+        //}
         
     }
     
@@ -706,9 +707,9 @@ Developer   :
         List<Teacher_Leave__c> leaveList = new List<Teacher_Leave__c>();
         Set<String> setId = new Set<String>();
         setId.addAll(teacherIds.split(','));
-        isTeacherLeaveAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c',new Set<String>{'Id','Teacher__c'
-            ,'Start_Date__c','End_Date__c','Status__c'}, false);
-        if(isTeacherLeaveAccessible){
+        //isTeacherLeaveAccessible = FieldPremissionCrudUtility.checkReadPermission('Teacher_Leave__c',new Set<String>{'Id','Teacher__c'
+            //,'Start_Date__c','End_Date__c','Status__c'}, false);
+        //if(isTeacherLeaveAccessible){
             if(String.isNotBlank(teacherIds)){
                 leaveList = TeacherLeaveService.getByTeacherId(setId);//[SELECT Id, Teacher__c, Start_Date__c, End_Date__c FROM Teacher_Leave__c WHERE Status__c = 'Approved' AND Teacher__c IN: setId];
                 if(leaveList.size() > 0){
@@ -717,7 +718,7 @@ Developer   :
             }else{
                 system.debug('Teacher Leave is not Accessible');
             }
-        }
+        //}
         
         return null;
     }
@@ -726,14 +727,15 @@ Developer   :
     global static List<Holiday__c> getHolidays(String selectedDate){
         date startDt = date.valueOf(selectedDate); 
         List<Holiday__c> holidayList = new List<Holiday__c>();
-        if(FieldPremissionCrudUtility.checkReadPermission('Holiday__c', new Set<String>{'Id', 'Start_Date__c', 'End_Date__c'}, false)){
+        //if(FieldPremissionCrudUtility.checkReadPermission('Holiday__c', new Set<String>{'Id', 'Start_Date__c', 'End_Date__c'}, false)){
             holidayList = HolidayService.getByYear(startDt);//[SELECT id, Start_Date__c, End_Date__c FROM Holiday__c WHERE CALENDAR_YEAR(Start_Date__c) =: startDt.year()];
             if(holidayList.size() > 0){
                 return holidayList;
             }
-        }else{
+        //}
+        /*else{
             system.debug('Holiday not Accessible');
-        }
+        }*/
         return null;
     }
     
@@ -751,11 +753,11 @@ Developer   :
     //     }
     
     /**
-Name        :   studentIsExistsForSession
-Date        :   11 Mar 2020
-Description :   
-Developer   :   
-*/
+    Name        :   studentIsExistsForSession
+    Date        :   11 Mar 2020
+    Description :   
+    Developer   :   
+    */
     // @RemoteAction
     // global static boolean studentIsExistsForSession(String sessionId, String studentId){
     //     //query on student session and get id of Student(Account) based on session Id
@@ -773,11 +775,11 @@ Developer   :
     //     return false;      
     // }
     /**
-Name        :   updateStudenSessionsInAllSessions
-Date        :   11 Mar 2020
-Description :   commment code after discussed with Dharam And NITIN 
-Developer   :   
-*/
+    Name        :   updateStudenSessionsInAllSessions
+    Date        :   11 Mar 2020
+    Description :   commment code after discussed with Dharam And NITIN 
+    Developer   :   
+    */
     // @RemoteAction
     // global static void updateStudenSessionsInAllSessions(Integer oldDay, Integer newDay, String accId){               
     //     List<student_session__c> sessionList = [SELECT id,Name,Session__r.session_date__c FROM student_session__c WHERE DAY_IN_WEEK(Session__r.session_date__c) =: oldDay+1 AND account__c =: accId];

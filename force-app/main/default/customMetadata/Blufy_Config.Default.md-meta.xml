@@ -15,12 +15,20 @@
         <value xsi:type="xsd:double">7.0</value>
     </values>
     <values>
+        <field>Logo__c</field>
+        <value xsi:type="xsd:string">https://ability-app-2436-dev-ed--c.documentforce.com/servlet/servlet.ImageServer?id=015J0000001nDWM&amp;oid=00DJ0000003ZwJz&amp;lastMod=1609401089000</value>
+    </values>
+    <values>
         <field>Monthly_Invoice_Cycle__c</field>
         <value xsi:type="xsd:string">Next_Month</value>
     </values>
     <values>
         <field>Overlap_Holiday_For_Monthly_Session__c</field>
         <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Segment_Type__c</field>
+        <value xsi:type="xsd:string">Enrichment</value>
     </values>
     <values>
         <field>Terms_and_Conditions_Description__c</field>

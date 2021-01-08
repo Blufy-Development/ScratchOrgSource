@@ -71,6 +71,10 @@
                 <behavior>Edit</behavior>
                 <field>Last_Session_Date__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Subject__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

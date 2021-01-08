@@ -88,6 +88,10 @@
     </types>
     <types>
         <members>*</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>GlobalValueSet</name>
     </types>
     <types>
@@ -95,7 +99,6 @@
 		<members>Account-Business Account Layout</members>
 		<members>Account-Location Layout</members>
 		<members>Assessment_Model__c-Assessment Model Layout</members>
-		<members>Assessment_Module_Lesson__c-Assessment Module Lesson Layout</members>
 		<members>Assessment__c-Assessment Layout</members>
 		<members>Blufy_Config__mdt-Blufy Config Layout</members>
 		<members>Blufy_Error_Log__c-Blufy Error Log Layout</members>

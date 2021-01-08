@@ -19,7 +19,7 @@
         <isOptional>false</isOptional>
     </lookupFilter>
     <referenceTo>Account</referenceTo>
-    <relationshipLabel>Payments (Parent)</relationshipLabel>
+    <relationshipLabel>Payments</relationshipLabel>
     <relationshipName>Payments1</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>

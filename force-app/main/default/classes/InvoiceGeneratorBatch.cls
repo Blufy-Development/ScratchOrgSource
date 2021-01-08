@@ -13,10 +13,16 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
     Set<String> invoicefieldsName;
     Set<String> subscriptionLineItemfieldsName;
     Set<String> invoiceLineItemfieldsName;
+    private String year;
+    private String month;
     // use this constructor if we want to execute on a date base and Term base,
-    global InvoiceGeneratorBatch(Date executionDate, String type){
-        nextBillDate = executionDate;
-        this.type = type;
+    global InvoiceGeneratorBatch(String year, String month){
+        this.year = year;
+        this.month = month;
+        system.debug('year'+year);
+        system.debug('month'+month);
+        //nextBillDate = executionDate;
+        //this.type = type;
        /* if(type == 'Month'){
             List<Blufy_Config__mdt> systemConfig = BlufyConfigService.getByDeveloperName('Default');
             if(systemConfig.size() > 0){
@@ -30,7 +36,7 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
         String query = 'SELECT Id, Name, Location__c, Customer__c, Status__c, Amount__c, GST_Tax_Amount__c, Total_Amount__c, Next_Bill_Date__c,';
         query += 'Payment_Frequency__c,(SELECT Id, Fee__c, Amount__c, Enrollment__c, Enrollment__r.class__c, Enrollment__r.Class_Session__c, Next_Bill_Date__c,'; 
         query += ' Status__c, Class_Term__r.End_Date__c, Class_Term__r.Sessions__c, Class_Term__r.Start_Date__c, Class_Term__r.Sequence__c';
-        query += ',Fee__r.Unit_Price__c,Fee__r.GST_Applicable__c,Fee__r.Units__c, Fee__r.Fixed_Billing__c, Fee__r.Amount__c,  Subscription_Start_Date__c, Subscription_Expiry_Date__c, Enrollment__r.Last_Session_Date__c, Enrollment__r.Start_Date__c FROM Subscription_Line_Items__r ';
+        query += ',Fee__r.Unit_Price__c,Fee__r.GST_Applicable__c,Fee__r.Units__c, Fee__r.Fixed_Billing__c, Fee__r.Prorate__c, Fee__r.Amount__c,  Subscription_Start_Date__c, Subscription_Expiry_Date__c, Enrollment__r.Last_Session_Date__c, Enrollment__r.Start_Date__c FROM Subscription_Line_Items__r ';
         query += ' WHERE Status__c = \'Active\' AND Enrollment__c != null AND Fee__c != null ';
         // if(this.type == 'Term'){
         //     query += ' AND next_bill_date__c = :nextBillDate';    
@@ -38,7 +44,7 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
         //     query += ' AND next_bill_date__c = '+this.monthCycle;     
         // }
         query += ') FROM Subscription__c where ';
-      	//query += ' ID = \'a0l110000086MoKAAU\'  AND ';
+     // 	query += ' ID = \'a0l110000086doPAAQ\'  AND ';
         query += 'Status__c = \'Active\' AND Payment_Frequency__c != null AND Customer__c != null WITH SECURITY_ENFORCED';              
         
         System.debug('query '+query);
@@ -59,7 +65,7 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
         List<payment__c> paymentList = new List<payment__c>();
         
         for(Subscription__c objSub : lstSubscriptions){
-            InvoiceFactory objFactory = new InvoiceFactory(objSub,nextBillDate); //,nextTerm,currentMonthEndDate.addDays(1)
+            InvoiceFactory objFactory = new InvoiceFactory(objSub,nextBillDate, year,month); //,nextTerm,currentMonthEndDate.addDays(1)
             customerIds.add(objSub.customer__c);
             listOfInvoiceFactory.add(objFactory);
             setOfClassIds.addAll(objFactory.setOFClassSessionIds);
@@ -70,10 +76,12 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
            // objWrap.mapOfClassTerm = InvoiceFactory.getClassTermMap(setOfClassIDs);
         //}else if(this.type == 'Month' && String.isNotBlank(this.monthCycle)){
         system.debug('setOfClassIds'+setOfClassIds);
+        system.debug('Year and Month ' + year +' ' +  month);
         if(setOfClassIds.size() > 0){
-            objWrap.mapOfClassSession  = InvoiceFactory.getClassSessions(setOfClassIds);
+            objWrap.mapOfClassSession  = InvoiceFactory.getClassSessions(setOfClassIds, year, month);
             //Filling map of account id with credit note list
-            for(Credit_Note__c cnObj : CreditNoteService.getByParentIds(setOfClassIds)){
+            //for now we commented code on 29-12-20
+            /*for(Credit_Note__c cnObj : CreditNoteService.getByParentIds(setOfClassIds)){
                 if(mapOfCreditNote.containsKey(cnObj.Account__c)){
                     list<Credit_Note__c>cnList = mapOfCreditNote.get(cnObj.Account__c);
                     cnList.add(cnObj);
@@ -81,7 +89,7 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
                 }else{
                     mapOfCreditNote.put(cnObj.Account__c,new List<Credit_Note__c>{cnObj});
                 }
-            }
+            }*/
         }
        
         //}
@@ -92,7 +100,7 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
         system.debug('mapOfSubInv.values();'+mapOfSubInv.values());
         INSERT mapOfSubInv.values();
         system.debug('mapOfSubInv'+mapOfSubInv);
-        if(mapOfCreditNote.size() > 0){
+        /*if(mapOfCreditNote.size() > 0){
             for(Invoice__c invObj : mapOfSubInv.values()){
                 if(invObj.Customer__c != null && mapOfCreditNote.containsKey(invObj.Customer__c)){
                     for(Credit_Note__c cnObj : mapOfCreditNote.get(invObj.Customer__c)){
@@ -104,17 +112,20 @@ global with sharing class InvoiceGeneratorBatch implements Database.Batchable<sO
                         paymentList.add(payObj);
                     }
                 }
-            }
-            if(paymentList.size() > 0){
+            }*/
+            //if(paymentList.size() > 0){
                 //for now we commented code on 15-12-20
                // PaymentService.insertPaymentRecords(paymentList);
-            }
-        }
+           // }
+        //}
         for(InvoiceFactory objFactory : listOfInvoiceFactory){
             for(iBlufyInvoiceEngine invoiceEngine : objFactory.listOfInvoiceHandler){
-                listofInvItems.addAll(invoiceEngine.createInvoiceLineItems(mapOfSubInv.get(objFactory.objSub.id),objWrap));
-                system.debug('btach-> '+invoiceEngine.objLineItem);
-                subsciptionLineItemsList.add(invoiceEngine.objLineItem);
+                if(invoiceEngine != null){
+                    listofInvItems.addAll(invoiceEngine.createInvoiceLineItems(mapOfSubInv.get(objFactory.objSub.id),objWrap,year, month));
+                    system.debug('btach-> '+invoiceEngine.objLineItem);
+                    subsciptionLineItemsList.add(invoiceEngine.objLineItem);
+                }
+               
             }
         }
         

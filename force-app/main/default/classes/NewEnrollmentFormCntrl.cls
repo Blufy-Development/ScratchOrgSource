@@ -47,7 +47,7 @@ public class NewEnrollmentFormCntrl {
         List<ClassWrapper> cwList   = new List<ClassWrapper>();
         Integer counter = 0;
         for(Class__c cls: ClassService.getByCourseIdAlongWithClassTerms(crId)){   
-            system.debug('cls'+cls); 
+            system.debug('cls => '+cls); 
             ClassWrapper cw = new ClassWrapper();
             cw.clsId        = cls.Id;                  
             cw.clsName      = cls.Name;
@@ -149,27 +149,29 @@ public class NewEnrollmentFormCntrl {
     @AuraEnabled
     public static List<ParentFeeWrapper> fetchFessDetail(String classSessionId){
         if(String.isNotBlank(classSessionId)){
-            List<Class_Session__c> clsList = [SELECT Id, Class__r.Course__c FROM Class_Session__c WHERE Id=: classSessionId];
+            List<Class_Session__c> clsList = ClassSessionService.getById(new Set<String>{classSessionId});//[SELECT Id, Class__r.Course__c FROM Class_Session__c WHERE Id=: classSessionId];
             if(clsList.size() > 0){
                 Map<String, ParentFeeWrapper> mapOfFee = new Map<String, ParentFeeWrapper>();         
-                for(Course_Fee__c courseObj : [SELECT Id, Fee__c, Fee__r.Type__c, Fee__r.Amount__c, Fee__r.Unit_Price__c, Fee__r.Name,
-                                               Fee__r.Prorate__c,  Fee__r.Required__c, Fee__r.GST_Applicable__c,
-                                               Fee__r.Frequency__c,  Fee__r.Schedule__c
-                                               FROM Course_Fee__c 
-                                               WHERE Course__c =: clsList[0].Class__r.Course__c AND Fee__r.RecordType.Id =: ConstantClass.primaryFeeRecordTypeId]){
-                                                   ParentFeeWrapper parentFeeObj = new ParentFeeWrapper();                                                        
-                                                   parentFeeObj.parentFeeId = courseObj.Fee__c;
-                                                   parentFeeObj.parentFeeName = courseObj.Fee__r.Name;
-                                                   parentFeeObj.parentFeeType = courseObj.Fee__r.Type__c;
-                                                   parentFeeObj.parenTtutionFeeUnitPrice = courseObj.Fee__r.Unit_Price__c != null ? courseObj.Fee__r.Unit_Price__c : 0;
-                                                   parentFeeObj.parentAmount = courseObj.Fee__r.Amount__c;
-                                                   parentFeeObj.prorate      = courseObj.Fee__r.Prorate__c; 
-                                                   parentFeeObj.required     = courseObj.Fee__r.Required__c;
-                                                   parentFeeObj.gstApplicable = courseObj.Fee__r.GST_Applicable__c;
-                                                   parentFeeObj.payFrequency = courseObj.Fee__r.Frequency__c;
-                                                   parentFeeObj.frequency = courseObj.Fee__r.Schedule__c;
-                                                   mapOfFee.put(courseObj.Fee__c, parentFeeObj);
-                                               }                
+                for(Course_Fee__c courseObj : CourseFeeService.getByCourseId(clsList[0].Class__r.Course__c)//[SELECT Id, Fee__c, Fee__r.Type__c, Fee__r.Amount__c, Fee__r.Unit_Price__c, Fee__r.Name,
+                    // Fee__r.Prorate__c,  Fee__r.Required__c, Fee__r.GST_Applicable__c,
+                    // Fee__r.Frequency__c,  Fee__r.Schedule__c
+                    // FROM Course_Fee__c 
+                    // WHERE Course__c =: clsList[0].Class__r.Course__c AND Fee__r.RecordType.Id =: ConstantClass.primaryFeeRecordTypeId
+                    // ]
+                   ){
+                       ParentFeeWrapper parentFeeObj = new ParentFeeWrapper();                                                        
+                       parentFeeObj.parentFeeId = courseObj.Fee__c;
+                       parentFeeObj.parentFeeName = courseObj.Fee__r.Name;
+                       parentFeeObj.parentFeeType = courseObj.Fee__r.Type__c;
+                       parentFeeObj.parenTtutionFeeUnitPrice = courseObj.Fee__r.Unit_Price__c != null ? courseObj.Fee__r.Unit_Price__c : 0;
+                       parentFeeObj.parentAmount = courseObj.Fee__r.Amount__c;
+                       parentFeeObj.prorate      = courseObj.Fee__r.Prorate__c; 
+                       parentFeeObj.required     = courseObj.Fee__r.Required__c;
+                       parentFeeObj.gstApplicable = courseObj.Fee__r.GST_Applicable__c;
+                       parentFeeObj.payFrequency = courseObj.Fee__r.Frequency__c;
+                       parentFeeObj.frequency = courseObj.Fee__r.Schedule__c;
+                       mapOfFee.put(courseObj.Fee__c, parentFeeObj);
+                   }                
                 For(Fee__c feeObj : [SELECT Id, Name,Type__c, Amount__c, Frequency__c,
                                      Unit_Price__c, Parent__c, RecordType.Name, Units__c,
                                      GST_Applicable__c, Required__c, Schedule__c
@@ -265,422 +267,417 @@ public class NewEnrollmentFormCntrl {
     }
     
     @AuraEnabled
-    public static String doSaveEnrollmentApex(String studentDetails,String parentDetail,String secondaryDetail,String btnLabel,Decimal grandTotal,String paymentRefNumber,String paymentComments,String paymentMode,Boolean showAchPayment,
-                                              String discountList,String achRelatedInfo){
-                                                  Savepoint sp;
-                                                  try{
-                                                      Account parentAccount = new Account();
-                                                      Account secondaryAccount = new Account();
-                                                      StudentDetails objStudentDetail = new StudentDetails();
-                                                      Boolean isExistingParent = false;
-                                                      List<ACHDetailsWrapper> listACHDetailsWrapper = new List<ACHDetailsWrapper>();
-                                                      List<Account> listStudent = new List<Account>();
-                                                      List<Family__c> listFamily = new List<Family__c>();
-                                                      List<Enrollment__c> listEnrollment = new List<Enrollment__c>();
-                                                      List<Invoice_Line_Item__c> listInvoiceLineItem = new List<Invoice_Line_Item__c>();
-                                                      List<Deposit__c> listDeposit = new List<Deposit__c>();
-                                                      List<Student_Session__c> listStudentSession = new List<Student_Session__c>();
-                                                      String locationId = '';
-                                                      Map<String,List<Session__c>> mapCourseDetailsToClassSessions = new Map<String,List<Session__c>>();
-                                                      Map<String,Account> mapAccDetailToAccount = new Map<String,Account>();
-                                                      Map<String,String> mapCourseDetailsToEnrollmentId = new Map<String,String>();
-                                                      Map<String,String> mapCourseDetailsToTuitionFee = new Map<String,String>();
-                                                      Map<String,Subscription__c> mapPaymentFrequencyToSubscription = new Map<String,Subscription__c>();
-                                                      List<Subscription_Line_Item__c> listSubscriptionLineItem = new List<Subscription_Line_Item__c>();
-                                                      List<DisWrapper> listDiscountWrapper = new List<DisWrapper>();
-                                                      Boolean gstApplicable = false;
-                                                      Decimal gstRate = 0.0;
-                                                      Decimal invoiceDueDays = 0;
-                                                      
-                                                      Blufy_Config__mdt blufyConfig = getBlufyConfigDetails();
-                                                      if(blufyConfig != NULL){
-                                                          gstApplicable = blufyConfig.GST_VAT_Applicable__c;	
-                                                          gstRate = blufyConfig.GST_VAT_Rate__c;
-                                                          invoiceDueDays = blufyConfig.Invoice_Due_Days__c;
-                                                      }
-                                                      
-                                                      if(String.isNotBlank(parentDetail))
-                                                          parentAccount = (Account)JSON.deserialize(parentDetail,Account.class);
-                                                      
-                                                      if(String.isNotBlank(secondaryDetail))
-                                                          secondaryAccount = (Account)JSON.deserialize(secondaryDetail,Account.class);
-                                                      
-                                                      if(String.isNotBlank(studentDetails))
-                                                          objStudentDetail = (StudentDetails)JSON.deserialize(studentDetails, StudentDetails.class);
-                                                      
-                                                      if(String.isNotBlank(discountList))
-                                                          listDiscountWrapper = (List<DisWrapper>)JSON.deserialize(discountList, List<DisWrapper>.class);
-                                                      
-                                                      if(String.isNotBlank(achRelatedInfo))
-                                                          listACHDetailsWrapper = (List<ACHDetailsWrapper>)JSON.deserialize(achRelatedInfo, List<ACHDetailsWrapper>.class);
-                                                      
-                                                      //**********************************************Parent Records Insertion**********************************************************
-                                                      if(parentAccount != NULL){       
-                                                          if(String.isBlank(parentAccount.Id) && String.isNotBlank(parentAccount.PersonEmail)){
-                                                              parentAccount.RecordTypeId = ConstantClass.customerRecTypeId;
-                                                              List<Account> listAccount = AccountService.getAccountByEmailId(parentAccount.PersonEmail);
-                                                              if(listAccount.size() > 0){                    
-                                                                  parentAccount.Id = listAccount[0].Id;
-                                                              }
-                                                          }
-                                                          
-                                                          if(String.isNotBlank(parentAccount.Id))
-                                                              isExistingParent = true;
-                                                          
-                                                          if(String.isBlank(parentAccount.Id) && String.isBlank(parentAccount.PersonEmail)){
-                                                              parentAccount.RecordTypeId = ConstantClass.corporateRecTypeId;
-                                                          }
-                                                          parentAccount = AccountService.upsertAccountRecords(new List<Account>{parentAccount})[0];          
-                                                      }
-                                                      //**********************************************Parent Records Insertion**********************************************************
-                                                      
-                                                      //**********************************************Secondary Account Records Insertion**********************************************************
-                                                      if(secondaryAccount != NULL && String.isNotBlank(secondaryAccount.LastName)){
-                                                          if(String.isBlank(secondaryAccount.Id)){
-                                                              secondaryAccount.RecordTypeId = ConstantClass.customerRecTypeId;
-                                                          }
-                                                          secondaryAccount = AccountService.upsertAccountRecords(new List<Account>{secondaryAccount})[0];
-                                                      }
-                                                      //**********************************************Secondary Account Insertion**********************************************************
-                                                      
-                                                      //**********************************************Family Records Insertion**********************************************************
-                                                      if(!isExistingParent && String.isNotBlank(parentAccount.Id) && String.isNotBlank(secondaryAccount.Id)){          
-                                                          Family__c family = new Family__c();
-                                                          family.Name = parentAccount.LastName;
-                                                          family.Account__c = parentAccount.Id;
-                                                          family.Account_2__c = secondaryAccount.Id;
-                                                          family.Relationship__c = ConstantClass.spouseFmlyRelationPicklist;
-                                                          listFamily.add(family);
-                                                      }
-                                                      //**********************************************Family Records Insertion**********************************************************
-                                                      
-                                                      if(objStudentDetail != NULL){
-                                                          if(String.isNotBlank(parentAccount.Id)){
-                                                              List<Subscription__c> listSubscription = SubscriptionService.getSubscriptionByParentId(new Set<String>{parentAccount.Id});
-                                                              if(listSubscription.size() > 0){
-                                                                  for(Subscription__c sub: listSubscription){
-                                                                      mapPaymentFrequencyToSubscription.put(sub.Payment_Frequency__c,sub);
-                                                                  }   
-                                                              }
-                                                          }
-                                                          
-                                                          //**********************************************Student Records Filling & Insertion**********************************************************
-                                                          if(objStudentDetail.studentDetail.size() > 0){
-                                                              for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
-                                                                  Account studentAcc = new Account();
-                                                                  studentAcc.RecordTypeId = ConstantClass.studCustomerRecordTypeId;
-                                                                  studentAcc.FirstName = student.FirstName;
-                                                                  studentAcc.LastName = student.LastName;
-                                                                  studentAcc.PersonBirthdate = student.PersonBirthdate;
-                                                                  studentAcc.Gender__c = student.Gender;
-                                                                  studentAcc.educato__Parent__c = parentAccount.Id;
-                                                                  if(String.isNotBlank(student.Id))
-                                                                      studentAcc.Id = student.Id;
-                                                                  listStudent.add(studentAcc);
-                                                              }
-                                                              
-                                                              if(listStudent.size() > 0){
-                                                                  listStudent = AccountService.upsertAccountRecords(listStudent);
-                                                                  for(Account student :listStudent){
-                                                                      mapAccDetailToAccount.put(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender__c,student);
-                                                                  }
-                                                                  //**********************************************Student Records Filling & Insertion**********************************************************
-                                                                  
-                                                                  //**********************************************Student Family Records Filling & Insertion**********************************************************
-                                                                  if(!isExistingParent && mapAccDetailToAccount.keySet().size() > 0){
-                                                                      Account frstStudent = mapAccDetailToAccount.values()[0];
-                                                                      for(Account student : mapAccDetailToAccount.values()){
-                                                                          Family__c parentAccountfamily = new Family__c();
-                                                                          parentAccountfamily.Name = parentAccount.LastName;
-                                                                          parentAccountfamily.Account__c = parentAccount.Id;
-                                                                          parentAccountfamily.Account_2__c = student.Id;
-                                                                          parentAccountfamily.Relationship__c = ConstantClass.childFmlyRelationPicklist;
-                                                                          listFamily.add(parentAccountfamily);
-                                                                          
-                                                                          if(String.isNotBlank(secondaryAccount.Id)){
-                                                                              Family__c secondaryAccountfamily = new Family__c();
-                                                                              secondaryAccountfamily.Name = parentAccount.LastName;
-                                                                              secondaryAccountfamily.Account__c = secondaryAccount.Id;
-                                                                              secondaryAccountfamily.Account_2__c = student.Id;
-                                                                              secondaryAccountfamily.Relationship__c = ConstantClass.childFmlyRelationPicklist;   
-                                                                          	  listFamily.add(secondaryAccountfamily);
-                                                                          }
-                                                                          
-                                                                          if(String.isNotBlank(frstStudent.Id) && !frstStudent.Id.equals(student.Id)){
-                                                                              Family__c siblingAccountfamily = new Family__c();
-                                                                              siblingAccountfamily.Name = parentAccount.LastName;
-                                                                              siblingAccountfamily.Account__c = frstStudent.Id;
-                                                                              siblingAccountfamily.Account_2__c = student.Id;
-                                                                              siblingAccountfamily.Relationship__c = ConstantClass.siblingFmlyRelationPicklist;   
-                                                                          	  listFamily.add(siblingAccountfamily);
-                                                                          }
-                                                                      }                                                          
-                                                                  }                        
-                                                                  
-                                                                  if(listFamily.size() > 0){
-                                                                      listFamily = FamilyService.insertRecords(listFamily);
-                                                                  }
-                                                                  //**********************************************Student Family Records Filling & Insertion**********************************************************
-                                                                  
-                                                                  //**********************************************Enrollment Records Filling**********************************************************
-                                                                  for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
-                                                                      if(student.classDetails.size() > 0){
-                                                                          for(ClassDetailsListWrapper classDetails : student.classDetails){
-                                                                              ClassDetailWrapper classDetail = classDetails.classDetail;
-                                                                              String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;                  
-                                                                              if(String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm'))
-                                                                                  mapCourseDetailsToClassSessions.put(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId+'#'+classDetails.enrollmentStartDate,null);
-                                                                              if(String.isBlank(locationId))
-                                                                                  locationId = classDetail.locationId;
-                                                                              Enrollment__c enrolmnt  = UtilityClass.fillEnrollment(parentAccount.Id,classDetail.locationId, classDetail.classId,
-                                                                                                                                    classDetails.enrollmentStartDate,ConstantClass.enrollmentStage,
-                                                                                                                                    (String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm') ? 
-                                                                                                                                     ConstantClass.enrolledStatus : ConstantClass.draftStatus));
-                                                                              enrolmnt.Student__c = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
-                                                                              enrolmnt.Class_Session__c = classDetail.classSessionId;
-                                                                              enrolmnt.Type__c = classDetail.clsType;
-                                                                              enrolmnt.Parent_Email__c = parentAccount.PersonEmail;
-                                                                              enrolmnt.Comments__c = classDetails.comments;
-                                                                              enrolmnt.Mode__c = classDetail.mode;
-                                                                              listEnrollment.add(enrolmnt);
-                                                                          }
-                                                                      }
-                                                                  }
-                                                                  //**********************************************Enrollment Records Filling**********************************************************
-                                                                  
-                                                                  //**********************************************Invoice Record Insertion**********************************************************
-                                                                  Invoice__c invoice = UtilityClass.fillInvoice(parentAccount.Id,locationId,null,ConstantClass.newEnrollmentInvType,
-                                                                                                                (!showAchPayment && String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm') ? 
-                                                                                                                 ConstantClass.paidStatus : ConstantClass.dueStatus));
-                                                                  if(invoiceDueDays > 0)
-                                                                      invoice.Due_Date__c = System.today().addDays(Integer.valueOf(invoiceDueDays));
-                                                                  invoice.Remarks__c = paymentComments;
-                                                                  invoice = InvoiceService.insertInvoiceRecords(new List<Invoice__c>{invoice})[0];
-                                                                  //**********************************************Invoice Record Insertion**********************************************************
-                                                                  
-                                                                  //**********************************************Enrollment Records Insertion**********************************************************
-                                                                  if(listEnrollment.size() > 0){
-                                                                      listEnrollment = EnrollmentService.insertEnrollmentRecords(listEnrollment);
-                                                                      for(Enrollment__c enrolment : listEnrollment){
-                                                                          mapCourseDetailsToEnrollmentId.put(enrolment.Student__c+'#'+enrolment.Class__c+'#'+enrolment.Class_Session__c,enrolment.Id);
-                                                                      }
-                                                                      //**********************************************Enrollment Records Insertion**********************************************************
-                                                                      
-                                                                      for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
-                                                                          if(student.classDetails.size() > 0){
-                                                                              if(mapAccDetailToAccount.keySet().size() > 0 && mapCourseDetailsToEnrollmentId.keySet().size() > 0){
-                                                                                  for(ClassDetailsListWrapper classDetails : student.classDetails){
-                                                                                      ClassDetailWrapper classDetail = classDetails.classDetail;
-                                                                                      //**************************Invoice Line Item Records Insertion***************************************************
-                                                                                      if(classDetail.tuitionFeeList.size() > 0){
-                                                                                          ParentFeeWrapper tutionFee = classDetail.tuitionFeeList[0];
-                                                                                          Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, tutionFee.parentFeeId, null, ConstantClass.feeType,
-                                                                                                                                                       tutionFee.parentProratedAmount,gstApplicable,gstRate);
-                                                                                          String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
-                                                                                          invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
-                                                                                          invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
-                                                                                          listInvoiceLineItem.add(invLnItm);
-                                                                                          
-                                                                                          if(classDetail.clsType.equalsIgnoreCase(ConstantClass.ongoingClsType) && !(tutionFee.payFrequency.equalsIgnoreCase(ConstantClass.oneTimeFrequency))){
-                                                                                              mapCourseDetailsToTuitionFee.put(studentId+'#'+classDetail.classId,tutionFee.parentFeeId+'#'+tutionFee.payFrequency);
-                                                                                              
-                                                                                              //**************************Subscription Records Insertion***************************************************
-                                                                                              Subscription__c subs = new Subscription__c();
-                                                                                              if(mapPaymentFrequencyToSubscription.containsKey(tutionFee.payFrequency)){
-                                                                                                  subs = mapPaymentFrequencyToSubscription.get(tutionFee.payFrequency);
-                                                                                              }else{
-                                                                                                  subs.Location__c = classDetail.locationId;
-                                                                                                  subs.Customer__c = parentAccount.Id;
-                                                                                                  subs.Status__c   = ConstantClass.activeStatus;
-                                                                                                  subs.Payment_Frequency__c = tutionFee.payFrequency;
-                                                                                                  if(subs.Subscription_Start_Date__c == NULL)
-                                                                                                      subs.Subscription_Start_Date__c = classDetails.enrollmentStartDate;
-                                                                                                  else if(subs.Subscription_Start_Date__c > classDetails.enrollmentStartDate)
-                                                                                                      subs.Subscription_Start_Date__c = classDetails.enrollmentStartDate;
-                                                                                                  mapPaymentFrequencyToSubscription.put(tutionFee.payFrequency, subs);
-                                                                                              }
-                                                                                              //**************************Subscription Records Insertion***************************************************   
-                                                                                          }                                                    
-                                                                                      }
-                                                                                      if(classDetail.secondaryFeeList.size() > 0){
-                                                                                          for(FeeWrapper secondaryFee : classDetail.secondaryFeeList){
-                                                                                              Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, secondaryFee.feeId, null, ConstantClass.feeType,
-                                                                                                                                                           secondaryFee.feeAmount,gstApplicable,gstRate);
-                                                                                              String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
-                                                                                              invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
-                                                                                              invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
-                                                                                              listInvoiceLineItem.add(invLnItm);
-                                                                                          }
-                                                                                      }
-                                                                                      if(classDetail.depositfeelist.size() > 0){
-                                                                                          for(ParentFeeWrapper depositFee : classDetail.depositfeelist){
-                                                                                              Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, depositFee.parentFeeId, null, ConstantClass.depositFeeType,
-                                                                                                                                                           depositFee.parentAmount,false,0.0);
-                                                                                              String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
-                                                                                              invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
-                                                                                              invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
-                                                                                              listInvoiceLineItem.add(invLnItm);
-                                                                                          }
-                                                                                      }
-                                                                                      //**************************Invoice Line Item Records Insertion***************************************************
-                                                                                  }
-                                                                              }
-                                                                          }
-                                                                      }
-                                                                      
-                                                                      //*************************************************Student Session Record Filling*******************************
-                                                                      if(mapCourseDetailsToClassSessions.keySet().size() > 0){
-                                                                          Set<String> setClassSessionId = new Set<String>();
-                                                                          for(String key : mapCourseDetailsToClassSessions.keySet()){
-                                                                              setClassSessionId.add(key.split('#')[2]);
-                                                                          }
-                                                                          
-                                                                          if(setClassSessionId.size() > 0){
-                                                                              List<Session__c> listSession = SessionService.getSessionsByClassSessionId(setClassSessionId);
-                                                                              if(listSession.size() > 0){
-                                                                                  for(String key : mapCourseDetailsToClassSessions.keySet()){
-                                                                                      String classSessionId = key.split('#')[2];
-                                                                                      Date enrollmentDate = Date.valueOf(key.split('#')[3]);
-                                                                                      for(Session__c session : listSession){
-                                                                                          if(classSessionId.equals(session.Class_Session__c) && session.Session_Date__c >= enrollmentDate){
-                                                                                              List<Session__c> listSessionToPut = new List<Session__c>();
-                                                                                              if(mapCourseDetailsToClassSessions.get(key) != NULL)
-                                                                                                  listSessionToPut = mapCourseDetailsToClassSessions.get(key);
-                                                                                              listSessionToPut.add(session);
-                                                                                              mapCourseDetailsToClassSessions.put(key,listSessionToPut);
-                                                                                          } 
-                                                                                      }
-                                                                                  }
-                                                                              }
-                                                                          }                                                      
-                                                                          System.debug('mapCourseDetailsToClassSessions-->'+mapCourseDetailsToClassSessions);
-                                                                          for(String mapKey : mapCourseDetailsToClassSessions.keySet()){
-                                                                              if(mapCourseDetailsToClassSessions.get(mapKey) != NULL){   
-                                                                                  System.debug('mapStudent Size-->'+mapCourseDetailsToClassSessions.get(mapKey).size());
-                                                                                  for(Session__c session : mapCourseDetailsToClassSessions.get(mapKey)){
-                                                                                      Student_Session__c stuSess = new Student_Session__c();
-                                                                                      stuSess.Account__c    = mapKey.split('#')[0];
-                                                                                      stuSess.Session__c    = session.Id;
-                                                                                      stuSess.Enrollment__c = mapCourseDetailsToEnrollmentId.get(mapKey.split('#')[0]+'#'+mapKey.split('#')[1]+'#'+mapKey.split('#')[2]);
-                                                                                      stuSess.Status__c     = ConstantClass.ScheduledStatus;
-                                                                                      stuSess.Billable__c   = True;  
-                                                                                      listStudentSession.add(stuSess);
-                                                                                  }                                                    
-                                                                              }
-                                                                          }                                                                                     
-                                                                      }
-                                                                      //*************************************************Student Session Record Filling*******************************
-                                                                      
-                                                                      
-                                                                      
-                                                                      //*************************************************Subscription Record Insertion*******************************************
-                                                                      if(mapPaymentFrequencyToSubscription.keySet().size() > 0){
-                                                                          List<Subscription__c> listSubscriptionToInsert = SubscriptionService.upsertSubscriptionRecords(mapPaymentFrequencyToSubscription.values());
-                                                                          if(listSubscriptionToInsert != NULL && listSubscriptionToInsert.size() > 0 ){
-                                                                              for(Subscription__c subs : listSubscriptionToInsert){
-                                                                                  if(mapPaymentFrequencyToSubscription.containsKey(subs.Payment_Frequency__c))
-                                                                                      mapPaymentFrequencyToSubscription.put(subs.Payment_Frequency__c,subs);
-                                                                              }
-                                                                          }
-                                                                      }
-                                                                      //*************************************************Subscription Record Insertion*******************************************
-                                                                      
-                                                                      //*************************************************Subscription Line Item Record Filling*******************************************
-                                                                      if(mapCourseDetailsToTuitionFee.keySet().size() > 0 && mapAccDetailToAccount.keySet().size() > 0 
-                                                                         && mapCourseDetailsToEnrollmentId.keySet().size() > 0 && mapPaymentFrequencyToSubscription.keySet().size() > 0){
-                                                                             for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
-                                                                                 if(student.classDetails.size() > 0){
-                                                                                     for(ClassDetailsListWrapper classDetails : student.classDetails){
-                                                                                         ClassDetailWrapper classDetail = classDetails.classDetail;
-                                                                                         String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
-                                                                                         if(mapCourseDetailsToEnrollmentId.containsKey(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId) &&
-                                                                                            mapCourseDetailsToTuitionFee.containsKey(studentId+'#'+classDetail.classId)){
-                                                                                                Subscription_Line_Item__c subsLnItem = new Subscription_Line_Item__c();
-                                                                                                subsLnItem.Subscription__c  = mapPaymentFrequencyToSubscription.get(mapCourseDetailsToTuitionFee.get(studentId+'#'+classDetail.classId).split('#')[1]).Id;
-                                                                                                subsLnItem.Enrollment__c    = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
-                                                                                                subsLnItem.Fee__c           = mapCourseDetailsToTuitionFee.get(studentId+'#'+classDetail.classId).split('#')[0];
-                                                                                                subsLnItem.Status__c        = ConstantClass.activeStatus;
-                                                                                                //subsLnItem.Subscription_Start_Date__c = classDetails.enrollmentStartDate;    
-                                                                                                //Date oneMonthAfterSubsStartDate = classDetails.enrollmentStartDate.date().addMonths(1);
-                                                                                                //subsLnItem.Next_Bill_Date__c = Date.newInstance(oneMonthAfterSubsStartDate.year(),oneMonthAfterSubsStartDate.month(),1);
-                                                                                                listSubscriptionLineItem.add(subsLnItem);
-                                                                                            }
-                                                                                     }                                           
-                                                                                 }
-                                                                             }
-                                                                         }                            
-                                                                      
-                                                                      if(listSubscriptionLineItem.size() > 0)
-                                                                          listSubscriptionLineItem = SubscriptionLineItemService.insertSubsLineItemRecords(listSubscriptionLineItem);
-                                                                      //*************************************************Subscription Line Item Record Filling*******************************************
-                                                                      
-                                                                      //*************************************************Discount Record Filling*********************************************************
-                                                                      if(listDiscountWrapper.size() > 0){
-                                                                          for(DisWrapper discount : listDiscountWrapper){
-                                                                              Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, null,discount.disId,ConstantClass.discountType,discount.amount,gstApplicable,gstRate);
-                                                                              listInvoiceLineItem.add(invLnItm);
-                                                                          }
-                                                                      }
-                                                                      //*************************************************Discount Record Filling*********************************************************
-                                                                      
-                                                                      //*************************************************Invoice Line Item Record Insertion**********************************************
-                                                                      if(listInvoiceLineItem.size() > 0){
-                                                                          listInvoiceLineItem = InvoiceLineItemService.insertInvoiceLineItemRecords(listInvoiceLineItem);
-                                                                          for(Invoice_Line_Item__c invLinItem : listInvoiceLineItem){
-                                                                              if(invLinItem.Type__c.equalsIgnoreCase(ConstantClass.depositFeeType)){
-                                                                                  Deposit__c deposit 		= new Deposit__c();
-                                                                                  deposit.Account__c	 	= parentAccount.Id;
-                                                                                  deposit.Enrollment__c 	= invLinItem.Enrollment__c;
-                                                                                  deposit.Invoice_Line_Item__c = invLinItem.Id;
-                                                                                  listDeposit.add(deposit);
-                                                                              }
-                                                                          }
-                                                                      }                            
-                                                                      //*************************************************Invoice Line Item Record Insertion*******************************
-                                                                      
-                                                                      //*************************************************Deposit Record Insertion*******************************
-                                                                      if(listDeposit.size() > 0)
-                                                                          listDeposit = DepositService.insertDepositRecords(listDeposit);
-                                                                      //*************************************************Deposit Record Insertion*******************************
-                                                                      
-                                                                      //*************************************************Student Session Record Insertion*******************************
-                                                                      if(listStudentSession.size() > 0)
-                                                                          listStudentSession = StudentSessionService.insertStudentSessionRecords(listStudentSession);
-                                                                      //*************************************************Student Session Record Insertion*******************************
-                                                                  }
-                                                                  
-                                                                  
-                                                                  //**********************************************Payment Records Insertion**********************************************************
-                                                                  if(!showAchPayment && String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm')){
-                                                                      Payment__c payment = UtilityClass.fillPayment(parentAccount.Id,invoice.Id,ConstantClass.successStatus,grandTotal);
-                                                                      payment.Payment_Reference__c = paymentRefNumber;
-                                                                      payment.Payment_Mode__c = paymentMode;
-                                                                      //payment.Credit_Note__c = 'a0l110000087Za0AAE';
-                                                                      payment.Comments__c = paymentComments;
-                                                                      payment = PaymentService.insertPaymentRecords(new List<Payment__c>{payment})[0];
-                                                                  }
-                                                                  //**********************************************Payment Records Insertion**********************************************************
-                                                                  
-                                                                  //**********************************************Payment Account Records Insertion**********************************************************
-                                                                  if(String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm')){
-                                                                      if(showAchPayment && listACHDetailsWrapper.size() > 0){
-                                                                          ACHDetailsWrapper objACH = listACHDetailsWrapper[0];
-                                                                          StripeUtility.createStripeCustomerUsingACH(parentAccount.Id,'US','USD',objACH.HolderName,objACH.HolderType,objACH.RoutingNo,objACH.AccountNumber,parentAccount.PersonEmail,ConstantClass.ACHHolderType);
-                                                                      }else if(!showAchPayment){
-                                                                          StripeUtility.createStripeCustomerUsingACH(parentAccount.Id, NULL, NULL,parentAccount.FirstName+' '+parentAccount.LastName, NULL, NULL, NULL,parentAccount.PersonEmail,ConstantClass.offlineHolderType);
-                                                                      }
-                                                                  }
-                                                                  //**********************************************Payment Account Records Insertion**********************************************************
-                                                              }
-                                                          }
-                                                      }
-                                                      return 'SUCCESS#'+listEnrollment[0].Id;
-                                                  }catch(Exception e){
-                                                      System.debug('@@@@ Error:   '+e.getMessage() + e.getLineNumber());
-                                                      Database.rollback(sp);
-                                                      return e.getMessage();
+    public static String doSaveEnrollmentApex(String studentDetails,String parentDetail,String secondaryDetail,String btnLabel,Decimal grandTotal,String paymentRefNumber,String paymentComments,String paymentMode,String discountList){
+        Savepoint sp;
+        try{
+            Account parentAccount = new Account();
+            Account secondaryAccount = new Account();
+            StudentDetails objStudentDetail = new StudentDetails();
+            Boolean isExistingParent = false;
+            List<ACHDetailsWrapper> listACHDetailsWrapper = new List<ACHDetailsWrapper>();
+            List<Account> listStudent = new List<Account>();
+            List<Family__c> listFamily = new List<Family__c>();
+            List<Enrollment__c> listEnrollment = new List<Enrollment__c>();
+            List<Invoice_Line_Item__c> listInvoiceLineItem = new List<Invoice_Line_Item__c>();
+            List<Deposit__c> listDeposit = new List<Deposit__c>();
+            List<Student_Session__c> listStudentSession = new List<Student_Session__c>();
+            String locationId = '';
+            Map<String,List<Session__c>> mapCourseDetailsToClassSessions = new Map<String,List<Session__c>>();
+            Map<String,Account> mapAccDetailToAccount = new Map<String,Account>();
+            Map<String,String> mapCourseDetailsToEnrollmentId = new Map<String,String>();
+            Map<String,String> mapCourseDetailsToTuitionFee = new Map<String,String>();
+            Map<String,Subscription__c> mapPaymentFrequencyToSubscription = new Map<String,Subscription__c>();
+            List<Subscription_Line_Item__c> listSubscriptionLineItem = new List<Subscription_Line_Item__c>();
+            List<DisWrapper> listDiscountWrapper = new List<DisWrapper>();
+            Boolean gstApplicable = false;
+            Decimal gstRate = 0.0;
+            Decimal invoiceDueDays = 0;
+            List<CardDetails> listCardDetails = new List<CardDetails>();
+            Blufy_Config__mdt blufyConfig = getBlufyConfigDetails();
+            
+            if(blufyConfig != NULL){
+                gstApplicable = blufyConfig.GST_VAT_Applicable__c;	
+                gstRate = blufyConfig.GST_VAT_Rate__c;
+                invoiceDueDays = blufyConfig.Invoice_Due_Days__c;
+            }
+            
+            if(String.isNotBlank(parentDetail))
+                parentAccount = (Account)JSON.deserialize(parentDetail,Account.class);
+            
+            if(String.isNotBlank(secondaryDetail))
+                secondaryAccount = (Account)JSON.deserialize(secondaryDetail,Account.class);
+            
+            if(String.isNotBlank(studentDetails))
+                objStudentDetail = (StudentDetails)JSON.deserialize(studentDetails, StudentDetails.class);
+            
+            if(String.isNotBlank(discountList))
+                listDiscountWrapper = (List<DisWrapper>)JSON.deserialize(discountList, List<DisWrapper>.class);
+            
+           // if(String.isNotBlank(achRelatedInfo))
+             //   listACHDetailsWrapper = (List<ACHDetailsWrapper>)JSON.deserialize(achRelatedInfo, List<ACHDetailsWrapper>.class);
+            
+          //  if(String.isNotBlank(cardDetail))
+            //    listCardDetails = (List<CardDetails>)JSON.deserialize(cardDetail, List<CardDetails>.class);
+           // System.debug('listCardDetails-->'+listCardDetails);
+            //**********************************************Parent Records Insertion**********************************************************
+            if(parentAccount != NULL){       
+                if(String.isBlank(parentAccount.Id) && String.isNotBlank(parentAccount.PersonEmail)){
+                    parentAccount.RecordTypeId = ConstantClass.customerRecTypeId;
+                    List<Account> listAccount = AccountService.getAccountByEmailId(parentAccount.PersonEmail);
+                    if(listAccount.size() > 0){                    
+                        parentAccount.Id = listAccount[0].Id;
+                    }
+                }
+                
+                if(String.isNotBlank(parentAccount.Id))
+                    isExistingParent = true;
+                
+                if(String.isBlank(parentAccount.Id) && String.isBlank(parentAccount.PersonEmail)){
+                    parentAccount.RecordTypeId = ConstantClass.corporateRecTypeId;
+                }
+                parentAccount = AccountService.upsertAccountRecords(new List<Account>{parentAccount})[0];          
+            }
+            //**********************************************Parent Records Insertion**********************************************************
+            
+            //**********************************************Secondary Account Records Insertion**********************************************************
+            if(secondaryAccount != NULL && String.isNotBlank(secondaryAccount.LastName)){
+                if(String.isBlank(secondaryAccount.Id)){
+                    secondaryAccount.RecordTypeId = ConstantClass.customerRecTypeId;
+                }
+                secondaryAccount = AccountService.upsertAccountRecords(new List<Account>{secondaryAccount})[0];
+            }
+            //**********************************************Secondary Account Insertion**********************************************************
+            
+            //**********************************************Family Records Insertion**********************************************************
+            if(!isExistingParent && String.isNotBlank(parentAccount.Id) && String.isNotBlank(secondaryAccount.Id)){          
+                Family__c family = new Family__c();
+                family.Name = parentAccount.LastName;
+                family.Account__c = parentAccount.Id;
+                family.Account_2__c = secondaryAccount.Id;
+                family.Relationship__c = ConstantClass.spouseFmlyRelationPicklist;
+                listFamily.add(family);
+            }
+            //**********************************************Family Records Insertion**********************************************************
+            
+            if(objStudentDetail != NULL){
+                if(String.isNotBlank(parentAccount.Id)){
+                    List<Subscription__c> listSubscription = SubscriptionService.getSubscriptionByParentId(new Set<String>{parentAccount.Id});
+                    if(listSubscription.size() > 0){
+                        for(Subscription__c sub: listSubscription){
+                            mapPaymentFrequencyToSubscription.put(sub.Payment_Frequency__c,sub);
+                        }   
+                    }
+                }
+                
+                //**********************************************Student Records Filling & Insertion**********************************************************
+                if(objStudentDetail.studentDetail.size() > 0){
+                    for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
+                        Account studentAcc = new Account();
+                        studentAcc.RecordTypeId = ConstantClass.studCustomerRecordTypeId;
+                        studentAcc.FirstName = student.FirstName;
+                        studentAcc.LastName = student.LastName;
+                        studentAcc.PersonBirthdate = student.PersonBirthdate;
+                        studentAcc.Gender__c = student.Gender;
+                        studentAcc.educato__Parent__c = parentAccount.Id;
+                        if(String.isNotBlank(student.Id))
+                            studentAcc.Id = student.Id;
+                        listStudent.add(studentAcc);
+                    }
+                    
+                    if(listStudent.size() > 0){
+                        listStudent = AccountService.upsertAccountRecords(listStudent);
+                        for(Account student :listStudent){
+                            mapAccDetailToAccount.put(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender__c,student);
+                        }
+                        //**********************************************Student Records Filling & Insertion**********************************************************
+                        
+                        //**********************************************Student Family Records Filling & Insertion**********************************************************
+                        if(!isExistingParent && mapAccDetailToAccount.keySet().size() > 0){
+                            Account frstStudent = mapAccDetailToAccount.values()[0];
+                            for(Account student : mapAccDetailToAccount.values()){
+                                Family__c parentAccountfamily = new Family__c();
+                                parentAccountfamily.Name = parentAccount.LastName;
+                                parentAccountfamily.Account__c = parentAccount.Id;
+                                parentAccountfamily.Account_2__c = student.Id;
+                                parentAccountfamily.Relationship__c = ConstantClass.childFmlyRelationPicklist;
+                                listFamily.add(parentAccountfamily);
+                                
+                                if(String.isNotBlank(secondaryAccount.Id)){
+                                    Family__c secondaryAccountfamily = new Family__c();
+                                    secondaryAccountfamily.Name = parentAccount.LastName;
+                                    secondaryAccountfamily.Account__c = secondaryAccount.Id;
+                                    secondaryAccountfamily.Account_2__c = student.Id;
+                                    secondaryAccountfamily.Relationship__c = ConstantClass.childFmlyRelationPicklist;   
+                                    listFamily.add(secondaryAccountfamily);
+                                }
+                                
+                                if(String.isNotBlank(frstStudent.Id) && !frstStudent.Id.equals(student.Id)){
+                                    Family__c siblingAccountfamily = new Family__c();
+                                    siblingAccountfamily.Name = parentAccount.LastName;
+                                    siblingAccountfamily.Account__c = frstStudent.Id;
+                                    siblingAccountfamily.Account_2__c = student.Id;
+                                    siblingAccountfamily.Relationship__c = ConstantClass.siblingFmlyRelationPicklist;   
+                                    listFamily.add(siblingAccountfamily);
+                                }
+                            }                                                          
+                        }                        
+                        
+                        if(listFamily.size() > 0){
+                            listFamily = FamilyService.insertRecords(listFamily);
+                        }
+                        //**********************************************Student Family Records Filling & Insertion**********************************************************
+                        
+                        //**********************************************Enrollment Records Filling**********************************************************
+                        for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
+                            if(student.classDetails.size() > 0){
+                                for(ClassDetailsListWrapper classDetails : student.classDetails){
+                                    ClassDetailWrapper classDetail = classDetails.classDetail;
+                                    String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;                  
+                                    if(String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm'))
+                                        mapCourseDetailsToClassSessions.put(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId+'#'+classDetails.enrollmentStartDate,null);
+                                    if(String.isBlank(locationId))
+                                        locationId = classDetail.locationId;
+                                    Enrollment__c enrolmnt  = UtilityClass.fillEnrollment(parentAccount.Id,classDetail.locationId, classDetail.classId,
+                                                                                          classDetails.enrollmentStartDate,ConstantClass.enrollmentStage,
+                                                                                          (String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm') ? 
+                                                                                           ConstantClass.enrolledStatus : ConstantClass.draftStatus));
+                                    enrolmnt.Student__c = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
+                                    enrolmnt.Class_Session__c = classDetail.classSessionId;
+                                    enrolmnt.Type__c = classDetail.clsType;
+                                    enrolmnt.Parent_Email__c = parentAccount.PersonEmail;
+                                    enrolmnt.Comments__c = classDetails.comments;
+                                    enrolmnt.Subject__c = classDetails.subject;
+                                    enrolmnt.Mode__c = classDetail.mode;
+                                    listEnrollment.add(enrolmnt);
+                                }
+                            }
+                        }
+                        //**********************************************Enrollment Records Filling**********************************************************
+                        
+                        //**********************************************Invoice Record Insertion**********************************************************
+                        Invoice__c invoice = UtilityClass.fillInvoice(parentAccount.Id,locationId,null,ConstantClass.newEnrollmentInvType,
+                                                                      (String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm') ? 
+                                                                       ConstantClass.paidStatus : ConstantClass.dueStatus));
+                        if(invoiceDueDays > 0)
+                            invoice.Due_Date__c = System.today().addDays(Integer.valueOf(invoiceDueDays));
+                        invoice.Remarks__c = paymentComments;
+                        invoice = InvoiceService.insertInvoiceRecords(new List<Invoice__c>{invoice})[0];
+                        //**********************************************Invoice Record Insertion**********************************************************
+                        
+                        //**********************************************Enrollment Records Insertion**********************************************************
+                        if(listEnrollment.size() > 0){
+                            listEnrollment = EnrollmentService.insertEnrollmentRecords(listEnrollment);
+                            for(Enrollment__c enrolment : listEnrollment){
+                                mapCourseDetailsToEnrollmentId.put(enrolment.Student__c+'#'+enrolment.Class__c+'#'+enrolment.Class_Session__c,enrolment.Id);
+                            }
+                            //**********************************************Enrollment Records Insertion**********************************************************
+                            
+                            for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
+                                if(student.classDetails.size() > 0){
+                                    if(mapAccDetailToAccount.keySet().size() > 0 && mapCourseDetailsToEnrollmentId.keySet().size() > 0){
+                                        for(ClassDetailsListWrapper classDetails : student.classDetails){
+                                            ClassDetailWrapper classDetail = classDetails.classDetail;
+                                            //**************************Invoice Line Item Records Insertion***************************************************
+                                            if(classDetail.tuitionFeeList.size() > 0){
+                                                ParentFeeWrapper tutionFee = classDetail.tuitionFeeList[0];
+                                                Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, tutionFee.parentFeeId, null, ConstantClass.feeType,
+                                                                                                             tutionFee.parentProratedAmount,gstApplicable,gstRate,'','');
+                                                String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
+                                                //invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
+                                                invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
+                                                listInvoiceLineItem.add(invLnItm);
+                                                
+                                                if(classDetail.clsType.equalsIgnoreCase(ConstantClass.ongoingClsType) && !(tutionFee.payFrequency.equalsIgnoreCase(ConstantClass.oneTimeFrequency))){
+                                                    mapCourseDetailsToTuitionFee.put(studentId+'#'+classDetail.classId,tutionFee.parentFeeId+'#'+tutionFee.payFrequency);
+                                                    
+                                                    //**************************Subscription Records Insertion***************************************************
+                                                    Subscription__c subs = new Subscription__c();
+                                                    if(mapPaymentFrequencyToSubscription.containsKey(tutionFee.payFrequency)){
+                                                        subs = mapPaymentFrequencyToSubscription.get(tutionFee.payFrequency);
+                                                    }else{
+                                                        subs.Location__c = classDetail.locationId;
+                                                        subs.Customer__c = parentAccount.Id;
+                                                        subs.Status__c   = ConstantClass.activeStatus;
+                                                        subs.Payment_Frequency__c = tutionFee.payFrequency;
+                                                        if(subs.Subscription_Start_Date__c == NULL)
+                                                            subs.Subscription_Start_Date__c = classDetails.enrollmentStartDate;
+                                                        else if(subs.Subscription_Start_Date__c > classDetails.enrollmentStartDate)
+                                                            subs.Subscription_Start_Date__c = classDetails.enrollmentStartDate;
+                                                        mapPaymentFrequencyToSubscription.put(tutionFee.payFrequency, subs);
+                                                    }
+                                                    //**************************Subscription Records Insertion***************************************************   
+                                                }                                                    
+                                            }
+                                            if(classDetail.secondaryFeeList != NULL && classDetail.secondaryFeeList.size() > 0){
+                                                for(FeeWrapper secondaryFee : classDetail.secondaryFeeList){
+                                                    Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, secondaryFee.feeId, null, ConstantClass.feeType,
+                                                                                                                 secondaryFee.feeAmount,gstApplicable,gstRate,'','');
+                                                    String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
+                                                   // invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
+                                                    invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
+                                                    listInvoiceLineItem.add(invLnItm);
+                                                }
+                                            }
+                                            if(classDetail.depositfeelist != NULL && classDetail.depositfeelist.size() > 0){
+                                                for(ParentFeeWrapper depositFee : classDetail.depositfeelist){
+                                                    Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, depositFee.parentFeeId, null, ConstantClass.depositFeeType,
+                                                                                                                 depositFee.parentAmount,false,0.0,'','');
+                                                    String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
+                                                    //invLnItm.Period__c = DateTime.now().format('MMM') +' '+System.today().year();
+                                                    invLnItm.Enrollment__c = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
+                                                    listInvoiceLineItem.add(invLnItm);
+                                                }
+                                            }
+                                            //**************************Invoice Line Item Records Insertion***************************************************
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            //*************************************************Student Session Record Filling*******************************
+                            if(mapCourseDetailsToClassSessions.keySet().size() > 0){
+                                Set<String> setClassSessionId = new Set<String>();
+                                for(String key : mapCourseDetailsToClassSessions.keySet()){
+                                    setClassSessionId.add(key.split('#')[2]);
+                                }
+                                
+                                if(setClassSessionId.size() > 0){
+                                    List<Session__c> listSession = SessionService.getSessionsByClassSessionId(setClassSessionId);
+                                    if(listSession.size() > 0){
+                                        for(String key : mapCourseDetailsToClassSessions.keySet()){
+                                            String classSessionId = key.split('#')[2];
+                                            Date enrollmentDate = Date.valueOf(key.split('#')[3]);
+                                            for(Session__c session : listSession){
+                                                if(classSessionId.equals(session.Class_Session__c) && session.Session_Date__c >= enrollmentDate){
+                                                    List<Session__c> listSessionToPut = new List<Session__c>();
+                                                    if(mapCourseDetailsToClassSessions.get(key) != NULL)
+                                                        listSessionToPut = mapCourseDetailsToClassSessions.get(key);
+                                                    listSessionToPut.add(session);
+                                                    mapCourseDetailsToClassSessions.put(key,listSessionToPut);
+                                                } 
+                                            }
+                                        }
+                                    }
+                                }                                                      
+                                System.debug('mapCourseDetailsToClassSessions-->'+mapCourseDetailsToClassSessions);
+                                for(String mapKey : mapCourseDetailsToClassSessions.keySet()){
+                                    if(mapCourseDetailsToClassSessions.get(mapKey) != NULL){   
+                                        System.debug('mapStudent Size-->'+mapCourseDetailsToClassSessions.get(mapKey).size());
+                                        for(Session__c session : mapCourseDetailsToClassSessions.get(mapKey)){
+                                            Student_Session__c stuSess = new Student_Session__c();
+                                            stuSess.Account__c    = mapKey.split('#')[0];
+                                            stuSess.Session__c    = session.Id;
+                                            stuSess.Enrollment__c = mapCourseDetailsToEnrollmentId.get(mapKey.split('#')[0]+'#'+mapKey.split('#')[1]+'#'+mapKey.split('#')[2]);
+                                            stuSess.Status__c     = ConstantClass.ScheduledStatus;
+                                            stuSess.Billable__c   = True;  
+                                            listStudentSession.add(stuSess);
+                                        }                                                    
+                                    }
+                                }                                                                                     
+                            }
+                            //*************************************************Student Session Record Filling*******************************
+                            
+                            
+                            
+                            //*************************************************Subscription Record Insertion*******************************************
+                            if(mapPaymentFrequencyToSubscription.keySet().size() > 0){
+                                List<Subscription__c> listSubscriptionToInsert = SubscriptionService.upsertSubscriptionRecords(mapPaymentFrequencyToSubscription.values());
+                                if(listSubscriptionToInsert != NULL && listSubscriptionToInsert.size() > 0 ){
+                                    for(Subscription__c subs : listSubscriptionToInsert){
+                                        if(mapPaymentFrequencyToSubscription.containsKey(subs.Payment_Frequency__c))
+                                            mapPaymentFrequencyToSubscription.put(subs.Payment_Frequency__c,subs);
+                                    }
+                                }
+                            }
+                            //*************************************************Subscription Record Insertion*******************************************
+                            
+                            //*************************************************Subscription Line Item Record Filling*******************************************
+                            if(mapCourseDetailsToTuitionFee.keySet().size() > 0 && mapAccDetailToAccount.keySet().size() > 0 
+                               && mapCourseDetailsToEnrollmentId.keySet().size() > 0 && mapPaymentFrequencyToSubscription.keySet().size() > 0){
+                                   for(StudentDetailsWrapper student : objStudentDetail.studentDetail){
+                                       if(student.classDetails.size() > 0){
+                                           for(ClassDetailsListWrapper classDetails : student.classDetails){
+                                               ClassDetailWrapper classDetail = classDetails.classDetail;
+                                               String studentId = mapAccDetailToAccount.get(student.FirstName+'#'+student.LastName+'#'+student.PersonBirthDate+'#'+student.Gender).Id;
+                                               if(mapCourseDetailsToEnrollmentId.containsKey(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId) &&
+                                                  mapCourseDetailsToTuitionFee.containsKey(studentId+'#'+classDetail.classId)){
+                                                      Subscription_Line_Item__c subsLnItem = new Subscription_Line_Item__c();
+                                                      subsLnItem.Subscription__c  = mapPaymentFrequencyToSubscription.get(mapCourseDetailsToTuitionFee.get(studentId+'#'+classDetail.classId).split('#')[1]).Id;
+                                                      subsLnItem.Enrollment__c    = mapCourseDetailsToEnrollmentId.get(studentId+'#'+classDetail.classId+'#'+classDetail.classSessionId);
+                                                      subsLnItem.Fee__c           = mapCourseDetailsToTuitionFee.get(studentId+'#'+classDetail.classId).split('#')[0];
+                                                      subsLnItem.Status__c        = ConstantClass.activeStatus;
+                                                      //subsLnItem.Subscription_Start_Date__c = classDetails.enrollmentStartDate;    
+                                                      //Date oneMonthAfterSubsStartDate = classDetails.enrollmentStartDate.date().addMonths(1);
+                                                      //subsLnItem.Next_Bill_Date__c = Date.newInstance(oneMonthAfterSubsStartDate.year(),oneMonthAfterSubsStartDate.month(),1);
+                                                      listSubscriptionLineItem.add(subsLnItem);
                                                   }
-                                              }
+                                           }                                           
+                                       }
+                                   }
+                               }                            
+                            
+                            if(listSubscriptionLineItem.size() > 0)
+                                listSubscriptionLineItem = SubscriptionLineItemService.insertSubsLineItemRecords(listSubscriptionLineItem);
+                            //*************************************************Subscription Line Item Record Filling*******************************************
+                            
+                            //*************************************************Discount Record Filling*********************************************************
+                            if(listDiscountWrapper.size() > 0){
+                                for(DisWrapper discount : listDiscountWrapper){
+                                    if(discount.amount > 0){
+                                        Invoice_Line_Item__c invLnItm = UtilityClass.fillInvLineItem(invoice.Id, null, null, null,discount.disId,ConstantClass.discountType,discount.amount,gstApplicable,gstRate,'','');
+                                        listInvoiceLineItem.add(invLnItm);
+                                    }
+                                }
+                            }
+                            //*************************************************Discount Record Filling*********************************************************
+                            
+                            //*************************************************Invoice Line Item Record Insertion**********************************************
+                            if(listInvoiceLineItem.size() > 0){
+                                listInvoiceLineItem = InvoiceLineItemService.insertInvoiceLineItemRecords(listInvoiceLineItem);
+                                for(Invoice_Line_Item__c invLinItem : listInvoiceLineItem){
+                                    if(invLinItem.Type__c.equalsIgnoreCase(ConstantClass.depositFeeType)){
+                                        Deposit__c deposit 		= new Deposit__c();
+                                        deposit.Account__c	 	= parentAccount.Id;
+                                        deposit.Enrollment__c 	= invLinItem.Enrollment__c;
+                                        deposit.Invoice_Line_Item__c = invLinItem.Id;
+                                        listDeposit.add(deposit);
+                                    }
+                                }
+                            }                            
+                            //*************************************************Invoice Line Item Record Insertion*******************************
+                            
+                            //*************************************************Deposit Record Insertion*******************************
+                            if(listDeposit.size() > 0)
+                                listDeposit = DepositService.insertDepositRecords(listDeposit);
+                            //*************************************************Deposit Record Insertion*******************************
+                            
+                            //*************************************************Student Session Record Insertion*******************************
+                            if(listStudentSession.size() > 0)
+                                listStudentSession = StudentSessionService.insertStudentSessionRecords(listStudentSession);
+                            //*************************************************Student Session Record Insertion*******************************
+                        }
+                        
+                        
+                        //**********************************************Payment Records Insertion**********************************************************
+                        if(/*showOfflinePayment && */String.isNotBlank(btnLabel) && btnLabel.equalsIgnoreCase('Confirm')){
+                            Payment__c payment = UtilityClass.fillPayment(parentAccount.Id,invoice.Id,ConstantClass.successStatus,grandTotal);
+                            payment.Payment_Reference__c = paymentRefNumber;
+                            payment.Payment_Mode__c = paymentMode;
+                            //payment.Credit_Note__c = 'a0l110000087Za0AAE';
+                            payment.Comments__c = paymentComments;
+                            payment = PaymentService.insertPaymentRecords(new List<Payment__c>{payment})[0];
+                        }
+                        //**********************************************Payment Records Insertion**********************************************************                        
+                    }
+                }
+            }
+            return 'SUCCESS#'+listEnrollment[0].Id;
+        }catch(Exception e){
+            System.debug('@@@@ Error:   '+e.getMessage() + e.getLineNumber());
+            Database.rollback(sp);
+            return e.getMessage();
+        }
+    }
     
     public class CustomerWrapper{
         @AuraEnabled public Integer stuRecNo{get;set;}
@@ -835,6 +832,7 @@ public class NewEnrollmentFormCntrl {
     public class ClassDetailsListWrapper{
         @AuraEnabled public ClassDetailWrapper classDetail {get;set;}
         @AuraEnabled public Date enrollmentStartDate {get;set;}
+        @AuraEnabled public String subject {get;set;}
         @AuraEnabled public String comments {get;set;}
         public ClassDetailsListWrapper(){
             classDetail = new ClassDetailWrapper();
@@ -929,5 +927,13 @@ public class NewEnrollmentFormCntrl {
         @AuraEnabled public String RoutingNo;
         @AuraEnabled public String AccountNumber;
         public ACHDetailsWrapper(){}
+    }
+    
+    public class CardDetails{
+        @AuraEnabled public String CardNumber;
+        @AuraEnabled public Integer ExpMonth;
+        @AuraEnabled public Integer ExpYear;
+        @AuraEnabled public Integer CVCNumber;
+        public CardDetails(){}
     }
 }

@@ -20,7 +20,7 @@
         <isOptional>false</isOptional>
     </lookupFilter>
     <referenceTo>Account</referenceTo>
-    <relationshipLabel>Invoice (Customer)</relationshipLabel>
+    <relationshipLabel>Invoices</relationshipLabel>
     <relationshipName>Invoice_Customer</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>

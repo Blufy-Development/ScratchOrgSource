@@ -46,12 +46,12 @@
                 <field>Duration_In_Minutes__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Seats_Left__c</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Capacity__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Seats_Left__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>

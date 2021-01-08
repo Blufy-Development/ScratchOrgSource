@@ -6,6 +6,7 @@ public class UtilityClass {
                                                       Integer i = 1;
                                                       while(sessCounTotal != NULL ? i <= sessCounTotal && startDate <= endDate : startDate <= endDate){                                                          
                                                           for(Class_Session__c clsSession : listClassSession){
+                                                              system.debug('clsSession'+clsSession);
                                                               if(clsSession.Day_of_Week__c.contains(DateTime.newInstance(startDate.year(), startDate.month(), startDate.day()).format('EEE'))){
                                                                   Session__c sess = new Session__c();
                                                                   sess.put('Sequence__c',sessionNum + 1);
@@ -132,8 +133,7 @@ public class UtilityClass {
         return invoice;
     }
     
-    public static Invoice_Line_Item__c fillInvLineItem(String invId, String enrId, String subLnItmId, String feeId, String disId, String type, Decimal amount, Boolean isApplyGst, Decimal gstRate){
-       	DateTime dt = Datetime.now();
+    public static Invoice_Line_Item__c fillInvLineItem(String invId, String enrId, String subLnItmId, String feeId, String disId, String type, Decimal amount, Boolean isApplyGst, Decimal gstRate,String year, String month){       
         Invoice_Line_Item__c invLnItm = new Invoice_Line_Item__c();
         //invLnItm.Invoice__c   = invId;
         invLnItm.put('Invoice__c',invId);
@@ -146,6 +146,10 @@ public class UtilityClass {
         //invLnItm.Type__c      = type;
         invLnItm.put('Type__c',type);
         invLnItm.put('Amount__c',roundOffAmount(amount));
+        DateTime dt = Datetime.now();
+        if(String.isNotBlank(year) && String.isNotBlank(month) && dt.month() != Integer.valueOf(month)){
+            dt =  dateTime.newInstance(Integer.valueOf(year), Integer.valueOf(month), 1);
+        }
         invLnItm.put('Period__c',dt.format('MMM')+' '+dt.year());
         system.debug('amount---><'+amount);
         if(isApplyGst && gstRate > 0){

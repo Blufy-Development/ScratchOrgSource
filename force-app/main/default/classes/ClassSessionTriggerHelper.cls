@@ -24,7 +24,7 @@ public class ClassSessionTriggerHelper {
     public static void updateClsSessRelatedSessionRecords(Map <String, Class_Session__c> mapClsSess){
         List<Session__c> updateSessList = new List<Session__c>();
         List<Session__c> sessionList    = SessionService.getSessionsFromTodayByClassSessionId(mapClsSess.keySet());
-        if(sessionList.size() > 0){
+        if(sessionList.size() > 0 && sessionList != NULL){
             for(Session__c sessObj : sessionList){
                 Session__c sess = new Session__c(Id = sessObj.Id);
                 sess.Teacher__c = mapClsSess.get(sessObj.Class_Session__c).Teacher__c;

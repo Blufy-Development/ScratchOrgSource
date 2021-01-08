@@ -1,5 +1,4 @@
 import { LightningElement, api, track } from 'lwc';
-import GSTRate from '@salesforce/label/c.GST_Rate';
 import LOCALE_CURRENCY from "@salesforce/i18n/currency";
 import getBlufyConfigDetailsApex from "@salesforce/apex/NewEnrollmentFormCntrl.getBlufyConfigDetails";
 
@@ -13,7 +12,7 @@ export default class EnrollmentSummary extends LightningElement {
 
     GSTApplicableByBlufyConfig = false;
     GSTRateByBlufyConfig = 0.0;
-
+    isEnrichment;
     label = {
         LOCALE_CURRENCY
     }
@@ -26,7 +25,10 @@ export default class EnrollmentSummary extends LightningElement {
                 if(response != null){
                     this.GSTApplicableByBlufyConfig = response.educato__GST_VAT_Applicable__c;
                     if(response.educato__GST_VAT_Rate__c != null)
-                    this.GSTRateByBlufyConfig = response.educato__GST_VAT_Rate__c;
+                        this.GSTRateByBlufyConfig = response.educato__GST_VAT_Rate__c;
+                    if(response.educato__Segment_Type__c != null && response.educato__Segment_Type__c == 'Enrichment')
+                        this.isEnrichment = true;
+                    console.log('isEnrichment eSummary-->'+this.isEnrichment)
                     console.log('gstblufyconfigApplicable-->'+this.GSTApplicableByBlufyConfig)
                     console.log('gstblufyconfigRate-->'+this.GSTRateByBlufyConfig)
                 }
@@ -44,7 +46,7 @@ export default class EnrollmentSummary extends LightningElement {
             this.studentIndex = studentindex;
             this.showEditClassForm = true;
             this.currentClassDetail = this.studetnDetailsArr.studentDetail[studentindex];
-            // console.log('currentClassDetail', this.currentClassDetail);
+            console.log('currentClassDetail', this.currentClassDetail);
         }
     }
 
@@ -112,6 +114,7 @@ export default class EnrollmentSummary extends LightningElement {
         studentClassDetail.classDetails[this.classIndex].classDetail = JSON.parse(JSON.stringify(courseDetails.relatedCourseDetails.classDetail));
         studentClassDetail.classDetails[this.classIndex].comments = JSON.parse(JSON.stringify(courseDetails.relatedCourseDetails.comments));
         studentClassDetail.classDetails[this.classIndex].enrollmentStartDate = JSON.parse(JSON.stringify(courseDetails.relatedCourseDetails.enrollmentStartDate));
+        studentClassDetail.classDetails[this.classIndex].subject = JSON.parse(JSON.stringify(courseDetails.relatedCourseDetails.subject));
         // if (studentDetail.classDetails.length == 0)
         //     classDetail.showName = true;
         // else

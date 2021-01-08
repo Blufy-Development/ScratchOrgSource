@@ -1172,6 +1172,25 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>FIN %23</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Passport</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSN</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>UpsellOpportunity__c</picklist>
         <values>
             <fullName>Maybe</fullName>

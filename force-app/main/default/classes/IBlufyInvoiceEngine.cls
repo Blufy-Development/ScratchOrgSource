@@ -11,5 +11,5 @@
 
 public Abstract class IBlufyInvoiceEngine{
     public Subscription_Line_Item__c objLineItem;
-	public Abstract List<Invoice_Line_Item__c> createInvoiceLineItems(Invoice__c objInv,LineItemCalculateWrapper objWrap);
+	public Abstract List<Invoice_Line_Item__c> createInvoiceLineItems(Invoice__c objInv,LineItemCalculateWrapper objWrap, String year, String month);
 }

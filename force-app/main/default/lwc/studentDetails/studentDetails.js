@@ -2,7 +2,6 @@ import { LightningElement, track, api, wire } from 'lwc';
 import getBlufyConfigDetailsApex from "@salesforce/apex/NewEnrollmentFormCntrl.getBlufyConfigDetails";
 import getGender from '@salesforce/apex/NewEnrollmentFormCntrl.getPicklistValues';
 import getSlcdAccDetailFromApex from '@salesforce/apex/NewEnrollmentFormCntrl.getchSlcdAccDetails';
-import GSTRate from '@salesforce/label/c.GST_Rate';
 
 export default class StudentDetails extends LightningElement {
     @api classSessionId;
@@ -24,6 +23,7 @@ export default class StudentDetails extends LightningElement {
 
     GSTApplicableByBlufyConfig = false;
     GSTRateByBlufyConfig = 0.0;
+    isEnrichment;
 
     @wire(getGender, {
         "ObjectApi_name": '$objectApiName',
@@ -50,6 +50,9 @@ export default class StudentDetails extends LightningElement {
                     this.GSTApplicableByBlufyConfig = response.educato__GST_VAT_Applicable__c;
                     if(response.educato__GST_VAT_Rate__c != null)
                     this.GSTRateByBlufyConfig = response.educato__GST_VAT_Rate__c;
+                    if(response.educato__Segment_Type__c != null && response.educato__Segment_Type__c == 'Enrichment')
+                        this.isEnrichment = true;
+                    console.log('isEnrichment-->'+this.isEnrichment)    
                     console.log('gstblufyconfigApplicable-->'+this.GSTApplicableByBlufyConfig)
                     console.log('gstblufyconfigRate-->'+this.GSTRateByBlufyConfig)
                 }

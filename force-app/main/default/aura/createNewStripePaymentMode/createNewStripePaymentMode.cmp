@@ -1,0 +1,97 @@
+<aura:component controller="StripeUtility" implements="force:appHostable,flexipage:availableForRecordHome,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:locationChange" action="{!c.doInit}"/>
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="isACH" type="Boolean"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" default="true"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="cmp" type="Payment_Account__c" default="{'sobjectType': 'Payment_Account__c'}"/>
+    
+
+    <aura:if isTrue="{!v.isOpen}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <!-- Modal/Popup Box Header Starts here-->
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{! c.closeModel }"
+                                      alternativeText="close"
+                                      variant="bare-inverse"
+                                      class="slds-modal__close"/>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Payment Mode</h2>
+            </header>
+            <!--Modal/Popup Box Body Starts here-->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p><b>Modals/Popup Box are used to display content in a layer above the app. This paradigm is used in cases such as the creation or editing of a record, as well as various types of messaging and wizards.
+                    </b>
+                </p>
+            </div>
+            <!--Modal/Popup Box Footer Starts here-->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral"
+                                  label="Cancel"
+                                  title="Cancel"
+                                  onclick="{! c.closeModel }"/>
+                <lightning:button variant="brand"
+                                  label="OK"
+                                  title="OK"
+                                  onclick="{!c.submitDetails}"/>
+            </footer>
+        </div>
+
+
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:if>
+    <!-- <lightning:card title="Payment Mode">
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner alternativeText="Loading" size="medium" />
+        </aura:if>
+        <aura:set attribute="actions">
+            <lightning:button variant="brand" label="Back" title="Back" onclick="{!c.backtoMain}"/>
+        </aura:set>
+        <div class="slds-p-left_medium slds-p-right_medium">
+            <lightning:radioGroup 
+                            aura:id = "radioGroup"
+                            name="radioGroup"
+                            label="Select Payment Mode"
+                            options="{! v.options }"
+                            value="{! v.value }"
+                            type="radio"
+                            onchange="{! c.handleChange }"
+                            />
+            <! <div aura:id = "lwcComponenet">
+                <c:createRecordsNewStripePaymentMode paymentMode= "{!v.value}" />
+            </div> 
+            <aura:if isTrue="{!v.value == 'ACH'}">
+
+                <c:stripeACHVerification aura:id="achVerficationComponenet"/>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+                        <lightning:button variant="brand" label="Back" title="Back" onclick="{! c.goBack}" class="slds-float_right"/>
+                    </div>
+                    <div class="slds-col">
+                        <lightning:button variant="success" label="Submit" title="Submit" onclick="{! c.submitACHDetails }" />
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.value == 'Credit/Debit Card'}">
+                <div >
+                    <c:stripeCardCreation aura:id="cardComponenet"/>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <lightning:button variant="brand" label="Back" title="Back" onclick="{! c.goBack}"  class="slds-float_right"/>
+                        </div>
+                        <div class="slds-col">
+                            <lightning:button variant="success" label="Submit" title="Submit" onclick="{! c.submitCardDetails }"  />
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </lightning:card> -->
+</aura:component>

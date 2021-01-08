@@ -1,4 +1,5 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
+import getSubject from '@salesforce/apex/NewEnrollmentFormCntrl.getPicklistValues';
 import getClassDetails from '@salesforce/apex/NewEnrollmentFormCntrl.fetchClassDetails';
 import getFessDetail from '@salesforce/apex/NewEnrollmentFormCntrl.fetchFessDetail';
 import getClassSessionDetail from '@salesforce/apex/NewEnrollmentFormCntrl.getClassSessionData';
@@ -24,7 +25,11 @@ export default class AddCourse extends LightningElement {
     @track locationName = '';
     @track courseName = '';
     @track enrollmentSrtDt;
-    @track comment = '';
+    @track subject;
+    @track comment = '';    
+    @track subjectoptions = [];
+
+    @api isEnrichment;
     showAnotherFees = false;
     showSecondayFees = false;
     showDepositFees = false;
@@ -59,6 +64,25 @@ export default class AddCourse extends LightningElement {
         }
     }
 
+    @wire(getSubject, {
+        "ObjectApi_name": 'educato__Enrollment__c',
+        "Field_name": 'educato__Subject__c'
+    })
+    wiredData({ error, data }) {
+        if (data) {
+            data.forEach(ele => {
+                this.subjectoptions.push({ label: ele, value: ele });
+            })
+            this.subjectoptions = JSON.parse(JSON.stringify(this.subjectoptions))
+        } else if (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    getSubjectValue(event){
+        console.log('subject-->',event.target.value)
+        this.subject = event.target.value;
+    }
     getToday() {
         let today = new Date();
         let dd = String(today.getDate()).padStart(2, '0');
@@ -75,6 +99,7 @@ export default class AddCourse extends LightningElement {
             console.log('res', res);
             this.showSpinner = false;
             this.showClassData = true;
+            console.log('Class Data =>' , JSON.parse(JSON.stringify(res)));
             this.classData = JSON.parse(JSON.stringify(res));
             if (this.classData.classWrapperList.length > 0) {
                 this.isClassNotNull = true;
@@ -94,6 +119,7 @@ export default class AddCourse extends LightningElement {
                         if (clasSessionObj) {
                             this.index = index;
                             this.comment = classEle.comments;
+                            this.subject = classEle.subject;
                             this.enrollmentSrtDt = classEle.enrollmentStartDate;
                             clasSessionObj.dayOfWeekClsList.forEach(dayObj => {
                                 if (classEle.classDetail.dayOfWeek == dayObj.nameOfDay) {
@@ -362,6 +388,8 @@ export default class AddCourse extends LightningElement {
                 // console.log('this.enrollmentSrtDt',this.enrollmentSrtDt);
                 console.log(this.template.querySelector('.enroll-date').value);
                 console.log(this.template.querySelector('.notes-cls').value);
+                console.log('subject--->',this.template.querySelector('.subject').value);
+                
                 let courseDetails = {};
                 // courseDetails.tuitionFeeList = [this.anotherFeesData];
                 // courseDetails.secondaryFeeList = this.selectedFessData.second;
@@ -374,6 +402,8 @@ export default class AddCourse extends LightningElement {
                 courseDetails.classDetail.depositfeelist = this.selectedFessData.deposit;
 
                 courseDetails.enrollmentStartDate = this.template.querySelector('.enroll-date').value;
+                courseDetails.subject = this.template.querySelector('.subject').value;
+                console.log('courseDetails.subject -->',courseDetails.subject )
                 courseDetails.comments = this.template.querySelector('.notes-cls').value ?? '';
                 if (courseDetails.classDetail.tuitionFeeList[0].prorate == true) {
                     //courseDetails.classDetail.tuitionFeeList[0].parentProratedAmount = ;

@@ -18,17 +18,19 @@ global class StripeCustomerPaymentBatch implements Database.Batchable<sObject>, 
         System.debug('StripeCustomerPaymentBatch start method called');
         String query;
         // if(this.setAccountIds == null)
-        //     query = 'Select Id, Customer__c, Total_Amount__c FROM Invoice__c WHERE Customer__c != NULL AND Due_Date__c <= today() AND Status__c= \'Due\' AND Total_Amount__c > 0';
+        //     query = 'Select Id, Customer__c, Total_Amount__c, (Select Id, educato__Status__c from educato__Payments__r) FROM Invoice__c WHERE Customer__c != NULL AND Due_Date__c <= today() AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Automation_Applied__c = FALSE'';
         // else
-        //     query = 'Select Id, Customer__c, Total_Amount__c FROM Invoice__c WHERE Customer__c != NULL AND Due_Date__c <= today() AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Customer__c IN :this.setAccountIds';
+        //     query = 'Select Id, Customer__c, Total_Amount__c, (Select Id, educato__Status__c from educato__Payments__r) FROM Invoice__c WHERE Customer__c != NULL AND Due_Date__c <= today() AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Customer__c IN :this.setAccountIds AND Automation_Applied__c = FALSE';
         
         if(this.setAccountIds == null)
-            query = 'Select Id, Customer__c, Total_Amount__c FROM Invoice__c WHERE Customer__c != NULL AND Status__c= \'Due\' AND Total_Amount__c > 0';
+            query = 'Select Id, Customer__c, Total_Amount__c, Automation_Applied__c, (Select Id, educato__Status__c from educato__Payments__r) FROM Invoice__c WHERE Customer__c != NULL AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Automation_Applied__c = FALSE';
         else
-            query = 'Select Id, Customer__c, Total_Amount__c FROM Invoice__c WHERE Customer__c != NULL AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Customer__c IN :setAccountIds';
-        
+            query = 'Select Id, Customer__c, Total_Amount__c, Automation_Applied__c, (Select Id, educato__Status__c from educato__Payments__r) FROM Invoice__c WHERE Customer__c != NULL AND Status__c= \'Due\' AND Total_Amount__c > 0 AND Customer__c IN :setAccountIds AND Automation_Applied__c = FALSE';
+         System.debug('Database.getQueryLocator(query)--->'+Database.getQueryLocator(query));
         System.debug('JM :: Query : '+query);
-        return Database.getQueryLocator(query);    
+        return Database.getQueryLocator(query);
+       
+        
     }
     global void execute(Database.BatchableContext BC, List<Invoice__c> lstInvoices){
         System.debug('JM :: StripeCustomerPaymentBatch execute method is called');

@@ -109,14 +109,15 @@ public class BlufyTestUtil {
         
         Invoice__c invoiceObj = BlufyTestUtil.createInvoice(parentObj.Id,ConstantClass.dueStatus,Date.today());
         insert invoiceObj;
-        
-        Invoice_Line_Item__c invLinItm = BlufyTestUtil.createInvoiceLineItem(invoiceObj.Id,enrollObj.Id,ConstantClass.depositFeeType,100);
+       
+        Invoice_Line_Item__c invLinItm = BlufyTestUtil.createInvoiceLineItem(invoiceObj.Id,enrollObj.Id,ConstantClass.depositFeeType,500);
         insert invLinItm;
         
         Payment__c payment = BlufyTestUtil.createPayment(200,parentObj.Id,'Success',invoiceObj.Id,'Transaction',enrollObj.Id);
         insert payment;
-        //Credit_Note__c createNoteObj = BlufyTestUtil.createCreditRec(studentObj.id, 'Issued',Date.today(),Date.newInstance(2020,6,24),50 );
-        //insert createNoteObj;
+        
+        Credit_Note__c createNoteObj = BlufyTestUtil.createCreditRec(parentObj.id, 'Issued',Date.today(),50 );
+        insert createNoteObj;
         
        // Credit_Note__c createNoteObj2 = BlufyTestUtil.createCreditRec(studentObj.id, 'Issued',Date.newInstance(2020,6,24),Date.newInstance(2020,6,24),50 );
        // insert createNoteObj2;
@@ -204,9 +205,10 @@ public class BlufyTestUtil {
     public static Subscription_Line_Item__c createSubscriptionLineItems(String enrollId,String classTermId,String subscriptionId, Date nextBillDate, String feeId, Date startDate, String status, Date expriyDate){
         return new Subscription_Line_Item__c(Enrollment__c = enrollId,Class_Term__c = classTermId,Subscription__c = subscriptionId,Next_Bill_Date__c = nextBillDate ,Fee__c = feeId, Subscription_Start_Date__c = startDate,Status__c = status,Subscription_Expiry_Date__c= expriyDate);
     }
-   // public static Credit_Note__c createCreditRec(String customerId, String status, Date issuedDate , Date utilizedDate, Double amount){
-   //     return new Credit_Note__c(Customer__c = customerId,Status__c = status,Date_Issued__c = issuedDate, Date_Utilized__c = utilizedDate, Amount__c  = amount );
-   // }
+   
+    public static Credit_Note__c createCreditRec(String customerId, String status, Date issuedDate ,Double amount){
+        return new Credit_Note__c(Account__c = customerId,Status__c = status,Issue_Date__c = issuedDate,Amount__c  = amount );
+    }
     
     public static Invoice__c createInvoice(String customerId, String status, Date issuedDate){
         return new Invoice__c(Customer__c = customerId,Status__c = status,Invoice_Date__c = issuedDate);

@@ -14,7 +14,8 @@ trigger SessionTrigger on Session__c(after insert,after update) {
     }
 
     //Added by Rajesh on 31st July 2020, For session rollup on class
-    if((Trigger.isInsert || Trigger.isUpdate) && Trigger.isAfter){
+    //We are not using rollup summary fields on class 28 Dec, 2020.
+   /* if((Trigger.isInsert || Trigger.isUpdate) && Trigger.isAfter){
       Set<String> clsIds = new Set<String>();
       for(Session__c sess: Trigger.new){
           if(sess.Class__c != null && (Trigger.isInsert || (Trigger.isUpdate && sess.Status__c != Trigger.oldMap.get(sess.Id).Status__c))){
@@ -24,5 +25,5 @@ trigger SessionTrigger on Session__c(after insert,after update) {
       if(clsIds.size() > 0){
         SessionTriggerHandler.sessionRollUpOnClass(clsIds);
       }
-    } 
+    } */
 }

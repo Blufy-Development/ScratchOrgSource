@@ -3,9 +3,9 @@ public class InvoiceService {
     public static List<Invoice__c> getInvoiceById(String invoiceId){ 
         try{
             List<Invoice__c> listInvoice = new List<Invoice__c>();
-            if(String.isNotBlank(invoiceId)){
-                listInvoice = [Select Id,Name,Due_Date__c,Invoice_Date__c,Customer__c,Customer__r.Name,Customer__r.BillingCity,
-                               Customer__r.Billingstreet,Customer__r.BillingCountry,Customer__r.BillingPostalcode,Customer__r.BillingState,
+            if(String.isNotBlank(invoiceId)){               
+                listInvoice = [Select Id,Name,Due_Date__c,Invoice_Date__c,Customer__c,Customer__r.Name,Customer__r.PersonMailingCity,
+                               Customer__r.PersonMailingStreet,Customer__r.PersonMailingCountry,Customer__r.PersonMailingPostalCode,Customer__r.PersonMailingState,
                                Customer__r.personEmail,Customer__r.personMobilePhone,Status__c,Remarks__c,
                                Discount_Amount__c,Total_Amount__c,GST_Tax_Amount__c,Location__r.Name,
                                Location__r.PersonEmail,Location__r.PersonMobilePhone,Location__r.Billingstreet,
@@ -13,8 +13,9 @@ public class InvoiceService {
                                Location__r.Phone, Location__r.Website,Total_Paid_Amount__c,Outstanding_Amount__c,
                                (Select Id,Fee__r.Name,Amount__c,GST_Amount__c,Type__c,Enrollment__c,Label__c,
                                 Enrollment__r.Student__r.Name from Invoice_Line_Items__r 
-                                WHERE Type__c !=: ConstantClass.discountType ORDER BY CreatedDate Asc), 
-                               (Select Id,Name,Status__c,createdDate,Amount__c From Payments__r)
+                                WHERE Type__c !=: ConstantClass.discountType ORDER BY Enrollment__r.Student__r.Name), 
+                               (Select Id,Name,Status__c,Payment_Date__c,Payment_Reference__c,Payment_Mode__c,Type__c,
+                                Amount__c From Payments__r)
                                FROM Invoice__c 
                                WHERE Id=: invoiceId WITH SECURITY_ENFORCED LIMIT 1];
             }

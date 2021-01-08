@@ -6,8 +6,9 @@ public class EnrollmentTriggerHelperTest {
     }
     
     static testmethod void validateEnrollmentTriggerHelper(){
+        Account parentObj  = [Select Name from Account where recordtypeid =: ConstantClass.customerRecTypeId Limit 1];
         
-        Account studentObj  = [Select Name from Account where recordtypeid =: ConstantClass.customerRecTypeId Limit 1];
+        Account studentObj  = [Select Name from Account where recordtypeid =: ConstantClass.studCustomerRecordTypeId Limit 1];
         
         Account locationObj = [Select Name from Account where recordtypeid =: ConstantClass.locationRecordsTypeId Limit 1];
         
@@ -75,7 +76,7 @@ public class EnrollmentTriggerHelperTest {
         
         Enrollment__c enrollObj = BlufyTestUtil.createEnrollment(classObj.Id, Date.today().addDays(1), locationObj.Id,
                                                                  studentObj.Id, ConstantClass.draftStatus, true, 
-                                                                 Date.newInstance(2020,03,24), studentObj.id);
+                                                                 Date.newInstance(2020,03,24), parentObj.id);
         enrollObj.Type__c                = ConstantClass.ongoingClsType;
         enrollObj.Enrollment_End_Date__c = Date.today().addMonths(3);
         enrollObj.Class_Session__c       = clsSessObj.Id;
@@ -86,7 +87,7 @@ public class EnrollmentTriggerHelperTest {
                                                                             studentObj.Id, enrollObj.Id);
         insert studSessObj;
         
-        Invoice__c invoiceObj = BlufyTestUtil.createInvoice(studentObj.Id,ConstantClass.dueStatus,Date.today());
+        Invoice__c invoiceObj = BlufyTestUtil.createInvoice(parentObj.Id,ConstantClass.dueStatus,Date.today());
         insert invoiceObj;
         
         Invoice_Line_Item__c invLinItm = BlufyTestUtil.createInvoiceLineItem(invoiceObj.Id,enrollObj.Id,

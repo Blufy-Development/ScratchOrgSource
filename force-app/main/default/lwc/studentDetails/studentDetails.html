@@ -59,7 +59,7 @@
         </tbody>
     </table>
     <template if:true={showAddClassModal}>
-        <c-add-course onclosemodal={handleClasseModal} onsavemodal={handleSaveEvent} mode="new" index={studentindex}
+        <c-add-course onclosemodal={handleClasseModal} onsavemodal={handleSaveEvent} mode="new" index={studentindex} is-enrichment={isEnrichment}
         class-session-id={classSessionId}>
         </c-add-course>
     </template>

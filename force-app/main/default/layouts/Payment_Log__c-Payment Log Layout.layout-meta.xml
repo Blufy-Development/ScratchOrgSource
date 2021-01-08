@@ -28,7 +28,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Status__c</field>
+                <field>API_Status__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>

@@ -46,7 +46,7 @@ public class StudentSessionService {
                 return [SELECT Session__c, Session__r.Teacher__r.Name,
                         Account__r.Name, Session__r.Class__r.Name, 
                         Status__c, Notes__c, Enrollment__c,Enrollment__r.Comments__c,
-                        Enrollment__r.Start_Date__c,Enrollment__r.Status__c, Session__r.Class__r.Course__r.Name
+                        Enrollment__r.Start_Date__c,Enrollment__r.Status__c,Enrollment__r.Subject__c, Session__r.Class__r.Course__r.Name
                         FROM Student_Session__c
                         WHERE Session__c IN :sessionIds
                         WITH SECURITY_ENFORCED];

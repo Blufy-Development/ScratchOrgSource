@@ -1,0 +1,1337 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+        aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header slds-text-align_left slds-p-around_none">
+                <h2 id="modal-heading-01"
+                    class="slds-modal__title slds-hyphenate title slds-text-heading_xx-small slds-p-bottom_small">
+                    {title}
+                </h2>
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={closemodal}>
+                    <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </header>
+
+            <div class="slds-modal__content slds-p-vertical_x-small slds-p-horizontal_medium" id="modal-content-id-1">
+                <div class="courseSections courseSection1 slds-show">
+                    <!-- <h2 class="slds-section_title slds-text-body_small slds-p-bottom_xx-small slds-text-color_weak">
+                        Course Name:</h2> -->
+                    <!-- ======================== First Page ================================ -->
+                    <div class="slds-p-bottom_xx-small">
+                        <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_xx-small">
+                            <div class="slds-col slds-medium-size_5-of-12 " style="position:relative;">
+                                <!-- <c:AutoCompleteCmp label="" objectApiName="Course__c" selectedOption="{crsId}"
+                                    inputValue="{crsName}" showLabel="false"
+                                    extendedWhereClause=" AND Status__c = 'Active'" /> -->
+                                <c-auto-complete-component iconname="standard:account" objectname="Course__c"
+                                    label="Course Name" searchfield="Name" onselectedrec={handleCourseSelect}>
+                                </c-auto-complete-component>
+                            </div>
+                            <!-- <aura:if isTrue="{slcdCrsObject.classWrapperList.length == 0}"> -->
+                            <!-- <div class="slds-size_1-of-1 slds-section_title slds-text-heading_small slds-p-top_large slds-p-horizontal_large slds-p-bottom_small"
+                                style="display:block;color:#C23934">
+                                No class found related to the mentioned course.Please contact your Administrator.
+                            </div> -->
+                            <!-- </aura:if> -->
+                        </div>
+                        <!-- <aura:if isTrue="{showPlansec}"> -->
+                        <template if:true={showClassData}>
+                            <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-end">
+                                <div class="slds-col slds-large-size_6-of-12 slds-p-vertical_small">
+                                    <p
+                                        class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
+                                        <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
+                                        &nbsp;&nbsp;Selected
+                                        Course:</p>
+                                    <p class="slds-text-heading_small"><strong>{courseName}</strong></p>
+                                </div>
+                                <div
+                                    class="slds-col slds-large-size_6-of-12  slds-p-vertical_small slds-text-align_right">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Location:
+                                        <strong>{locationName}</strong></p>
+
+                                </div>
+                            </div>
+
+                            <template for:each={classData.classWrapperList} for:item="clsItem" for:index="rowIndex">
+                                <ul class="list-num" key={clsItem.clsId}>
+                                    <li>
+                                        <div
+                                            class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_vertical-align-center">
+                                            <div class="slds-col  slds-medium-size_11-of-12">
+                                                <div class="slds-grid slds-gutters slds-grid_align-spread">
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div
+                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                            <div class="slds-media__figure">
+                                                                <span class="slds-avatar slds-avatar_x-small">
+                                                                    <lightning-icon icon-name="utility:description" size="small">
+                                                                    </lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small">Class Name:</p>
+                                                                <p class="slds-text-heading_x-small">
+                                                                    <strong>{clsItem.clsName}</strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div
+                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                            <div class="slds-media__figure">
+                                                                <span class="slds-avatar slds-avatar_x-small">
+                                                                    <lightning-icon icon-name="utility:checkin" size="small">
+                                                                    </lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small">Location:</p>
+                                                                <p class="slds-text-heading_x-small">
+                                                                    <strong>
+                                                                        {clsItem.location}
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-grid slds-gutters slds-grid_align-spread">
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div
+                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                            <div class="slds-media__figure">
+                                                                <span class="slds-avatar slds-avatar_x-small">
+                                                                    <lightning-icon icon-name="utility:user" size="small">
+                                                                    </lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small">Total Enrollments:</p>
+                                                                <p class="slds-text-heading_x-small"><strong>{clsItem.totalEnrollment}</strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div
+                                                            class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                                            <div class="slds-media__figure">
+                                                                <span class="slds-avatar slds-avatar_x-small">
+                                                                    <lightning-icon icon-name="utility:date_input" size="small">
+                                                                    </lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small">Days of Week:</p>
+                                                                <p class="slds-text-heading_x-small">
+                                                                    <strong>
+                                                                        {clsItem.clsDays}
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col icon-blue slds-text-align_right">
+                                                <lightning-icon class="slds-show plus-util articleTwo"
+                                                    data-index={rowIndex} name="plus" onclick={toggleSection}
+                                                    icon-name="utility:add" size="x-small">
+                                                </lightning-icon>
+                                                <lightning-icon class="slds-hide minus-util articleTwo"
+                                                    data-index={rowIndex} name="minus" icon-name="utility:dash"
+                                                    size="x-small" onclick={toggleSection}></lightning-icon>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="bg-lite slds-border_top slds-border_top collapse-class-session slds-hide">
+                                            <!--slds-hide-->
+                                            <template for:each={clsItem.dayOfWeekClsList} for:item="dayOfWeekItem">
+                                                <div key={dayOfWeekItem.nameOfDay}>
+                                                    <div
+                                                        class="slds-grid slds-gutters slds-p-around_x-small slds-wrap bg-white slds-grid_align-spread slds-border_bottom-black slds-m-horizontal_none">
+                                                        <div class="slds-col slds-media"><span
+                                                                class="slds-avatar slds-avatar_x-small slds-m-right_x-small">
+                                                                <lightning-icon icon-name="utility:date_time" size="small">
+                                                                </lightning-icon>
+                                                            </span> {dayOfWeekItem.nameOfDay}</div>
+                                                        <div class="slds-col"><span
+                                                                class=" slds-text-body_small slds-text-color_weak">Total
+                                                                Enrollments:</span>
+                                                            <strong>{dayOfWeekItem.csTotEnrollment}</strong></div>
+
+                                                    </div>
+                                                    <p class="slds-m-top_x-small"></p>
+                                                    <template for:each={dayOfWeekItem.classSessionWrapperList}
+                                                        for:item="classSessionItem">
+                                                        <div key={classSessionItem.Id}
+                                                            class="slds-grid slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+
+                                                            <div class="slds-col slds-size_2-of-12">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon
+                                                                                icon-name="utility:resource_territory" size="small">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">Teacher:</p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>{classSessionItem.teacherName}</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="slds-col slds-p-horizontal_none">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon icon-name="utility:user" size="small">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">Enrollments:</p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>{classSessionItem.enrollments}</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="slds-col">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon
+                                                                                icon-name="utility:side_list">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">Seats Left:</p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>{classSessionItem.seatsLeft}</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="slds-col slds-size_1-of-12">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon icon-name="utility:adduser">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">Type:</p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>{classSessionItem.type}
+                                                                            </strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="slds-col">
+                                                                <div
+                                                                    class="slds-media slds-media_center  slds-p-bottom_x-small">
+                                                                    <div class="slds-media__figure">
+                                                                        <span class="slds-avatar slds-avatar_x-small">
+                                                                            <lightning-icon
+                                                                                icon-name="utility:date_time">
+                                                                            </lightning-icon>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="slds-media__body">
+                                                                        <p class="slds-text-body_small">Session Time:
+                                                                        </p>
+                                                                        <p class="slds-text-heading_x-small">
+                                                                            <strong>
+                                                                                <lightning-formatted-date-time
+                                                                                    value={classSessionItem.startTime}
+                                                                                    hour="2-digit" minute="2-digit"
+                                                                                    time-zone="UTC">
+                                                                                </lightning-formatted-date-time> to
+                                                                                <lightning-formatted-date-time
+                                                                                    value={classSessionItem.endTime}
+                                                                                    hour="2-digit" minute="2-digit"
+                                                                                    time-zone="UTC">
+                                                                                </lightning-formatted-date-time>
+                                                                            </strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="slds-col slds-text-align_right">
+                                                                <p
+                                                                    class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                                                    Select:</p>
+                                                                <lightning-input type="checkbox" label=""
+                                                                variant="label-hidden" ></lightning-input>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </template>
+                        </template>
+                        <!-- </aura:if> -->
+                    </div>
+                </div>
+                <!-- ======================== Second Page ================================ -->
+                <div class="courseSections courseSection2 slds-hide">
+                    <h2 class="slds-section_title slds-text-body_small slds-p-bottom_xx-small slds-text-color_weak">
+                        Fees Name:</h2>
+                    <div class="slds-p-bottom_x-small slds-m-bottom_small" style="border:1px solid #7f7f7f;">
+                        <div
+                            class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_vertical-align-center">
+                            <div class="slds-col slds-large-size_9-of-12 slds-p-top_x-small">
+                                <p
+                                    class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
+                                    <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
+                                    &nbsp;&nbsp;Course:</p>
+                                <p class="slds-text-heading_small"><strong>English</strong></p>
+                            </div>
+                            <div class="slds-col slds-large-size_3-of-12   slds-p-top_x-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak">Day:</p>
+                                <p class="slds-text-heading_x-small"><strong>Monday</strong></p>
+
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none">
+                            <div class="slds-col slds-large-size_9-of-12  slds-p-top_x-small">
+                                <div class="slds-media slds-media_center">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-avatar slds-avatar_x-small">
+                                            <lightning-icon icon-name="utility:description"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-body_small">Class Name:</p>
+                                        <p class="slds-text-heading_x-small"><strong>English: Critical
+                                                Thinkers</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-large-size_3-of-12   slds-p-top_x-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak">Session
+                                    Time:</p>
+                                <p class="slds-text-heading_x-small"><strong>3:30 PM to 4:30 PM</strong></p>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-wrap slds-gutters ">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak">Payment Plan:
+                            </p>
+                            <strong>
+                                <!-- <lightning:select label="" variant="label-hidden" class="label-hidden"
+                                    onchange="{!c.selectPlan}">
+                                    <option value="custom-installments">Monthly</option>
+                                    <option value="module-based">Term Based</option>
+                                </lightning:select> -->
+                            </strong>
+                        </div>
+
+
+                    </div>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                style="justify-content: start;">
+                                <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                    size="x-small"></lightning-icon> Primary Fee:
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="list-num slds-p-bottom_xx-small">
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Monthly Tuition Fee
+                                        </strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Unit Price:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$37.50</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$150</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small  slds-text-color_weak">Select:
+                                    </p>
+                                    <div class="slds-form-element ">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" id="checkbox-unique-id-76"
+                                                    value="checkbox-unique-id-73" checked="" />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-76">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Monthly Tuition Fee
+                                        </strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Unit Price:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$37.50</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$150</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small  slds-text-color_weak">Select:
+                                    </p>
+                                    <div class="slds-form-element ">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" value="checkbox-unique-id-73"
+                                                    checked="" />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-76">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="slds-hide custom-installments">
+                        <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                            <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                    style="justify-content: start;">
+                                    <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                        size="x-small"></lightning-icon> Custom Installments:
+                                </p>
+                            </div>
+                        </div>
+
+                        <ul class="list-num slds-p-bottom_small list-num-single slds-m-bottom_small">
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Upfront Payment:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Program Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+
+                                                <p class="slds-text-heading_x-small "><strong>
+                                                        <lightning-input type="date" aura:id="StuDetReqId" name="input5"
+                                                            variant="label-hidden" value={maxBirthDate}
+                                                            autocomplete="off">
+                                                        </lightning-input>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag"></lightning-icon>
+
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong><input type="text"
+                                                            class="slds-input" value="2,500" /></strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="slds-col slds-size_1-of-12 icon-blue slds-text-align_right slds-align_absolute-center slds-m-horizontal_none">
+                                        <lightning-icon icon-name="utility:add" size="x-small"></lightning-icon>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--id="module-based"-->
+                    <div class="slds-hide slds-p-bottom_x-small">
+                        <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                            <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                    style="justify-content: start;">
+                                    <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                        size="x-small"></lightning-icon> Module Based:
+                                </p>
+                            </div>
+                        </div>
+                        <ul class="list-num slds-p-bottom_small list-num-single">
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Upfront Payment:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Introduction to Accounting
+                                                Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>Nov 30, 2020</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Core</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" id="checkbox-unique-id-a"
+                                                        value="checkbox-unique-id-a" checked disabled />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-a">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Installment 1:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Introduction to Business
+                                                Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>Jan 4, 2021</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Core</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" id="checkbox-unique-id-b"
+                                                        value="checkbox-unique-id-b" checked disabled />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-b">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Installment 2:</p>
+                                        <p class="slds-text-heading_x-small"><strong>English as a Second Language
+                                                Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>Feb 8, 2021</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Core</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" id="checkbox-unique-id-c"
+                                                        value="checkbox-unique-id-c" checked disabled />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-c">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Installment 3:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Introduction to Economics
+                                                Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>Mar 8, 2021</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Core</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="optionss" id="checkbox-unique-id-d"
+                                                        value="checkbox-unique-id-d" checked disabled />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-d">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Installment 4:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Introduction to Marketing
+                                                Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>Apr 9, 2021</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Elective</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" id="checkbox-unique-id-e"
+                                                        value="checkbox-unique-id-e" />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-e">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div
+                                    class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                    <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Installment 5:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Mathematics Fee</strong></p>
+                                    </div>
+                                    <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Payment Date:</p>
+                                                <p class="slds-text-heading_x-small"><strong>May 10, 2021</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12 slds-p-vertical_x-small">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-avatar slds-avatar_x-small">
+                                                    <lightning-icon class="slds-text-color_success"
+                                                        icon-name="utility:moneybag" a size="x-small">
+                                                    </lightning-icon>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">Amount:</p>
+                                                <p class="slds-text-heading_x-small"><strong>416.67</strong></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="slds-col slds-large-size_2-of-12   slds-p-top_x-small">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">
+                                            Type:</p>
+                                        <p class="slds-text-heading_x-small"><strong>Elective</strong></p>
+
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                        <p class="slds-section_title slds-text-body_small  slds-text-color_weak">
+                                            Select:</p>
+                                        <div class="slds-form-element ">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-checkbox">
+                                                    <input type="checkbox" name="options" id="checkbox-unique-id-f"
+                                                        value="checkbox-unique-id-f" />
+                                                    <label class="slds-checkbox__label" for="checkbox-unique-id-f">
+                                                        <span class="slds-checkbox_faux"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+
+                        </ul>
+                    </div>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                style="justify-content: start;">
+                                <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                    size="x-small"></lightning-icon> Secondary Fee:
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="list-num slds-p-bottom_xx-small">
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Enrollment Fee</strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12">
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$100</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small  slds-text-color_weak">Select:
+                                    </p>
+                                    <div class="slds-form-element ">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" id="checkbox-unique-id-77"
+                                                    value="checkbox-unique-id-73" checked="" />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-77">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Books &amp; Material</strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12">
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$200</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Select:
+                                    </p>
+                                    <div class="slds-form-element ">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" id="checkbox-unique-id-78"
+                                                    value="checkbox-unique-id-73" checked="" />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-78">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                style="justify-content: start;">
+                                <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                    size="x-small"></lightning-icon>Deposit:
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="list-num slds-p-bottom_small">
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee
+                                        Type:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Deposit</strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12">
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$500</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small  slds-text-color_weak">Select:
+                                    </p>
+                                    <div class="slds-form-element ">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-checkbox">
+                                                <input type="checkbox" name="options" id="checkbox-unique-id-79"
+                                                    value="checkbox-unique-id-73" checked="" />
+                                                <label class="slds-checkbox__label" for="checkbox-unique-id-79">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- ======================== Third Page ================================ -->
+                <div class="courseSections courseSection3 slds-hide">
+                    <div class="slds-p-bottom_x-small" style="border:1px solid #7f7f7f;">
+                        <div
+                            class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_vertical-align-center">
+                            <div class="slds-col slds-large-size_9-of-12 slds-p-top_x-small">
+                                <p
+                                    class="slds-section_title slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
+                                    <!-- <img src="{!$Resource.course}" style="height:16px;" /> -->
+                                    &nbsp;&nbsp;Course:</p>
+                                <p class="slds-text-heading_small"><strong>English</strong></p>
+                            </div>
+                            <div class="slds-col slds-large-size_3-of-12   slds-p-top_x-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak">Day:</p>
+                                <p class="slds-text-heading_x-small"><strong>Monday</strong></p>
+
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none">
+                            <div class="slds-col slds-large-size_9-of-12  slds-p-top_x-small">
+                                <div class="slds-media slds-media_center">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-avatar slds-avatar_x-small">
+                                            <lightning-icon icon-name="utility:description"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-body_small">Class Name:</p>
+                                        <p class="slds-text-heading_x-small"><strong>English: Critical Thinkers</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-large-size_3-of-12   slds-p-top_x-small">
+                                <p class="slds-section_title slds-text-body_small slds-text-color_weak">Session Time:
+                                </p>
+                                <p class="slds-text-heading_x-small"><strong>3:30 PM to 4:30 PM</strong></p>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-p-top_small">
+                        <div class="slds-col slds-medium-size_1-of-2">
+                            <div class="slds-media slds-media_center">
+                                <div class="slds-media__figure">
+                                    <span class="slds-avatar slds-avatar_x-small">
+                                        <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                            size="x-small"></lightning-icon>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-body_small">Primary Fee</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-num slds-p-bottom_small">
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Monthly Tuition Fee
+                                        </strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Unit Price:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$37.50</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center  slds-p-vertical_xx-small">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$150</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+
+
+                    </ul>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center slds-m-top_small">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                style="justify-content: start;">
+                                <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                    size="x-small"></lightning-icon> Secondary Fee:
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="list-num slds-p-bottom_small list-num-single slds-m-bottom_small">
+                        <li>
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_4-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee:</p>
+                                    <p class="slds-text-heading_x-small"><strong>Enrollment Fee</strong></p>
+                                </div>
+
+                                <div class="slds-col slds-large-size_3-of-12">
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-media slds-media_center ">
+                                        <div class="slds-media__figure">
+                                            <span class="slds-avatar slds-avatar_x-small">
+                                                <lightning-icon class="slds-text-color_success"
+                                                    icon-name="utility:moneybag"></lightning-icon>
+
+                                            </span>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-body_small">Fee Amount:</p>
+                                            <p class="slds-text-heading_x-small"><strong>$100</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                        <div class="slds-col slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <p class="slds-section_title slds-text-body_small slds-text-color_weak slds-align_absolute-center"
+                                style="justify-content: start;">
+                                <lightning-icon class="slds-text-color_success" icon-name="utility:moneybag"
+                                    size="x-small"></lightning-icon>Deposit:
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="list-num">
+                        <li class="slds-m-bottom_none">
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-horizontal_none slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_5-of-12 slds-p-vertical_x-small">
+                                    <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee Type:
+                                    </p>
+                                    <p class="slds-text-heading_x-small"><strong>Deposit</strong></p>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12">
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 slds-p-vertical_x-small">
+                                    <div class="slds-p-left_medium">
+                                        <p class="slds-section_title slds-text-body_small slds-text-color_weak">Fee
+                                            Amount:</p>
+                                        <p class="slds-text-heading_x-small"><strong>$500</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_align-spread">
+                        <div class="slds-col slds-large-size_6-of-12 slds-p-vertical_small">
+                            <div class="slds-media slds-media_center">
+                                <div class="slds-media__figure">
+                                    <span class="slds-avatar slds-avatar_x-small">
+                                        <lightning-icon icon-name="utility:date_input"></lightning-icon>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-body_small">Enrollment Start Date:</p>
+                                    <p class="slds-text-heading_x-small "><strong>
+                                            <lightning-input type="date" aura:id="StuDetReqId" name="input5"
+                                                variant="label-hidden" value={maxBirthDate} autocomplete="off">
+                                            </lightning-input>
+                                        </strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-wrap slds-gutters slds-grid_align-spread">
+                        <div class="slds-col slds-large-size_12-of-12 ">
+                            <div class="slds-media ">
+                                <div class="slds-media__figure slds-p-top_small">
+                                    <span class="slds-avatar slds-avatar_x-small">
+                                        <lightning-icon icon-name="utility:copy"></lightning-icon>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-body_small">Notes:</p>
+                                    <textarea id="textarea-id-01" rows="5" class="slds-textarea"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer slds-p-vertical_medium ">
+                <div class="footerSection" data-name="courseSection1">
+                    <template if:true={showBackButton}>
+                        <lightning-button label="Back" variant="neutral" title="Base action"
+                            icon-name="utility:jump_to_left" onclick={showSection} name="back"
+                            class="slds-m-right_medium " icon-position="left" value="Select Course and Class">
+                        </lightning-button>
+                    </template>
+                    <lightning-button label={btnName} variant="brand" title="Base action" icon-name={iconName}
+                        onclick={showSection} name={btnName} class="courseSection2" icon-position="right"
+                        value="Fees &amp; Deposit"></lightning-button>
+                </div>
+                <!-- <div class="footerSection slds-hide" data-name="courseSection2">
+                    <lightning-button label="Back" variant="neutral" title="Base action"
+                        icon-name="utility:jump_to_left" onclick={showSection} name="courseSection1"
+                        class="slds-m-right_medium " icon-position="left" value="Select Course and Class">
+                    </lightning-button>
+                    <lightning-button label="Next" variant="brand" title="Base action" icon-name="utility:jump_to_right"
+                        onclick={showSection} name="courseSection3" class="courseSection3" icon-position="right"
+                        value="Enrollment Date and Notes"></lightning-button>
+                </div>
+                <div class="slds-hide footerSection" data-name="courseSection3">
+                    <lightning-button label="Back" variant="neutral" title="Base action"
+                        icon-name="utility:jump_to_left" onclick={showSection} name="courseSection2"
+                        class="slds-m-right_medium " icon-position="left" value="Fees &amp; Deposit"></lightning-button>
+
+                    <span>
+                        <lightning-button label="Save" variant="brand" title="Base action" icon-name="utility:download">
+                        </lightning-button>
+                    </span>
+                </div> -->
+            </footer>
+
+
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open "></div>
+</template>

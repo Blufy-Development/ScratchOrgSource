@@ -116,11 +116,11 @@
     </platformActionList>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Day_of_Week__c</fields>
         <fields>Start_Time__c</fields>
         <fields>End_Time__c</fields>
         <fields>Room__c</fields>
         <fields>Teacher__c</fields>
+        <fields>Duration_In_Minutes__c</fields>
         <relatedList>Class_Session__c.Class__c</relatedList>
         <sortField>Start_Time__c</sortField>
         <sortOrder>Asc</sortOrder>
@@ -145,14 +145,16 @@
         <sortOrder>Asc</sortOrder>
     </relatedLists>
     <relatedLists>
+        <fields>Sequence__c</fields>
         <fields>NAME</fields>
-        <fields>Class_Session__c</fields>
+        <fields>Class_Term__c</fields>
+        <fields>Teacher__c</fields>
         <fields>Session_Date__c</fields>
         <fields>Start_Time__c</fields>
         <fields>End_Time__c</fields>
-        <fields>Teacher__c</fields>
-        <fields>Room__c</fields>
         <fields>Status__c</fields>
+        <fields>Type__c</fields>
+        <fields>Module_Lesson__c</fields>
         <relatedList>Session__c.Class__c</relatedList>
     </relatedLists>
     <relatedLists>

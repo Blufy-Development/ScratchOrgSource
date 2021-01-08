@@ -1,6 +1,8 @@
 <apex:component controller="SessionActionController">
     <apex:attribute name="customMetaDataConfig" type="Full_Calendar_Configuration__mdt" description="for custom data Configration"
     />
+    <apex:attribute name="blufyMetaDataConfig" type="Blufy_Config__mdt" description="for custom data Configration"
+    />
     <apex:attribute name="nameSpace" type="String"  description="for name space"  />
     <style>
         .custom-anchor {
@@ -71,8 +73,10 @@
 
         var oldCalendarInfoForStudent;
         var nameSpace = '{!nameSpace}';    
+        var segmentType = '{!blufyMetaDataConfig.Segment_Type__c}';
         function handleChangeTab(event) {
-            //console.log(event);
+            
+             //console.log(event);
             let evt = event;
             let tabs = document.querySelectorAll('.slds-tabset');
             tabs.forEach(e => {
@@ -284,6 +288,7 @@
                 selectedSessionId,
                 function (result, event) {
                     //console.log(event.status);
+                    console.log('Segment Type =>', segmentType);
                     document.getElementById("spinner").style.display = "none";
                     if (document.querySelector('.content-student-detail') != null) {
                         document.querySelector('.content-student-detail').remove();
@@ -295,7 +300,11 @@
                     table += '<label class="slds-checkbox__label" for="select-all-checkbox">';
                     table += '<span class="slds-checkbox_faux"></span>';
                     table += '<span class="slds-form-element__label"> </span> </label> </div> </div> </div> </th>';
-                    table += '<th>Student Name</th> <th>Start Date</th> <th>Enrollment Status</th> <th>Comments</th> <th>Session Status</th>';
+                    table += '<th>Student Name</th> <th>Start Date</th> <th>Enrollment Status</th> <th>Comments</th>';
+                    if(segmentType == 'Enrichment'){
+                    	table += '<th>Subject</th>';
+                    }
+                    table += '<th>Session Status</th>';
                     if (currentDate.getTime() < newDate.getTime() && currentUserProfileName != 'Teacher') {
                         table += '<th>Action</th>';
                     }
@@ -316,7 +325,12 @@
                            // table += '</td> <td>';
                            // table += idx[nameSpace+'Session__r']?.[nameSpace+'Teacher__r']?.['Name'];                           
                             table += idx.sessionObj[nameSpace+'Enrollment__r']!= undefined ? idx.sessionObj[nameSpace+'Enrollment__r'][nameSpace+'Comments__c']!= undefined ? idx.sessionObj[nameSpace+'Enrollment__r'][nameSpace+'Comments__c'] :'' : '';
-                            table += '</td> <td>';                          
+                            table += '</td> <td>';    
+                            if(segmentType == 'Enrichment'){
+                            	table += idx.sessionObj[nameSpace+'Enrollment__r']!= undefined ? idx.sessionObj[nameSpace+'Enrollment__r'][nameSpace+'Subject__c']!= undefined ? idx.sessionObj[nameSpace+'Enrollment__r'][nameSpace+'Subject__c'] :'' : '';
+                            	table += '</td> <td>'; 
+                            }
+                                                     
                             table += idx.sessionObj[nameSpace+'Status__c'];
                             if (currentDate.getTime() < newDate.getTime() && currentUserProfileName != 'Teacher') {
                                 table += '</td> <td>';

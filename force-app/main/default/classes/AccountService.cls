@@ -11,7 +11,7 @@ public class AccountService {
             }catch (System.QueryException e) {
                 System.debug(e.getMessage());
             }        
-         }
+        }
         return null;
     }
     
@@ -41,14 +41,14 @@ public class AccountService {
         if(String.isNotBlank(emailId)){
             try {
                 List<Account> listAccount = [SELECT Id, Name,PersonContactId, (SELECT Id, FirstName, LastName, PersonBirthDate FROM Students__r) 
-                                   FROM Account WHERE PersonEmail =: emailId 
-                                   WITH SECURITY_ENFORCED LIMIT 1];
-                    return listAccount;
-                }catch (System.QueryException e) {
-                    System.debug(e.getMessage());
-                }        
-            }
-            return null;
+                                             FROM Account WHERE PersonEmail =: emailId 
+                                             WITH SECURITY_ENFORCED LIMIT 1];
+                return listAccount;
+            }catch (System.QueryException e) {
+                System.debug(e.getMessage());
+            }        
+        }
+        return null;
     }
     
     public static List<Account> getByTeacherRecTypeId(){
@@ -103,6 +103,19 @@ public class AccountService {
         try {
             listAccount =  [SELECT Id FROM Account WHERE PersonEmail =: email AND RecordType.Id =: ConstantClass.customerRecTypeId
                             WITH SECURITY_ENFORCED LIMIT 1];
+            
+        }catch (System.QueryException e) {
+            System.debug(e.getMessage());
+        } 
+        return listAccount;
+    }
+    
+    public static List<Account> getAccountOfLatestDueInvoice(Set<String> setCustomerId){
+        List<Account> listAccount = new List<Account>();
+        try {
+            listAccount =  [SELECT Id,(SELECT Id,Name,Outstanding_Amount__c FROM Invoice_Customer__r WHERE Status__c =: ConstantClass.dueStatus 
+                                       ORDER BY CreatedDate DESC LIMIT 1) FROM Account WHERE Id IN : setCustomerId
+                            WITH SECURITY_ENFORCED];
             
         }catch (System.QueryException e) {
             System.debug(e.getMessage());

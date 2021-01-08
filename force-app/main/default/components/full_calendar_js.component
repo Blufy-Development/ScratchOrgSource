@@ -183,16 +183,16 @@
         transform:translate3d(-50%,-100%,0);
         font-size: 0.8rem;
         box-shadow: 1px 1px 3px 0px #888888;
-        line-height: 1rem;
+        line-height: 1rem;       
         }
         .tooltipevent div{
-        padding: 5px 0px 5px 9px;
+        padding: 5px 0px 5px 9px;        
         }
         .tooltipevent div:first-child{
         font-weight:bold;
         color:White;
         background-color:#888888;
-        border:solid 1px #898ce8;
+        border:solid 1px #888888;
         }
         .tooltipevent div:last-child{       
         position:relative;
@@ -265,7 +265,7 @@
                               
             console.log(currentUserProfileName);
             //manageResourceSelectList();
-            ////console.log('customMetaDataConfig--> ', '{!customMetaDataConfig.Mode_Button_Color__c}');
+            //console.log('customMetaDataConfig--> ', '{!customMetaDataConfig.Mode_Button_Color__c}');
             //refreshCalendar();          
         });
 
@@ -381,7 +381,7 @@
                    let tis = info.el;
                    let details = info.event.extendedProps;
                    //                   let startEndtime =  '('+timeConvert(msToTime(element[nameSpace+'Start_Time__c']))+'-'+timeConvert(msToTime(element[nameSpace+'End_Time__c']))+')';
-                   let tooltip = '<div class="tooltipevent" style="top:'+($(tis).offset().top-5)+'px;left:'+($(tis).offset().left+($(tis).width())/2)+'px">';
+                   let tooltip = '<div class="tooltipevent" style="display: none;top:'+($(tis).offset().top-5)+'px;left:'+($(tis).offset().left+($(tis).width())/2)+'px">';
                    tooltip+= '<div>'+details.className+'</div>';
                    tooltip+= '<div>Teacher : '+details.teacherName+' </div>';
                    tooltip+= '<div>Capacity : '+details.capacity+'</div>';                 
@@ -389,7 +389,8 @@
                    tooltip+= '<div>Days(s) : '+convertDay(info.event.start.getDay())+'</div>';
                    tooltip+= '<div>Timing : '+details.time+'</div>';
                    tooltip+= '</div>';
-                   let $tooltip = $(tooltip).appendTo('body');                                               
+                   let $tooltip = $(tooltip).appendTo('body');       
+                   $(".tooltipevent").slideDown("slow");
                },
                    eventMouseLeave: function(info) {
                        //console.log('eventMouseLeave');
@@ -407,9 +408,10 @@
             });
             //console.log(calendarEl);
             calendar.render();
-                if( selectedViewType == 'resourceTimeGridDay')
-                document.querySelector('.fc-toolbar').children[1].children[0].innerText = convertDay(calendar.getDate().getDay())+', '+document.querySelector('.fc-toolbar').children[1].children[0].innerText;
-                
+            if( selectedViewType == 'resourceTimeGridDay'){
+                let dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                document.querySelector('.fc-toolbar').children[1].children[0].innerText = dayOfWeek[calendar.getDate().getDay()]+', '+document.querySelector('.fc-toolbar').children[1].children[0].innerText;
+            }
             if (selectedModeView == 'Teacher' && selectedViewType != 'dayGridMonth') {
                 document.querySelector('.fc-body').style.backgroundColor = '{!customMetaDataConfig.Business_Hours_Color__c}';
             }else{
@@ -567,7 +569,7 @@
             } else if (selectedViewType == 'dayGridMonth') {
                 if (isComeFromDatePicker == false) {
                     startDate = createDateFormat(calendarView.currentStart);
-                    endDate = createDateFormat(calendarView.currentEnd);
+                    endDate = new Date(calendarView.currentEnd.setDate(calendarView.currentEnd.getDate() - 1));//createDateFormat(calendarView.currentEnd);
                     selectedDate = startDate;
                 } //else {
                    // isComeFromDatePicker = false;
@@ -608,8 +610,8 @@
                 '{!$RemoteAction.FullCalendarDataService.fetchSessions}',
                 selectTeacher, selectLocation, selectedClassValue, selectedCourseValue, isNeedPhSession,
                 function (result, event) {
-                    //console.log(event.status);
-                    //console.log('result--> ', result);
+                    console.log(event.status);
+                    console.log('result--> ', result);
                     document.getElementById("spinner").style.display = "none";
                     if (event.status) {
                         sessionEvent = result;

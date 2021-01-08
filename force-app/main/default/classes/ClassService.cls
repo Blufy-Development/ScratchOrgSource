@@ -32,10 +32,24 @@ getClassData on  10-07-20  get the class data based on class set Ids
         if(!classid.isEmpty()){
             try {
                 List<Class__c> clasList = [SELECT Id, Name, (SELECT Id, Name FROM Class_Terms__r),
-                                           (SELECT Id,Class__c FROM Sessions__r)
+                                           (SELECT Id,Class__c FROM Sessions__r),
+                                           (SELECT Id FROM Enrollments__r LIMIT 1)
                                            FROM Class__c WHERE Id IN:classId WITH SECURITY_ENFORCED];
                 return clasList;
             }catch (System.QueryException e) {
+                System.debug(e.getMessage());
+            }        
+        }
+        return null;
+    }
+    
+    public static List<Class__c> getClassAlongContainEnrollmentByCourseId(Set<String> setCourseId){
+        if(!setCourseId.isEmpty()){
+            try {
+                List<Class__c> listClass = [SELECT Id, Name,Course__c,(SELECT Id FROM Enrollments__r LIMIT 1) FROM Class__c WHERE Course__c IN : setCourseId 
+                                            WITH SECURITY_ENFORCED];
+                return listClass;
+            }catch (System.QueryException e){
                 System.debug(e.getMessage());
             }        
         }
@@ -79,7 +93,7 @@ getClassData on  10-07-20  get the class data based on class set Ids
     }
     
     //Added on 17-08-20 get records by Teacher Id
-    public static List<Class__c> getByTeacherId(Set<String> teacherIds){
+   /* public static List<Class__c> getByTeacherId(Set<String> teacherIds){
         if(teacherIds.size() > 0){
             try{
                 return [ SELECT id, Course__c FROM Class__c WHERE Teacher__c IN: teacherIds WITH SECURITY_ENFORCED];
@@ -88,7 +102,7 @@ getClassData on  10-07-20  get the class data based on class set Ids
             }        
         }
         return null;
-    }
+    }*/
     
     public static List<Class__c> getByStringQuery(String query){
         if(String.isNotBlank(query)){
@@ -116,9 +130,9 @@ getClassData on  10-07-20  get the class data based on class set Ids
                                                 Day_of_Week__c FROM Class_Sessions__r ORDER BY educato__Day_of_Week__c  ASC, Start_Time__c ASC) FROM Class__c 
                                            WHERE Course__c =:courseId AND  Type__c != null AND Frequency__c != null 
                                            AND (Status__c =: ConstantClass.clsOpenStatus OR 
-                                                (Allow_Overbooking__c = True AND Status__c =: ConstantClass.clsClosedStatus))
+                                                (Allow_Overbooking__c = True AND Status__c =: ConstantClass.clsClosedStatus) OR Type__c =: ConstantClass.fixedType)
                                            WITH SECURITY_ENFORCED];
-                
+                    
                 return clasList;
             }catch (System.QueryException e) {
                 System.debug(e.getMessage());
@@ -127,7 +141,7 @@ getClassData on  10-07-20  get the class data based on class set Ids
         return null;
     } 
     
-    public static List<Class__c> getByIdAlongWithEnrolDate(String classId,Date enrolDate){
+    /*public static List<Class__c> getByIdAlongWithEnrolDate(String classId,Date enrolDate){
         if(String.isNotBlank(classId) && enrolDate != NULL){
             try {
                 List<Class__c> clasList = [SELECT Id, Name, Start_Date__c, End_Date__c, Start_Time__c, End_Time__c, Location__c,
@@ -165,7 +179,7 @@ getClassData on  10-07-20  get the class data based on class set Ids
             }        
         }
         return null;
-    } 
+    } */
     
     public static List<Class__c> getClassByClassIdAlongWithClassTermId(String clsTermId,String classId){
         if(String.isNotBlank(classId) && String.isNotBlank(clsTermId)){
@@ -187,5 +201,5 @@ getClassData on  10-07-20  get the class data based on class set Ids
         }
         return null;
     } 
-    
+
 }

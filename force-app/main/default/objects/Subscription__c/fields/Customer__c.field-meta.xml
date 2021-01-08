@@ -21,7 +21,7 @@
         <isOptional>false</isOptional>
     </lookupFilter>
     <referenceTo>Account</referenceTo>
-    <relationshipLabel>Subscriptions Customer</relationshipLabel>
+    <relationshipLabel>Subscriptions</relationshipLabel>
     <relationshipName>Subscriptions_Customer</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>

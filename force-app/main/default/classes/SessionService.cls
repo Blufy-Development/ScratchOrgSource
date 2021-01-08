@@ -162,8 +162,8 @@ public class SessionService {
         }
         return null; 
     }
-    
-    public static List<Session__c> getByClassTermIdAlongWithEnrolDate(String classTermId,Date enrolDate){
+    //We commented these function because we are not using anywhere in our code
+  /*  public static List<Session__c> getByClassTermIdAlongWithEnrolDate(String classTermId,Date enrolDate){
         if(String.isNotBlank(classTermId) && enrolDate != NULL){
             try {
                 List<Session__c> clasList = [SELECT Id, Name, Class__c, Sequence__c, Session_Date__c, Teacher__c, Status__c  
@@ -177,9 +177,9 @@ public class SessionService {
             }        
         }
         return null;
-    }
+    }*/
     
-    public static List<Session__c> getByClassTermIdAlongWithClassId(Set<String> setClassAndClassTermId){
+  /*  public static List<Session__c> getByClassTermIdAlongWithClassId(Set<String> setClassAndClassTermId){
         if(setClassAndClassTermId.size() > 0){
             try {
                 List<Session__c> listSession = [SELECT Id, Name, Class__c, Class_Term__c, Sequence__c, Session_Date__c, Teacher__c, Status__c, 
@@ -195,7 +195,7 @@ public class SessionService {
             }        
         }
         return null;
-    }
+    }*/
     
     public static List<Session__c> getByClassSessionIdAlongWithEnrolDate(String classSessionId,Date enrolDate){
         List<Session__c> listSession = new List<Session__c>();

@@ -26,19 +26,16 @@ trigger EnrollmentTrigger on Enrollment__c (after insert, after update, after de
         if(trigger.isInsert || trigger.isUpdate || trigger.isDelete || trigger.isUndelete){
             Set<String> clsSessIdSet = new Set<String>();
             List<Enrollment__c> enrolList = trigger.isDelete ? trigger.old : trigger.new;
-            Map<Id,Enrollment__c> oldMap = trigger.oldmap;
             for(Enrollment__c enrolObj : enrolList){
-                if(oldMap != NULL && oldMap.get(enrolObj.id).Class_Session__c != enrolObj.Class_Session__c){
-                    // when trigger is in update condition
-                    if(enrolObj.Class_Session__c != NULL){
+                if(enrolObj.Class_Session__c != NULL){
+                    if(Trigger.isUpdate){
+                        if(Trigger.oldMap.get(enrolObj.id).Class_Session__c != enrolObj.Class_Session__c){
+                            clsSessIdSet.add(Trigger.oldMap.get(enrolObj.id).Class_Session__c);
+                            clsSessIdSet.add(enrolObj.Class_Session__c);
+                        }
+                    }else{
                         clsSessIdSet.add(enrolObj.Class_Session__c);
                     }
-                    if(oldMap.get(enrolObj.id).Class_Session__c != NULL){
-                        clsSessIdSet.add(oldMap.get(enrolObj.id).Class_Session__c);    
-                    }
-                    // when trigger is in insert condition
-                }else if(enrolObj.Class_Session__c != NULL){
-                    clsSessIdSet.add(enrolObj.Class_Session__c);
                 }
             }
             

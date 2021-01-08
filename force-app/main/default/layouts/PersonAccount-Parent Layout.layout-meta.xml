@@ -193,7 +193,6 @@
         <fields>Account_Type__c</fields>
         <fields>Account_Number__c</fields>
         <fields>Type__c</fields>
-        <fields>Stripe_Token__c</fields>
         <fields>Active__c</fields>
         <relatedList>Payment_Account__c.Account__c</relatedList>
     </relatedLists>
@@ -234,7 +233,7 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00h11000002ahmW</masterLabel>
+        <masterLabel>00hJ0000002me3O</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

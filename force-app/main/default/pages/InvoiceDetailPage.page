@@ -1,141 +1,132 @@
-<apex:page controller="InvoiceDetailController" applyBodyTag="false" applyHtmlTag="false" showHeader="false">
-
-<html>
-    <head>
-        <!-- <apex:stylesheet value="{!URLFOR($Resource.InvocieStyle,'InvoiceStyle.css')}"/> -->
-        <style>
-            @page {
+<apex:page controller="InvoiceDetailController" standardStylesheets="true"  docType="html-5.0" showheader="false">
+    <apex:slds />
+    <html>
+        <head>
+            <!-- <apex:stylesheet value="{!URLFOR($Resource.InvocieStyle,'InvoiceStyle.css')}"/> -->
+            <style>
+                @page {
                 size: letter;
                 margin: 0px;
                 padding:0px;
                 font-size:12px;
                 font-color:gray !important;
-            }
-            @font-face{
+                }
+                @font-face{
                 font-family: 'Raleway-Black';
                 <!--src: url("{!URLFOR($Resource.InvoiceCustomeFont,'/Raleway-Black.ttf')}");-->
-            }
-            body {
-                
-            }
-            .text-right{
+                }
+                body {
+                }
+                .text-right{
                 text-align:right;
-            }
-            .text-left{
+                }
+                .text-left{
                 text-align:left;
-            }
-            .center{
+                }
+                .center{
                 text-align:center;
-            }
-            .color{
-                color:#324fc5;
-            }
-            .invoice-To{
-                border-left: solid 2px #324fc5;
-                padding: 6px !important;
-                margin-left:30px;
-            }
-            .invoice-from{
-                border-left: solid 2px #324fc5;
+                }
+                .color{
+                color:#2ba2dc;
+                }
+                .invoice-To{
+                padding: 0px 6px !important;
+                }
+                .invoice-from{
                 padding-right:4px;
                 padding-left:6px;
                 margin-left:30px;
-            }
-            th{
-                text-align: center;
-                font-weight: bold;
-                white-space: nowrap;
-                background-color:#324fc5;
+                }
+                th{
+                font-weight: bold !important;
+                white-space: nowrap !important;
+                background-color:#2ba2dc;
                 color:white;
                 font-size:15px;
+                line-height:14px !important;
                 letter-spacing: 1px;
-            }
-            .td{
+                }
+                .td{
                 padding:5px;
                 text-align:center;
-            }
-            
-            .grayColor{
+                }
+                .grayColor{
                 color:gray;
-            }
-            .lightgray{
+                }
+                .lightgray{
                 color:#bfbaba;
-            }
-            .item-Name{
+                }
+                .item-Name{
                 /*border-bottom: solid 1px gray;*/
                 margin-right: 11px;
                 padding: 10px;
-                padding-left: 35px !important;
-            }
-            .PQT{
+                }
+                .PQT{
                 /*border-bottom:solid 1px gray;*/
-                padding:18px;
+                padding:10px;
                 /*padding:10px; */
-            }
-            .item-header{
+                }
+                .item-header{
                 color:black;background-color:lightgray;border-bottom:solid 4px #324fc5;
                 font-family: Raleway-Black;
                 text-align:left;
                 padding-left:35px;
-            }
-            .taxbox{
+                }
+                .taxbox{
                 border-bottom: solid 0.5px gray;
                 padding: 5px;
-            }
-            .taxbox-right{
+                }
+                .taxbox-right{
                 width: 60%;
                 text-align:right;
-            }
-            .border-none{
+                }
+                .border-none{
                 border:none
-            }
-            .paybtn{
+                }
+                .paybtn{
                 background-color: #324fc5;
                 color: white;
                 padding: 11px;
                 border-radius: 5px;
                 margin-right: 9%;
                 float: right;
-            }
-            .invoiceNo{
+                }
+                .invoiceNo{
                 text-align:right;
                 padding-right: 12%;
-            }
-            .issueDate{
+                }
+                .issueDate{
                 border-right:solid 1px #324fc5;
                 padding-right:10px;
                 width:70%;
                 font-size:12px;
                 text-align:right;
-            }
-            .invoiceDate{
+                }
+                .invoiceDate{
                 width:30%;
                 font-size:12px;
                 padding-left:10px;
-            }
-            .payment{
-                padding-left: 35px;
-            }
-            .header{
+                }
+                .header{
                 padding:0px;
                 margin:0px;
-            }
-            b{
+                }
+                b{
                 color:gray;
-            }
-            .noteDetail{
+                }
+                .noteDetail{
                 color:#bfbaba;
                 font-size:12px;
-            }
-            table{
+                }
+                table{
                 font-size:15px;
-            }
-            .item-Description{
+                }
+                .item-Description{
                 background-color:gray;
                 margin:0px;
                 height:100%;
-            }
-            .item-Description{
+                }
+                .item-Description{
                 position: absolute;
                 display: block;
                 width: 100%;
@@ -147,287 +138,290 @@
                 -ms-transform: skew(-30deg, 0deg);
                 -webkit-transform: skew(-30deg, 0deg);
                 transform: skew(-30deg, 0deg);
-            }
-            .arrow{
+                }
+                .arrow{
                 margin-left: 10px;
                 font-size: 23px;
-                
-            }
-            tr.border_bottom td {
-              border-bottom:solid 1px gray;
-            }
-            
-            .paddingInside{
+                }
+                tr.border_bottom td {
+                border-bottom:solid 1px #e7e7e7;
+                }
+                .paddingInside{
                 padding-right: 35px;
                 font-size: smaller;
                 color: darkgray;
-            }
-            <!-- By Ravi -->
-            .button {
-            background-color: #324fc5;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            /* font-size: 16px; */
-            margin: 4px 2px;
-            cursor: pointer;
-            background-image: none !important;
-            font-size: small;
-            }
-            
-        </style>
-    </head>
-    <body style="margin:0px;padding:3%;padding-top:20px">
-        <apex:pageMessages ></apex:pageMessages>
-        <table class="header" style="width:100%" cellpadding="0" cellspacing="0" >
-            <tr>
-                <td style="padding-bottom: 35px;width:50%"><!--<apex:image url="{!$Resource.}" />--></td>
-                <td>
-                    <table width="100%">
-                        <tr><td colspan="2" class="invoiceNo"><span style="font-size:18px;color:gray;"><b>INVOICE</b></span> <span class="color">#{!invoice.Name}</span></td></tr>
-                        <tr>
-                            <td class="issueDate lightgray">Issue Date <Br/> <b>
-                                <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
-                                    <apex:param value="{!invoice.Invoice_Date__c}"/>
-                                </apex:outputText>
-                            </b></td>
-                            <td class="invoiceDate lightgray">Invoice Date <Br/> 
-                                <b>
-                                    <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
-                                        <apex:param value="{!invoice.Due_Date__c}"/>
-                                    </apex:outputText>
-                                </b>
-                               
-                            </td>
-                            
-                        </tr>
-                        <tr>
-                            
-                            <td align="right" style="padding-top: 15px;">
-                                
-                            </td>
-                          <!--  <td  class="invoiceDate lightgray"><Br/> 
-                                <span>
-                                    <b>Ref:</b>
-                                    <b>
-                                        <apex:outputText value="{!invoice.Internal_Ref_No__c}"/>
-                                    </b>
-                                </span>
-                            </td>-->
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="invoice-To">
-                        <b class="color">Invoice To</b><br/>
-                        <b>{!invoice.Customer__r.Name}</b><br/>
-                        <b>A:</b><span class="grayColor">{!invoice.Customer__r.Billingstreet} {!invoice.Customer__r.BillingCountry} {!invoice.Customer__r.BillingPostalcode}</span><br/>
-                        <b>E:</b><span class="grayColor">{!invoice.Customer__r.personEmail} <b>P:</b>{!invoice.Customer__r.personMobilePhone}</span><br/>
-                    </div>
-                </td>
-                <td>
-                    <div class="invoice-from">
-                        <b class="color">Invoice From</b><br/>
-                        <b>{!invoice.Location__r.Name}</b><br/>
-                        <b>A:</b><span class="grayColor">{!invoice.Location__r.Billingstreet} {!invoice.Location__r.BillingCountry} {!invoice.Location__r.BillingPostalcode}</span><br/>
-                        <b>E:</b><span class="grayColor">{!invoice.Location__r.personEmail} <b>P:</b>{!invoice.Location__r.personMobilePhone}</span><br/>
-                       <!-- <b>GST Reg:</b><span class="grayColor">{!invoice.Center__r.GST_Number__c}</span><br/>-->
-                    </div>
-                </td>
-            </tr>
-        </table>
-        <table class="header" cellpadding="0" cellspacing="0" style="width:100%" >
-            
-            
-            <tr>
-                <td colspan="4" class="text-right" style="padding-top:30px;padding-right: 7%;"><b>Invoice Status</b> <span style="{!IF(invoice.Status__c =='Paid','color:green',IF(invoice.Status__c=='Due','color:#324fc5',IF(invoice.Status__c=='Overdue','color:red','')))}">{!invoice.Status__c}</span></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="text-right" style=" padding-bottom:10px;padding-right: 7%;{!IF(invoice.Status__c =='Void','','display:none')}"><b>Void Reason : </b> <span style="{!IF(invoice.Status__c =='Void','','display:none')}" >{!invoice.Remarks__c}</span></td>
-            </tr>
-            <tr>
-                <th style="width: 50%;background-color: grey;height: 100%;position: relative;padding: 12px; ">
-                    <span style="position: inherit;z-index: 9999;">Item Description</span>
-                <div  class=""></div></th>
-                <th ><div>QTY<span class="arrow">&rsaquo;</span></div>
-                </th>
-                <th> Price <span class="arrow">&rsaquo;</span></th>
-                <th>Total <span class="arrow">&rsaquo;</span> </th>
-            </tr>
-            
-            <apex:repeat value="{!invoice.Invoice_Line_Items__r}" var="invLineItm">
-                <tr class="border_bottom">
-                    <td><div class="item-Name"><b>
-                        {!invLineItm.Label__c}</b><br/>
-                        <span class="lightgray">{!invLineItm.Enrollment__r.Student__r.Name}
-                        <!--<apex:outputPanel>
-                            (<apex:outputText value="{0, date,MMM','  yyyy}">
-                            <apex:param value="{!invLineItm.Invoice_Date__c}" /> 
-                            </apex:outputText>)
-                        </apex:outputPanel>-->
-                        </span>
-                        </div>
-                    </td>
-                    <td class="center"><div class="PQT grayColor">1</div></td>
-                    <td class="center">
-                        <div class="PQT grayColor">
-                            <apex:outputField value="{!invLineItm.Amount__c}"/>
-                        </div>
-                    </td>
-                    <td class="center">
-                        <div class="PQT ">
-                            <b><apex:outputField value="{!invLineItm.Amount__c}"/></b> 
-                            <apex:outputPanel rendered="{!IF(invLineItm.GST_Amount__c > 0, IF(invLineItm.Type__c=='Deposit', FALSE, TRUE), FALSE)}">
-                                (T)
-                            </apex:outputPanel>
-                        </div>
-                    </td>
-                </tr>
-            </apex:repeat>
-            <tr>
-                <td colspan="2" style="padding-left: 35px;">
-                    <p><b>NOTES:</b>
-                        <span class="noteDetail">
-                            In the event an admin or centre manager wants to add some notes,<br/>
-                            then here is where the notes would appear. A note could also be the start date<br/>
-                            of the lessons for enrolment of students.
-                        </span>
-                    </p>
-                </td>
-                <td colspan="2">
-                    <table width="100%" cellpadding="0" cellspacing="0" >
-                        
-                        <tr>
- 
-                               
-                                <td width="50%">
-                                   <!-- <apex:outputPanel rendered="{!IF(ISBLANK(invoice.Admin_Fees__c), false, true)}" layout="block">
-                                        <div class="taxbox lightgray">Admin Fees({!invoice.Parent_Account__r.Admin_Fees__c}%)</div>
-                                    </apex:outputPanel>-->
-                                </td>
-                                <td width="50%">
-                                   <!-- <apex:outputPanel rendered="{!IF(ISBLANK(invoice.Admin_Fees__c), false, true)}" layout="block">
-                                        <div class="taxbox taxbox-right lightgray">
-                                            <apex:outputField value="{!invoice.Admin_Fees__c}"/>
-                                        </div>
-                                    </apex:outputPanel>-->
-                                </td>
-                           
-                             
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <apex:outputPanel rendered="{!IF(invoice.GST_Tax_Amount__c > 0, TRUE,FALSE)}"><div class="taxbox lightgray">Tax GST(%)</div></apex:outputPanel>
-                            </td>
-                            <td width="50%">
-                                <apex:outputPanel rendered="{!IF(invoice.GST_Tax_Amount__c > 0, TRUE,FALSE)}">
-                                    <div class="taxbox taxbox-right lightgray">
-                                        <apex:outputField value="{!invoice.GST_Tax_Amount__c}"/>
+                }
+                <!-- By Ravi -->
+                .button {
+                background-color: #324fc5;
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                /* font-size: 16px; */
+                margin: 4px 2px;
+                cursor: pointer;
+                background-image: none !important;
+                font-size: small;
+                }
+                .table-info tr:nth-child(odd){
+                background-color:#f4f4f4;
+                } 
+                .table-payment th, .table-payment td{border-right:solid 1px #e7e7e7;}
+                .table-payment th{background-color:#f4f4f4; color:gray; font-weight:normal !important; font-size:13px;}
+                .table-payment th, .table-payment td{padding:10px; }
+                .table-payment{border:solid 1px #e7e7e7;}
+                .table-payment tfoot{border-top:solid 1px #e7e7e7; background-color:#eaeaea;}
+                .table-payment tfoot td{border-right:0 ;}
+            </style>
+        </head>
+        <body style="margin:0px; padding:10px;">
+            <apex:pageMessages ></apex:pageMessages>
+            <table class="header" style="width:100%" cellpadding="0" cellspacing="0" >
+                <tbody>
+                    <tr>
+                        <td style="padding-bottom: 30px;" colspan="2">
+                            <div class="slds-grid slds-wrap slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_3-of-12 slds-grid_vertical-align_center">
+                                    <img src="{!logo}" style="width:130px;" alt="logo"  />
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 ">
+                                    <table width="100%">
+                                        <tr>
+                                            <td colspan="2" class="invoiceNo"><span style="color:gray;">Invoice:</span> <span class="color slds-float_right"><b>#{!invoice.Name}</b></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="invoiceNo">
+                                                <span style="color:gray;">Issue Date:</span> 
+                                                <span class="color  slds-float_right">
+                                                    <b>
+                                                        <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
+                                                            <apex:param value="{!invoice.Invoice_Date__c}"/>
+                                                        </apex:outputText>
+                                                    </b>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="invoiceNo">
+                                                <span style="color:gray;">Due Date:</span> 
+                                                <span class="color  slds-float_right">
+                                                    <b>
+                                                        <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
+                                                            <apex:param value="{!invoice.Due_Date__c}"/>
+                                                        </apex:outputText>
+                                                    </b>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="slds-grid slds-wrap slds-grid_align-spread">
+                                <div class="slds-col slds-large-size_3-of-12 invoice-To">
+                                    <div style="padding-bottom:5px;"><b >Invoice To:</b> <b class="color  ">{!invoice.Customer__r.Name}</b></div>
+                                    <div style="padding-bottom:5px;">
+                                        <span class="grayColor">{!invoice.Customer__r.PersonMailingStreet}&nbsp; {!invoice.Customer__r.PersonMailingCity}&nbsp;<br/>
+                                            {!invoice.Customer__r.PersonMailingState},&nbsp;{!invoice.Customer__r.PersonMailingCountry}&nbsp;{!invoice.Customer__r.PersonMailingPostalCode}</span>
                                     </div>
-                                </apex:outputPanel>
-                            </td>
-                        </tr>
-                        
-                        <tr>
+                                    <div style="padding-bottom:5px;"><b><img src="{!$Resource.mail}" style="height:11px; padding-right:4px;" alt="mail" /></b><span class="grayColor">{!invoice.Customer__r.personEmail}</span> </div>
+                                    <div style="padding-bottom:5px;"><span class="grayColor"><b><img src="{!$Resource.phone}" style="height:14px; margin:0 2px; padding-right:4px;" alt="phone"  /></b>{!invoice.Customer__r.personMobilePhone}</span></div>
+                                </div>
+                                <div class="slds-col slds-large-size_3-of-12 invoice-from">
+                                    <div style="padding-bottom:5px;"><b >Invoice From:</b> <b class="color">{!invoice.Location__r.Name}</b></div>
+                                    <div style="padding-bottom:5px;">
+                                        <span class="grayColor">{!invoice.Location__r.Billingstreet} <br/>{!invoice.Location__r.BillingCountry} {!invoice.Location__r.BillingPostalcode}</span>
+                                    </div>
+                                    <div style="padding-bottom:5px;">
+                                        <b><img src="{!$Resource.mail}" style="height:11px; padding-right:4px;" alt="mail" /></b><span class="grayColor">{!invoice.Location__r.Website}</span> 
+                                    </div>
+                                    <div style="padding-bottom:5px;"><span class="grayColor"><b><img src="{!$Resource.phone}" style="height:14px; margin:0 2px; padding-right:4px;" alt="phone" /></b>{!invoice.Location__r.Phone}</span></div>
+                                    <!-- <b>GST Reg:</b><span class="grayColor">{!invoice.Center__r.GST_Number__c}</span><br/>-->
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="header slds-p-top_large slds-m-bottom_small" cellpadding="0" cellspacing="0" style="width:100%; " >
+                <tbody>
+                    <tr>
+                        <td colspan="4" class="slds-text-align_right" style=""><span style="color:#fff;" class="slds-button {!IF(invoice.Status__c =='Paid','slds-button_success',IF(invoice.Status__c=='Due','slds-button_brand',IF(invoice.Status__c=='Overdue','slds-button_destructive','')))}">Invoice {!invoice.Status__c}</span></td>
+                    </tr>
+                    <tr style="{!IF(invoice.Status__c =='Void','','display:none')}">
+                        <td colspan="4" class="text-right" style=" padding-bottom:10px;{!IF(invoice.Status__c =='Void','','display:none')}"><b>Void Reason : </b> <span style="{!IF(invoice.Status__c =='Void','','display:none')}" >{!invoice.Remarks__c}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="header" cellpadding="0" cellspacing="0" style="width:100%; border-left:1px solid #e7e7e7;border-right:1px solid #e7e7e7; border-top:1px solid #e7e7e7;" >
+                <thead>
+                    <tr>
+                        <th style="width: 50%;background-color: #d0e5f0; text-align:left !important; color:#444; height: 100%;position: relative;padding: 10px 12px;">
+                            <span style="position: inherit;z-index: 9999;">Item Description</span>
+                            <div  class=""></div>
+                        </th>
+                        <th style="padding: 10px 12px; width:10%;">
+                            <div>QTY<span class="arrow">&rsaquo;</span></div>
+                        </th>
+                        <th style="padding: 10px 12px; width:10%;"> Price <span class="arrow">&rsaquo;</span></th>
+                        <th style="padding: 10px 12px; width:10%;">Total <span class="arrow">&rsaquo;</span> </th>
+                    </tr>
+                </thead>
+                <tbody class="table-info">
+                    <apex:repeat value="{!invoice.Invoice_Line_Items__r}" var="invLineItm">
+                        <tr class="border_bottom">
                             <td>
-                                <apex:outputPanel rendered="{!IF(AND(invoice.Discount_Amount__c != 0,invoice.Discount_Amount__c != NULL), TRUE,FALSE)}">
-                                    <div class="taxbox" style="color:red;">Discount</div> 
-                                </apex:outputPanel>
-                            </td>
-                            <td>
-                                <apex:outputPanel rendered="{!IF(AND(invoice.Discount_Amount__c != 0,invoice.Discount_Amount__c != NULL), TRUE,FALSE)}">
-                                <div class="taxbox taxbox-right" style="color:red;"><apex:outputField value="{!invoice.Discount_Amount__c}"/></div> 
-                                </apex:outputPanel>
-                            </td>
-                        </tr>
-                       <tr>
-                            <td><div class="taxbox border-none"><b>Grand Total</b></div></td>
-                            <td>
-                                <div class="taxbox taxbox-right border-none">
+                                <div class="item-Name">
                                     <b>
-                                       <apex:outputField value="{!invoice.Total_Amount__c}"/>
+                                        {!invLineItm.Label__c}</b><br/>
+                                    <span class="lightgray">
+                                        {!invLineItm.Enrollment__r.Student__r.Name}                                        
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="center">
+                                <div class="PQT grayColor">1</div>
+                            </td>
+                            <td class="center">
+                                <div class="PQT grayColor">
+                                    <apex:outputField value="{!invLineItm.Amount__c}"/>
+                                </div>
+                            </td>
+                            <td class="center">
+                                <div class="PQT ">
+                                    <b>
+                                        <apex:outputField value="{!invLineItm.Amount__c}"/>
                                     </b>
+                                    <apex:outputPanel rendered="{!IF(invLineItm.GST_Amount__c > 0, IF(invLineItm.Type__c=='Deposit', FALSE, TRUE), FALSE)}">
+                                        (T)
+                                    </apex:outputPanel>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td><div class="taxbox border-none"><b>Total Paid</b></div></td>
-                            <td>
-                                <div class="taxbox taxbox-right border-none">
-                                    <b>
-                                       <apex:outputField value="{!invoice.Total_Paid_Amount__c}"/>
-                                      <!--  <apex:outputPanel rendered="{!IF(invoice.Paid_Amount__c == NULL,TRUE,FALSE)}">
-                                            $0
-                                        </apex:outputPanel>-->
-                                    </b>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><div class="taxbox border-none"><b>Total Outstanding</b></div></td>
-                            <td>
-                                <div class="taxbox taxbox-right border-none">
-                                    <b>
-                                       <apex:outputField value="{!invoice.Outstanding_Amount__c}" rendered="{!invoice.Outstanding_Amount__c != 0}"/>
-                                    </b>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+                    </apex:repeat>
+                </tbody>
+                <tbody style="background-color:#eaeaea;">
+                    <tr >
+                        <td>
+                        </td>
+                        <td colspan="2">
+                            <div class="item-Name slds-p-bottom_none">
+                                <p class="grayColor">
+                                    <apex:outputPanel rendered="{!IF(invoice.GST_Tax_Amount__c > 0, TRUE,FALSE)}"> Tax GST(%)</apex:outputPanel>
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-Name slds-p-bottom_none">
+                                <strong>
+                                    <apex:outputPanel rendered="{!IF(invoice.GST_Tax_Amount__c > 0, TRUE,FALSE)}">
+                                        <apex:outputField value="{!invoice.GST_Tax_Amount__c}"/>
+                                    </apex:outputPanel>
+                                </strong>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td  colspan="2">
+                            <div class="item-Name slds-p-bottom_none">
+                                <p class="grayColor">
+                                    Discount
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-Name slds-p-bottom_none">
+                                <strong style="color:red;">
+                                    <apex:outputPanel >
+                                        <apex:outputField value="{!invoice.Discount_Amount__c}"/>
+                                    </apex:outputPanel>
+                                </strong>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td  colspan="2">
+                            <div class="item-Name ">
+                                <p class="grayColor">Grand Total</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-Name">
+                                <strong>
+                                    <apex:outputField value="{!invoice.Total_Amount__c}"/>
+                                </strong>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            
+            <div class="slds-grid payment item-Name slds-m-top_large">
+                <div class="slds-col slds-large-size_12-of-12">
+                    <p class="slds-p-bottom_small slds-text-heading_medium"><b style="color:#444;">Payment Details</b></p>
+                    <table class="table-payment">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reference</th>
+                                <th>Type</th>
+                                <th>Mode</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!listPayment}" var="payment">
+                            <tr>
+                                <td>
+                                    <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
+                                        <apex:param value="{!payment.Payment_Date__c }"/>
+                                    </apex:outputText>
+                                </td>
+                                <td><apex:outputText value="{!payment.Type__c}"/></td>
+                                <td><apex:outputText value="{!payment.Payment_Reference__c}"/></td>
+                                <td><apex:outputText value="{!payment.Payment_Mode__c}"/></td>
+                                <td><apex:outputText value="{!payment.Amount__c}"/></td>
+                                </tr>
+                            </apex:repeat>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3"></td>
+                                    <td class="slds-p-bottom_none"><span class="grayColor">Total Paid: </span></td>
+                                    <td  class="slds-p-bottom_none"><strong><apex:outputField value="{!invoice.Total_Paid_Amount__c}"/></strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"></td>
+                                    <td> <span class="grayColor">Total Outstanding: </span></td>
+                                    <td> <strong><apex:outputField value="{!invoice.Outstanding_Amount__c}"/></strong></td>
+                                </tr>
+                        </tfoot>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <table class="header" cellpadding="0" cellspacing="0" style="width:100%;" >
             <tr>
-                <td colspan="1" >
-                    <div class="payment">
-                        <b>PAYMENT DETAILS</b><br/>
-                        <b>Payment Date: </b>
-                            <apex:outputText value="{0,date,EEE, MMM dd yyyy}">
-                                <apex:param value="{!payment.createdDate }"/>
-                            </apex:outputText>
+                <td colspan="4" style="padding-top:50px;padding-left:10px">
+                    <b class="color">
+                        <h1 class="color" style="font-size: 18pt;">Thank You For Your Business!</h1>
                         <br/>
-                        <b>Payment Reference: </b> 
-                        <apex:outputText value="{!paymentNo}" escape="false" Rendered="{!NOT(ISBLANK(paymentNo))}"/>                         
-                    </div>          
-                </td>
-            </tr>
-            <br/>
-            <br/>
-            <tr>
-            <td  colspan="4">
-                <!--
-                <apex:outputPanel rendered="{!OR(InvoiceStatus=='Due', InvoiceStatus=='Overdue') && (displayUpdate==true)}">
-                    <Div style="float: right;margin-right: 6%;">
-                        <button type="button" class="button"><a href="{!customLabelValue +'/apex/PayNowDetail?id='+InvoiceId}" style="color: white;font-weight: bold;text-decoration: none;font-size: medium;" target="_blank">Pay Now</a> </button>
-                        
-                    </Div>
-                </apex:outputPanel>
-                 <apex:outputPanel rendered="{!OR(InvoiceStatus=='Due', InvoiceStatus=='Overdue') && (displayUpdate==false)}">
-                    <Div style="float: right;margin-right: 6%;">
-                        <button type="button" class="button"><a href="{!customLabelValue +'/apex/UpdateCustomerCard?id='+ParentAccId}" style="color: white;font-weight: bold;text-decoration: none;font-size: medium;" target="_blank">Pay Now</a> </button>
-                        
-                    </Div>
-                </apex:outputPanel>
-                -->
-                </td>
-            </tr>
-            <tr>
-                <td colspan="4" style="padding-top:100px;padding-left:35px"><b class="color">
-                    <h1 class="color" style="font-size: 18pt;">Thank You For Your Business!</h1><br/>
-                    <div style="display: flex;padding-top: 13px;">
-                     <!--   <div class="paddingInside"><apex:image url="{!URLFOR($Resource.invoiceIcons,'invoiceIcons/phone.png')}" width="11px"/> {!center.phone}</div>
-                        <div class="paddingInside"><apex:image url="{!URLFOR($Resource.invoiceIcons,'invoiceIcons/post.png')}" width="11px"/> {!center.email}</div>
-                        <div class="paddingInside"><apex:image url="{!URLFOR($Resource.invoiceIcons,'invoiceIcons/globe.png')}" width="11px"/> {!center.website}</div>-->
-                    </div>
+                        <div style="display: flex;padding-top: 13px;">
+                        </div>
                     </b>
                 </td>
             </tr>
-            
         </table>
-    </body>    
+    </body>
 </html>
 </apex:page>

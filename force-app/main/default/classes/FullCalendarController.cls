@@ -14,9 +14,11 @@ global with sharing class FullCalendarController {
     public List<SelectOption> roomTypeList{get;set;}
     public List<SelectOption> roomList{get;set;}
     public Full_Calendar_Configuration__mdt calendarConfigMetadataObject {get;set;}
+    public Blufy_Config__mdt blufyConfigMetaDataObject {get;set;}
     public boolean isUserHaveAllAccess{get;set;}
     public String nameSpace{get;set;}
     private List<Full_Calendar_Configuration__mdt> calendarConfigMetaList;
+    private List<Blufy_Config__mdt> blufyConfigMetaDataList;
     private Map<Id, String> teacherMap;
     private String profileName;
     private Set<Id> teacherLocationIds;
@@ -24,20 +26,20 @@ global with sharing class FullCalendarController {
     
     public FullCalendarController(){
         Set<String> fieldsApiName = new Set<String>{'Id','Name'};
-        boolean isAccountAccessible;
-        boolean isCourseAccessible;
-        boolean isClassAccessible;
-        boolean isRommAccessible;
-        isAccountAccessible = FieldPremissionCrudUtility.checkReadPermission('Account',fieldsApiName,false);               
-        isCourseAccessible = FieldPremissionCrudUtility.checkReadPermission('Course__c',fieldsApiName,false);
-        fieldsApiName.add('Course__c');
-        fieldsApiName.add('Teacher__c');
-        isClassAccessible = FieldPremissionCrudUtility.checkReadPermission('Course__c',fieldsApiName,false);
+        //boolean isAccountAccessible;
+        //boolean isCourseAccessible;
+        //boolean isClassAccessible;
+        //boolean isRommAccessible;
+        //isAccountAccessible = FieldPremissionCrudUtility.checkReadPermission('Account',fieldsApiName,false);               
+        //isCourseAccessible = FieldPremissionCrudUtility.checkReadPermission('Course__c',fieldsApiName,false);
+        //fieldsApiName.add('Course__c');
+        //fieldsApiName.add('Teacher__c');
+        //isClassAccessible = FieldPremissionCrudUtility.checkReadPermission('Course__c',fieldsApiName,false);
         nameSpace = ConstantClass.nameSpace;
-        fieldsApiName = new Set<String>{'Id','Name','Type__c'};
-        isRommAccessible = FieldPremissionCrudUtility.checkReadPermission('Room__c',fieldsApiName,false);
+        //fieldsApiName = new Set<String>{'Id','Name','Type__c'};
+        //isRommAccessible = FieldPremissionCrudUtility.checkReadPermission('Room__c',fieldsApiName,false);
         
-        if(isAccountAccessible && isCourseAccessible && isCourseAccessible && isRommAccessible){
+        //if(isAccountAccessible && isCourseAccessible && isCourseAccessible && isRommAccessible){
             isUserHaveAllAccess = true;
             locationList  = new list<SelectOption>();
             teacherList   = new list<SelectOption>();
@@ -45,12 +47,14 @@ global with sharing class FullCalendarController {
             classList     = new list<SelectOption>();
             //resourcesList = new list<SelectOption>();
             roomTypeList  = new list<SelectOption>();
-            calendarConfigMetaList = new list<Full_Calendar_Configuration__mdt>();            
+            calendarConfigMetaList = new list<Full_Calendar_Configuration__mdt>();  
+        	blufyConfigMetaDataList = new list<Blufy_Config__mdt>();
             teacherMap = new Map<Id, String>();
             teacherLocationIds = new Set<Id>();
             //resourcesTypeList = new list<SelectOption>();
             
             getFullCalendatMetadata();
+        	getBlufyConfigMetaData();
             getProfileName();
             
             if(profileName == ConstantClass.teacherRecType){
@@ -84,9 +88,10 @@ global with sharing class FullCalendarController {
             if(String.isNotBlank(selectedLocation) && String.isNotBlank(selectedRoomType)){
                 populateRoom();
             }
-        }else{
+        //}
+        /*else{
             isUserHaveAllAccess = false;
-        }
+        }*/
         //populateResourceType();
         //selectedResourcesType = resourcesTypeList.get(0).getValue();
         
@@ -298,7 +303,8 @@ Developer   :
 */
     public String getTodayDate(){
         Datetime myDT = Datetime.now();
-        return myDT.format('YYYY-MM-dd');       
+        //return myDT.year()+'-'+myDt.month()+'-'+myDt.day();
+        return myDT.format('yyyy-MM-dd');       
     }  
     
     // commment function after discussed with Dharam And NITIN 
@@ -361,7 +367,7 @@ Developer   :
             }            
             roomTypeValues = roomTypeValues.removeEnd(',');
         }else{
-            roomTypeValues = '\''+string.escapeSingleQuotes(selectedRoomType)+ '\'';
+            roomTypeValues += '\''+string.escapeSingleQuotes(selectedRoomType)+ '\'';
         }
         List<Room__c> roomRecordList = RoomService.getRooms(selectedLocation, roomTypeValues);
         if(roomRecordList.size() > 0){
@@ -389,16 +395,25 @@ Developer   :
     }
     
     private void getFullCalendatMetadata(){        
-        Boolean isFullCalConfigmdtAccesible = FieldPremissionCrudUtility.checkReadPermission('Full_Calendar_Configuration__mdt', new Set<String>{'Id',
-            'Mode_Button_Color__c','Scheduler_License_Key__c','Selected_Mode_Button_Color__c','Selected_View_Button_Color__c','View_Button_Color__c',
-            'Non_Business_Hours_Color__c','Modal_Header_Footer_Color__c','Business_Hours_Color__c','Calendar_Border_Color__c'}, false);
-        if(isFullCalConfigmdtAccesible){
+        //Boolean isFullCalConfigmdtAccesible = FieldPremissionCrudUtility.checkReadPermission('Full_Calendar_Configuration__mdt', new Set<String>{'Id',
+            //'Mode_Button_Color__c','Scheduler_License_Key__c','Selected_Mode_Button_Color__c','Selected_View_Button_Color__c','View_Button_Color__c',
+            //'Non_Business_Hours_Color__c','Modal_Header_Footer_Color__c','Business_Hours_Color__c','Calendar_Border_Color__c'}, false);
+        //if(isFullCalConfigmdtAccesible){
             calendarConfigMetaList = FullCalendarConfigurationService.getMetadata();//[SELECT Mode_Button_Color__c,Scheduler_License_Key__c, Selected_Mode_Button_Color__c, Selected_View_Button_Color__c, View_Button_Color__c,Non_Business_Hours_Color__c, Modal_Header_Footer_Color__c, Business_Hours_Color__c, Calendar_Border_Color__c  
                                       //FROM Full_Calendar_Configuration__mdt LIMIT 1];      
             if(calendarConfigMetaList.size() > 0){
                 calendarConfigMetadataObject = calendarConfigMetaList.get(0);
             }                     
-        }
+        //}
         //system.debug('calendarConfigMetaList  -> '+calendarConfigMetaList);
+    }
+    
+    private void getBlufyConfigMetaData(){
+        blufyConfigMetaDataList = BlufyConfigService.getByDeveloperName('Default');
+        system.debug('Size ' + blufyConfigMetaDataList.size());
+        if(blufyConfigMetaDataList.size() > 0){
+            blufyConfigMetaDataObject = blufyConfigMetaDataList.get(0);
+        }
+        system.debug(blufyConfigMetaDataObject.educato__Segment_Type__c);
     }
 }

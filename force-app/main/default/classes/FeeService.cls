@@ -15,12 +15,13 @@ public class FeeService{
         return null;
     }
     
-    public static List<Fee__c> getRelatedFeeById(String feeId){
-        if(String.isNotBlank(feeId)){
+    public static List<Fee__c> getRelatedFeeById(Set<String> feeIds){
+        if(feeIds.size() > 0){
             try {
                 List<Fee__c> listFee = [SELECT Id, Name, Type__c, Frequency__c, Amount__c, Schedule__c, Units__c, Unit_Price__c,Parent__c,
-                                        Override__c,Required__c,GST_Applicable__c FROM Fee__c WHERE Parent__c =: feeId  AND 
-                                        RecordType.Name = 'Secondary' WITH SECURITY_ENFORCED];
+                                        Override__c,Required__c,GST_Applicable__c,RecordType.Name
+                                        FROM Fee__c WHERE Parent__c IN: feeIds  AND 
+                                        RecordType.Id =: ConstantClass.secondaryFeeRecordTypeId WITH SECURITY_ENFORCED];
                 
                 return listFee;
             }catch(System.QueryException e){
@@ -28,5 +29,5 @@ public class FeeService{
             }        
         }
         return null;
-    }
+    }     
 }
